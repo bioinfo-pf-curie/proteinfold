@@ -21,28 +21,34 @@ of the license and that you accept its terms.
  ***********************************************/
 
 process alphaFoldLauncher {
+  tag "${fastaFile}"
   label 'alphaFoldLauncher'
   label 'minMem'
   label 'minCpu'
   publishDir "${params.outDir}/alphaFoldLauncher", mode: 'copy'
 
+  input:
+  path fastaFile
+
   output:
-  path "alphaFoldLauncher.sh"
+  path "alphaFoldLauncher-*.sh"
 
   // TODO
   // - params hard are coded in the nextflow,config, this has to be changed
   // - the alphafold parameters are also hard-coded in the script section, they have to be passed with a parameter
   // - we need to use the annotations symlink proposed by geniac to set the path to the alphafold database
   // - name of fasta is hard-coded in the --fasta_paths option
+  // - check that data_dir is an absolute path
 
   // NB
   // It seems that the run_apptainer.py script expects that we are in the folder with the fatas file
 
   script:
+  String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   """
   export ALPHAFOLD_DIR=${params.geniac.singularityImagePath}
   export TMPDIR=${params.tmpDir}
-  run_singularity.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath} --max_template_date=2022-01-01  --use_gpu=false --output_dir=/data/tmp/phupe/res-alpha > alphaFoldLauncher.sh
+  run_singularity.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} --max_template_date=2022-01-01  --use_gpu=false --output_dir=/data/tmp/phupe/res-alpha > alphaFoldLauncher-${fastaFilePrefix}.sh
   """
 }
 

@@ -11,11 +11,11 @@ The fact that you are presently reading this means that you have had knowledge o
 
 /*
 ========================================================================================
-                         @git_repo_name@
+                         proteinfold
 ========================================================================================
- @git_repo_name@ analysis Pipeline.
+ proteinfold analysis Pipeline.
  #### Homepage / Documentation
- @git_url@
+ ssh://git@gitlab.curie.fr:2222/phupe/proteinfold.git
 ----------------------------------------------------------------------------------------
 */
 
@@ -42,6 +42,8 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
  BUILD CHANNELS
 ==========================
 */
+
+fastaFilesCh = Channel.fromPath("${params.fastaPath}/*.fasta")
 
 /*
 ===========================
@@ -85,7 +87,7 @@ include { alphaFold } from './nf-modules/local/process/alphaFold'
 workflow {
     main:
 
-    alphaFoldLauncher() | alphaFold
+    alphaFoldLauncher(fastaFilesCh) | alphaFold
 
 }
 

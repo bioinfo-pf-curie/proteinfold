@@ -27,11 +27,11 @@ process alphaFold {
   publishDir "${params.outDir}/alphaFold", mode: 'copy'
 
   input:
-  path 'alphaFoldLauncher.sh'
+  path alphaFoldLauncher
 
   script:
   """
-  echo alphaFoldLauncher.sh
+  cat  ${alphaFoldLauncher}
   """
 }
 
