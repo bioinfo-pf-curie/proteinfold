@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: registrygitlab.curie.fr/cubic-registry/alphafold:v2.3.2
+From: registrygitlab.curie.fr/cubic-registry/alphafold/alphafold:v2.3.2-hhsuite-compile-avx2
 
 %environment
   export PATH="/opt/conda/bin:/usr/local/cuda-11.1/bin:$PATH"
