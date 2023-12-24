@@ -37,6 +37,10 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 ===================================
 */
 
+File file = new File(params.genomes['alphafold'].database)
+params.alphaFoldDatabase = file.getCanonicalPath()
+System.out.println(params.alphaFoldDatabase)
+
 /*
 ==========================
  BUILD CHANNELS

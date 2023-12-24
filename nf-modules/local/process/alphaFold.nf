@@ -31,7 +31,7 @@ process alphaFold {
 
   script:
   """
-  cat  ${alphaFoldLauncher}
+  echo bash "${alphaFoldLauncher}" \$PWD
   """
 }
 

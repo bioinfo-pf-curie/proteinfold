@@ -39,12 +39,13 @@ import subprocess
 singularity_image = os.path.join(os.environ['ALPHAFOLD_DIR'], 'alphafold.sif')
 
 # tmp directory
-if 'TMP' in os.environ:
-    tmp_dir = os.environ['TMP']
-elif 'TMPDIR' in os.environ:
-    tmp_dir = os.environ['TMPDIR']
-else:
-    logging.error('Provide a value with either TMP or TMDIR environment variables')
+#if 'TMP' in os.environ:
+#    tmp_dir = os.environ['TMP']
+#elif 'TMPDIR' in os.environ:
+#    tmp_dir = os.environ['TMPDIR']
+#else:
+#    logging.error('Provide a value with either TMP or TMDIR environment variables')
+tmp_dir = '$ALPHAFOLD_TMPDIR'
 
 # Default path to a directory that will store the results.
 output_dir_default = tmp_dir
