@@ -22,8 +22,8 @@ of the license and that you accept its terms.
 
 process alphaFold {
   label 'alphaFold'
-  label 'minMem'
-  label 'minCpu'
+  label 'highMem'
+  label 'highCpu'
   publishDir "${params.outDir}/alphaFold", mode: 'copy'
 
   input:
@@ -31,7 +31,7 @@ process alphaFold {
 
   script:
   """
-  echo bash "${alphaFoldLauncher}" \$PWD
+  bash "${alphaFoldLauncher}" \$PWD
   """
 }
 
