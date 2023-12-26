@@ -33,19 +33,11 @@ import subprocess
 
 #### USER CONFIGURATION ####
 
-# Path to AlphaFold Singularity image. This relies on
-# the environment variable ALPHAFOLD_DIR which is the
-# directory where AlphaFold is installed.
-singularity_image = os.path.join(os.environ['ALPHAFOLD_DIR'], 'alphafold.sif')
+# Path to AlphaFold Singularity image.
+singularity_image = '${ALPHAFOLD_SIF}'
 
-# tmp directory
-#if 'TMP' in os.environ:
-#    tmp_dir = os.environ['TMP']
-#elif 'TMPDIR' in os.environ:
-#    tmp_dir = os.environ['TMPDIR']
-#else:
-#    logging.error('Provide a value with either TMP or TMDIR environment variables')
-tmp_dir = '$ALPHAFOLD_TMPDIR'
+# TMPDIR used bu alphafold
+tmp_dir = '${ALPHAFOLD_TMPDIR}'
 
 # Default path to a directory that will store the results.
 output_dir_default = tmp_dir
@@ -273,7 +265,7 @@ def main(argv):
   # Run the container.
   # Result is a dict with keys "message" (value = all output as a single string),
   # and "return_code" (value = integer return code)
-  print('apptainer run ' + ' '.join(options) + ' ' + singularity_image + ' ' + ' '.join(command_args))
+  print(' '.join(options) + ' ' + singularity_image + ' ' + ' '.join(command_args))
 
 
 if __name__ == '__main__':
