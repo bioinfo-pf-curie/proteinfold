@@ -44,16 +44,19 @@ process alphaFoldLauncher {
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
+  String apptainerRun = "${params.apptainerRun}" 
+  if (params.useGpu) {
+    apptainerRun += " --nv" 
+  }
   """
-  export ALPHAFOLD_DIR=${params.geniac.singularityImagePath}
-  export TMPDIR=${params.tmpDir}
   echo -e "#! /bin/bash\n" > alphaFoldLauncher-${fastaFilePrefix}.sh
   echo -e "set -oeu pipefail\n" >> alphaFoldLauncher-${fastaFilePrefix}.sh
   echo -e "WORKDIR_NXF=\\\"\\\$1\\\"" >> alphaFoldLauncher-${fastaFilePrefix}.sh
   echo -e "ALPHAFOLD_SIF=\\\""${params.geniac.singularityImagePath}/alphafold.sif"\\\"" >> alphaFoldLauncher-${fastaFilePrefix}.sh
   echo -e "ALPHAFOLD_TMPDIR=\\\"\\\$WORKDIR_NXF/alphafold_tmpdir\\\"\n" >> alphaFoldLauncher-${fastaFilePrefix}.sh
   echo -e "mkdir -p \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> alphaFoldLauncher-${fastaFilePrefix}.sh
-  generate_launcher.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} --max_template_date=2022-01-01 --use_gpu=false --output_dir=\\\$WORKDIR_NXF >> alphaFoldLauncher-${fastaFilePrefix}.sh
+  apptainer_options=\$(generate_launcher.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} ${params.alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$WORKDIR_NXF)
+  echo ${apptainerRun} \${apptainer_options} >> alphaFoldLauncher-${fastaFilePrefix}.sh
   """
 }
 
