@@ -25,10 +25,7 @@ process alphaFold {
   label 'alphaFold'
   label 'extraMem'
   label 'highCpu'
-  publishDir {
-    String protein = "${alphaFoldLauncher}".replaceAll(/\.sh$/, '')
-    "${params.outDir}/alphaFold/${protein}"
-    }, mode: 'copy'
+  publishDir "${params.outDir}/alphaFold/", mode: 'copy'
   
   input:
   path alphaFoldLauncher
