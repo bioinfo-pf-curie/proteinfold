@@ -21,13 +21,20 @@ of the license and that you accept its terms.
  ***********************************************/
 
 process alphaFold {
+  tag "${alphaFoldLauncher}"
   label 'alphaFold'
-  label 'highMem'
+  label 'extraMem'
   label 'highCpu'
-  publishDir "${params.outDir}/alphaFold", mode: 'copy'
-
+  publishDir {
+    String protein = "${alphaFoldLauncher}".replaceAll(/\.sh$/, '')
+    "${params.outDir}/alphaFold/${protein}"
+    }, mode: 'copy'
+  
   input:
   path alphaFoldLauncher
+
+  output:
+  path("*", type: 'dir')
 
   script:
   """

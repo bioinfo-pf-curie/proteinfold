@@ -30,7 +30,7 @@ process alphaFoldLauncher {
   path fastaFile
 
   output:
-  path "alphaFoldLauncher-*.sh"
+  path "*.sh"
 
   // TODO
   // - params hard are coded in the nextflow,config, this has to be changed
@@ -49,14 +49,16 @@ process alphaFoldLauncher {
     apptainerRun += " --nv" 
   }
   """
-  echo -e "#! /bin/bash\n" > alphaFoldLauncher-${fastaFilePrefix}.sh
-  echo -e "set -oeu pipefail\n" >> alphaFoldLauncher-${fastaFilePrefix}.sh
-  echo -e "WORKDIR_NXF=\\\"\\\$1\\\"" >> alphaFoldLauncher-${fastaFilePrefix}.sh
-  echo -e "ALPHAFOLD_SIF=\\\""${params.geniac.singularityImagePath}/alphafold.sif"\\\"" >> alphaFoldLauncher-${fastaFilePrefix}.sh
-  echo -e "ALPHAFOLD_TMPDIR=\\\"\\\$WORKDIR_NXF/alphafold_tmpdir\\\"\n" >> alphaFoldLauncher-${fastaFilePrefix}.sh
-  echo -e "mkdir -p \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> alphaFoldLauncher-${fastaFilePrefix}.sh
+  echo -e "#! /bin/bash\n" > ${fastaFilePrefix}.sh
+  echo -e "set -oeu pipefail\n" >> ${fastaFilePrefix}.sh
+  echo -e "WORKDIR_NXF=\\\"\\\$1\\\"" >> ${fastaFilePrefix}.sh
+  echo -e "ALPHAFOLD_SIF=\\\""${params.geniac.singularityImagePath}/alphafold.sif"\\\"" >> ${fastaFilePrefix}.sh
+  echo -e "ALPHAFOLD_TMPDIR=\\\"\\\$WORKDIR_NXF/alphafold_tmpdir\\\"\n" >> ${fastaFilePrefix}.sh
+  echo -e "mkdir -p \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> ${fastaFilePrefix}.sh
   apptainer_options=\$(generate_launcher.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} ${params.alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$WORKDIR_NXF)
-  echo ${apptainerRun} \${apptainer_options} >> alphaFoldLauncher-${fastaFilePrefix}.sh
+  echo ${apptainerRun} \${apptainer_options} >> ${fastaFilePrefix}.sh
+  echo -e "rm -rf \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> ${fastaFilePrefix}.sh
+  echo -e "rm -rf ld.so.cache\n" >> ${fastaFilePrefix}.sh
   """
 }
 
