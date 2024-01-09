@@ -44,7 +44,9 @@ process alphaFoldLauncher {
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
-  String apptainerRun = "${params.apptainerRun}" 
+  String apptainerRun = "${params.apptainerRun}"
+  // A space is needed to avoid potential complain when using --max_template_date
+  String alphaFoldOptions = "${params.alphaFoldOptions}" + " "
   if (params.useGpu) {
     apptainerRun += " --nv" 
   }
@@ -55,7 +57,7 @@ process alphaFoldLauncher {
   echo -e "ALPHAFOLD_SIF=\\\""${params.geniac.singularityImagePath}/alphafold.sif"\\\"" >> ${fastaFilePrefix}.sh
   echo -e "ALPHAFOLD_TMPDIR=\\\"\\\$WORKDIR_NXF/alphafold_tmpdir\\\"\n" >> ${fastaFilePrefix}.sh
   echo -e "mkdir -p \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> ${fastaFilePrefix}.sh
-  apptainer_options=\$(generate_launcher.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} ${params.alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$WORKDIR_NXF)
+  apptainer_options=\$(generate_launcher.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$WORKDIR_NXF)
   echo ${apptainerRun} \${apptainer_options} >> ${fastaFilePrefix}.sh
   echo -e "rm -rf \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> ${fastaFilePrefix}.sh
   echo -e "rm -rf ld.so.cache\n" >> ${fastaFilePrefix}.sh
