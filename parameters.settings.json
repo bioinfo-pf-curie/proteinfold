@@ -1,0 +1,71 @@
+{
+  "parameters": [
+    {
+      "name": "fastaPath",
+      "label": "Input fasta directory",
+      "usage": "Path to the input directory which contains the fasta files",
+      "type": "path",
+      "choices": [],
+      "nargs": "1",
+      "default_value": null,
+      "pattern": "",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Mandatory arguments"
+    },
+    {
+      "name": "profile",
+      "label": "Configuration profile(s)",
+      "usage": "Configuration profile to use. Can use multiple (comma separated).",
+      "type": "string",
+      "choices": [
+        "conda", "cluster", "docker", "multiconda", "conda", "path", "multipath", "singularity"
+      ],
+      "nargs": "+",
+      "default_value": null,
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Mandatory arguments"
+    },
+    {
+      "name": "genomeAnnotationPath",
+      "label": "Annotation path",
+      "usage": "Path to genome annotations folder",
+      "type": "path",
+      "choices": [],
+      "nargs": "+",
+      "default_value": null,
+      "pattern": ".*\\*.*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "References"
+    },
+    {
+      "name": "alphaFoldOptions",
+      "label": "alphaFold options",
+      "usage": "Prediction model options passed to alphaFold (all options must be passed at once surrounded with quotes)",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "outDir",
+      "label": "Output directory",
+      "usage": "The output directory where the results will be saved",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    }
+  ]
+}
