@@ -11,11 +11,11 @@ The fact that you are presently reading this means that you have had knowledge o
 
 /*
 ========================================================================================
-                         proteinfold
+                         @git_repo_name@
 ========================================================================================
- proteinfold analysis Pipeline.
+ @git_repo_name@ analysis Pipeline.
  #### Homepage / Documentation
- ssh://git@gitlab.curie.fr:2222/phupe/proteinfold.git
+ @git_url@
 ----------------------------------------------------------------------------------------
 */
 
@@ -39,7 +39,6 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 
 File file = new File(params.genomes['alphafold'].database)
 params.alphaFoldDatabase = file.getCanonicalPath()
-System.out.println(params.alphaFoldDatabase)
 
 /*
 ==========================
@@ -60,8 +59,8 @@ summary = [
   'Version': workflow.manifest.version ?: null,
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
-  'Inputs' : params.samplePlan ?: params.reads ?: null,
-  'Genome' : params.genome,
+  'Inputs' : params.fastaPath ?: null,
+  'AlphaFold Database' : params.alphaFoldDatabase,
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,
   'Profile' : workflow.profile,
