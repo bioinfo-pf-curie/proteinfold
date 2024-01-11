@@ -32,15 +32,8 @@ process alphaFoldLauncher {
   output:
   path "*.sh"
 
-  // TODO
-  // - params hard are coded in the nextflow,config, this has to be changed
-  // - the alphafold parameters are also hard-coded in the script section, they have to be passed with a parameter
-  // - we need to use the annotations symlink proposed by geniac to set the path to the alphafold database
-  // - name of fasta is hard-coded in the --fasta_paths option
-  // - check that data_dir is an absolute path
-  // NB
-  // It seems that the run_apptainer.py script expects that we are in the folder with the fatas file
-  // set the random seed to ensure results reproducibility
+  // TODO:
+  //  - set the random seed to ensure result reproducibility
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
