@@ -37,8 +37,8 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 ===================================
 */
 
-File file = new File(params.genomes['alphafold'].database)
-params.alphaFoldDatabase = file.getCanonicalPath()
+File alphaFoldDB = new File(params.genomes['alphafold'].database)
+params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
 
 /*
 ==========================
@@ -80,6 +80,7 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 // Processes
 include { alphaFoldLauncher } from './nf-modules/local/process/alphaFoldLauncher'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
+include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 
 /*
 =====================================
@@ -90,7 +91,7 @@ include { alphaFold } from './nf-modules/local/process/alphaFold'
 workflow {
     main:
 
-    alphaFoldLauncher(fastaFilesCh) | alphaFold
+    fastaChecker(fastaFilesCh) | alphaFoldLauncher(fastaFilesCh) | alphaFold
 
 }
 
