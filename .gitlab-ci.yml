@@ -282,29 +282,6 @@ sif:
         job: ci_4_sif
     strategy: depend # wait for the child pipeline to be completed
 
-sync_sif_calcsub:
-  stage: deploy
-  script:
-    - env
-    - echo "Sync  sif on calcsub"
-    - |
-      export VAULT_SERVICE="${CLUSTER_NAME}"
-      bash ${DIR_DEPLOY_PACKAGE}/utils/set-vault-token-4-gitlab-ci.sh # set the vault token
-      source variables.sh
-    - |
-      echo "#! /bin/bash" > sync-calcsub.sh
-      echo "rsync -avz  --delete-excluded  -e \"ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no'\" ${USERSSH}@abacus:${DEPLOY_HOME_ABACUS}/singularity/images/ ${DEPLOY_HOME_CALCSUB}/singularity/images/" >> sync-calcsub.sh
-    - chmod +x sync-calcsub.sh
-    - cat sync-calcsub.sh
-    - ssh -p ${SSH_PORT} ${USERSSH}@${SERVER_NAME} "mkdir -p ${DEPLOY_HOME_CALCSUB}/singularity/images"
-    - scp -P ${SSH_PORT} sync-calcsub.sh ${USERSSH}@${SERVER_NAME}:${DEPLOY_HOME_CALCSUB}/sync-calcsub-${CI_JOB_ID}.sh
-    - ssh -q ${USERSSH}@${CLUSTER_NAME}.curie.fr "${CLUSTER_SUBMIT} -x ${DEPLOY_HOME_CALCSUB}/sync-calcsub-${CI_JOB_ID}.sh"
-    - ssh -q ${USERSSH}@${CLUSTER_NAME}.curie.fr "rm -rf ${DEPLOY_HOME_CALCSUB}/sync-calcsub-${CI_JOB_ID}.sh"
-  variables:
-    CLUSTER_NAME: "calcsub"
-    CLUSTER_SUBMIT: "qsub -I -x"
-    DEPLOY_HOME_ABACUS: "${DIR_BIOINFO_PIPELINE_ABACUS}/${PIPELINE_NAME}/${DEPLOY_ENV}/${CUBIC_PIPE}"
-    DEPLOY_HOME_CALCSUB: "${DIR_BIOINFO_PIPELINE_CALCSUB}/${PIPELINE_NAME}/${DEPLOY_ENV}/${CUBIC_PIPE}"
 
 deploy_abacus:
   # This job deploys the singularity images (if needed)
@@ -327,29 +304,4 @@ deploy_abacus:
     OUT_DIR: "${DIR_BIOINFO_PIPELINE_ABACUS}/${PIPELINE_NAME}/${DEPLOY_ENV}/${CUBIC_PIPE}/${DIR_TMP_ON_CLUSTER}/results-${CI_JOB_NAME}-${CI_JOB_ID}"
     DIR_TMP_IN_RUNNER: "${DIR_TMP_IN_RUNNER}"
 
-
-deploy_calcsub:
-  # This job deploys the singularity images (if needed)
-  stage: deploy
-  trigger:
-    include:
-      - artifact: gitlab-ci_deploy_pipeline.yml
-        job: ci_4_deploy
-    strategy: depend # wait for the child pipeline to be completed
-  variables:
-    AP_NF_EXECUTOR: "pbs"
-    APPS_PATH: "/bioinfo/local/build/Centos"
-    CLUSTER_NAME: "calcsub"
-    CLUSTER_SUBMIT: "qsub -I -x"   # for calcsub
-    DEPLOY_ENV: "${DEPLOY_ENV}"
-    DEPLOY_HOME: "${DIR_BIOINFO_PIPELINE_CALCSUB}/${PIPELINE_NAME}/${DEPLOY_ENV}/${CUBIC_PIPE}"
-    DIR_ANNOTATION: "${DIR_ANNOTATION_CALCSUB}"
-    DIR_TMP_ON_CLUSTER: "dir_tmp_4_deploy" # This will be a folder created in the HOME of the user app on the cluster
-    NEXTFLOW_OPTIONS: "-process.clusterOptions '-v PATH'"
-    OUT_DIR: "${DIR_BIOINFO_PIPELINE_CALCSUB}/${PIPELINE_NAME}/${DEPLOY_ENV}/${CUBIC_PIPE}/${DIR_TMP_ON_CLUSTER}/results-${CI_JOB_NAME}-${CI_JOB_ID}"
-    DIR_TMP_IN_RUNNER: "${DIR_TMP_IN_RUNNER}"
-  needs:
-    - job: sync_sif_calcsub
-    - job: export_var
-      artifacts: true
 
