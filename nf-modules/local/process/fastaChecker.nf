@@ -19,7 +19,7 @@ of the license and that you accept its terms.
  * installed with a custom conda yml file      *
  ***********************************************/
 
-process alphaFoldLauncher {
+process fastaChecker {
   tag "${fastaFile}"
   label 'onlyLinux'
   label 'minMem'
