@@ -91,7 +91,8 @@ include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 workflow {
     main:
 
-    fastaChecker(fastaFilesCh) | alphaFoldLauncher(fastaFilesCh) | alphaFold
+    fastaChecker(fastaFilesCh)
+    alphaFoldLauncher(fastaFilesCh) | alphaFold
 
 }
 
