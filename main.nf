@@ -61,6 +61,8 @@ summary = [
   'Run Name': customRunName,
   'Inputs' : params.fastaPath ?: null,
   'AlphaFold Database' : params.alphaFoldDatabase,
+  'AlphaFold Options' : params.alphaFoldOptions,
+  'Use GPU' : params.useGpu,
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,
   'Profile' : workflow.profile,
