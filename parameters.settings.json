@@ -33,7 +33,7 @@
       "type": "path",
       "nargs": 1,
       "choices": [],
-      "default_value": "--max_template_date=None --random_seed=654321",
+      "default_value": "--max_template_date=2024-01-01 --random_seed=654321",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
