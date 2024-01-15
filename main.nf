@@ -40,6 +40,11 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 File alphaFoldDB = new File(params.genomes['alphafold'].database)
 params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
 
+// Check that alphaFoldOptions defines max_template_date=YYYY-MM-DD
+if (!params.alphaFoldOptions.find("max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])")){
+  exit 1, "ERROR: '--alphaFoldOptions' must define 'max_template_date=YYYY-MM-DD', e.g.: --alphaFoldOptions 'max_template_date=2024-01-01'"
+}
+
 /*
 ==========================
  BUILD CHANNELS

@@ -40,6 +40,8 @@ process alphaFoldLauncher {
   String apptainerRun = "${params.apptainerRun}"
   // A space is needed to avoid potential complain when using --max_template_date
   String alphaFoldOptions = "${params.alphaFoldOptions}" + " "
+  alphaFoldOptions = alphaFoldOptions.replaceAll("\\s", "")
+  alphaFoldOptions = '--' + alphaFoldOptions.replace("|", "--")
   if (params.useGpu) {
     apptainerRun += " --nv" 
   }
