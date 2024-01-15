@@ -48,7 +48,9 @@ REFERENCES:
     --genomeAnnotationPath PATH   Path to genome annotations folder
 
 OTHER OPTIONS:
-    --alphaFoldOptions PATH   Prediction model options passed to alphaFold (all options must be passed at once surrounded with quotes)
+    --alphaFoldOptions PATH   Prediction model options passed to alphaFold (all options must be passed at once surrounded with quotes). The different 
+                              options must be separated by a pipe ('|'). For example: max_template=2024-01-01|multimer. Do no add '--' characters as 
+                              they are not supported on the command line.
     --outDir           PATH   The output directory where the results will be saved
 
 =======================================================
@@ -74,7 +76,7 @@ nextflow run main.nf -profile test,singularity
 #### Run the pipeline with custom option
 
 ```
-nextflow run main.nf --fastaPath="test/data" --alphaFoldOptions "--max_template_date=2024-01-01  --random_seed=654321" --outDir MY_OUTPUT_DIR -profile singularity
+nextflow run main.nf --fastaPath="test/data" --alphaFoldOptions "max_template_date=2024-01-01|random_seed=654321" --outDir MY_OUTPUT_DIR -profile singularity
 ```
 
 #### Run the pipeline on a computing cluster
@@ -84,7 +86,7 @@ For example, to launch the pipeline on a computing cluster with SLURM:
 ```
 echo "#! /bin/bash" > launcher.sh
 echo "set -oue pipefail" >> launcher.sh
-echo "nextflow run main.nf --fastaPath=\"test/data\" --alphaFoldOptions \"--max_template_date=2024-01-01  --random_seed=654321\" --outDir MY_OUTPUT_DIR -profile singularity,cluster" >> launcher.sh
+echo "nextflow run main.nf --fastaPath=\"test/data\" --alphaFoldOptions \"max_template_date=2024-01-01|random_seed=654321\" --outDir MY_OUTPUT_DIR -profile singularity,cluster" >> launcher.sh
 sbatch launcher
 ```
 

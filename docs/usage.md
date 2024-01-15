@@ -29,7 +29,9 @@ REFERENCES:
     --genomeAnnotationPath PATH   Path to genome annotations folder
 
 OTHER OPTIONS:
-    --alphaFoldOptions PATH   Prediction model options passed to alphaFold (all options must be passed at once surrounded with quotes)
+    --alphaFoldOptions PATH   Prediction model options passed to alphaFold (all options must be passed at once surrounded with quotes). The different 
+                              options must be separated by a pipe ('|'). For example: max_template=2024-01-01|multimer. Do no add '--' characters as 
+                              they are not supported on the command line.
     --outDir           PATH   The output directory where the results will be saved
 
 =======================================================
