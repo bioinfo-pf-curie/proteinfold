@@ -38,7 +38,7 @@ process alphaFoldLauncher {
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   String apptainerRun = "${params.apptainerRun}"
-  String alphaFoldOptions = alphaFoldOptions.replaceAll("\\s", "")
+  String alphaFoldOptions = "${params.alphaFoldOptions}".replaceAll("\\s", "")
   alphaFoldOptions = '--' + alphaFoldOptions.replace("|", " --")
   if (params.useGpu) {
     apptainerRun += " --nv" 
