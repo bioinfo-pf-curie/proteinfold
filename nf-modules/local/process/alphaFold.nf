@@ -20,6 +20,7 @@ of the license and that you accept its terms.
  * installed with a custom conda yml file      *
  ***********************************************/
 
+// This process predicts the protein structure with alphaFold
 process alphaFold {
   tag "${alphaFoldLauncher}"
   label 'alphaFold'

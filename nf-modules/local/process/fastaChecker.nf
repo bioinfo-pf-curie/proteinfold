@@ -19,6 +19,7 @@ of the license and that you accept its terms.
  * installed with a custom conda yml file      *
  ***********************************************/
 
+// This process checks that the fasta files are correctly formatted
 process fastaChecker {
   tag "${fastaFile}"
   label 'onlyLinux'

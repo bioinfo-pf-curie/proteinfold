@@ -19,6 +19,9 @@ of the license and that you accept its terms.
  * installed with a custom conda yml file      *
  ***********************************************/
 
+// This process generates a command line to launch alpHaFold with apptainer:
+// - it sets the appropriate bindings with fasta files and nnotation, etc.
+// - it uses the alphaFoldOptions
 process alphaFoldLauncher {
   tag "${fastaFile}"
   label 'alphaFoldLauncher'
@@ -32,15 +35,10 @@ process alphaFoldLauncher {
   output:
   path "*.sh"
 
-  // TODO:
-  //  - set the random seed to ensure result reproducibility
-
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   String apptainerRun = "${params.apptainerRun}"
-  // A space is needed to avoid potential complain when using --max_template_date
-  String alphaFoldOptions = "${params.alphaFoldOptions}" + " "
-  alphaFoldOptions = alphaFoldOptions.replaceAll("\\s", "")
+  String alphaFoldOptions = alphaFoldOptions.replaceAll("\\s", "")
   alphaFoldOptions = '--' + alphaFoldOptions.replace("|", " --")
   if (params.useGpu) {
     apptainerRun += " --nv" 
