@@ -94,6 +94,7 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 // Processes
 include { alphaFoldLauncher } from './nf-modules/local/process/alphaFoldLauncher'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
+include { colabFold } from './nf-modules/local/process/colabFold'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 
 /*
@@ -107,7 +108,7 @@ workflow {
 
     fastaChecker(fastaFilesCh)
     alphaFoldLauncher(fastaFilesCh) | alphaFold
-
+    colabFold
 }
 
 workflow.onComplete {
