@@ -11,11 +11,11 @@ The fact that you are presently reading this means that you have had knowledge o
 
 /*
 ========================================================================================
-                         @git_repo_name@
+                         proteinfold
 ========================================================================================
- @git_repo_name@ analysis Pipeline.
+ proteinfold analysis Pipeline.
  #### Homepage / Documentation
- @git_url@
+ https://gitlab-ci-token:64_7sv5Kax23HxJyMudmk4j@gitlab.curie.fr/data-analysis/proteinfold.git
 ----------------------------------------------------------------------------------------
 */
 
@@ -38,8 +38,11 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 */
 
 // Check that the option --fastaPath has been provided and contains the path to the fasta files
-if (params.fastaPath == null | params.fastaPath.getClass().toString().contains('Boolean')){
-  exit 1, "ERROR: provide the path to the fasta file(s)."
+File fastaPath = new File(params.fastaPath)
+//if (!fastaPath.exists()){
+if (!fastaPath.isDirectory()){
+  //exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' does not exist."
+  exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
 }
 
 // Check that alphaFoldOptions defines max_template_date=YYYY-MM-DD
@@ -108,7 +111,7 @@ workflow {
 
     fastaChecker(fastaFilesCh)
     alphaFoldLauncher(fastaFilesCh) | alphaFold
-    colabFold
+    colabFold()
 }
 
 workflow.onComplete {
