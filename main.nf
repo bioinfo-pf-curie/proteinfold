@@ -46,8 +46,8 @@ if (!fastaPath.isDirectory()){
 }
 
 // Check that alphaFoldOptions defines max_template_date=YYYY-MM-DD
-if (!params.alphaFoldOptions.find("max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])")){
-  exit 1, "ERROR: '--alphaFoldOptions' must define 'max_template_date=YYYY-MM-DD', e.g.: --alphaFoldOptions 'max_template_date=2024-01-01'"
+if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])")){
+  exit 1, "ERROR: 'params.alphaFoldOptions' must define '--max_template_date=YYYY-MM-DD', e.g.: '--max_template_date=2024-01-01'"
 }
 
 // Get realpath for the annotations to avoid symlink issues in bindings with apptainer

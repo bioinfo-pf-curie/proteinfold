@@ -48,9 +48,11 @@ REFERENCES:
     --genomeAnnotationPath PATH   Path to genome annotations folder
 
 OTHER OPTIONS:
-    --alphaFoldOptions PATH   Prediction model options passed to alphaFold (all options must be passed at once surrounded with quotes). The different 
-                              options must be separated by a pipe ('|'). For example: max_template=2024-01-01|multimer. Do no add '--' characters as 
-                              they are not supported on the command line.
+    -params-file    
+    --alphaFoldOptions PATH   Prediction model options passed to alphaFold. This parameter must be set in a JSON file (i.e. 'params.json') and passed
+                              to nextflow with the option -params-file. For example, the JSON can contain: "alphaFoldOptions":
+                              "--max_template=2024-01-01 --multimer". WARNING: passing the option '--alphaFoldOptions' in command line may result in
+                              some errors when the option contains '-' or '--' characters which are not appreciated by nextflow.
     --outDir           PATH   The output directory where the results will be saved
 
 =======================================================
@@ -75,9 +77,19 @@ nextflow run main.nf -profile test,singularity
 
 #### Run the pipeline with custom option
 
+Create a json file with your custom parameters, for example:
+
+```json
+{
+  "alphaFoldOptions": "--max_template_date=2024-01-01 --random_seed=654321"
+}
 ```
-nextflow run main.nf --fastaPath="test/data" --alphaFoldOptions "max_template_date=2024-01-01|random_seed=654321" --outDir MY_OUTPUT_DIR -profile singularity
+
+Launch nextflow with the `-params-file` options:
 ```
+nextflow run main.nf --fastaPath="test/data" -params-file params.json --outDir MY_OUTPUT_DIR -profile singularity
+```
+
 
 #### Run the pipeline on a computing cluster
 
