@@ -1,5 +1,5 @@
 /*
-Copyright Institut Curie 2023
+Copyright Institut Curie 2024
 
 This software is a computer program whose purpose is to
 provide a demo with geniac.
@@ -14,13 +14,8 @@ of the license and that you accept its terms.
 
 */
 
-/***********************************************
- * Some process with a software that has to be *
- * installed with a custom conda yml file      *
- ***********************************************/
-
-// This process generates a command line to launch alpHaFold with apptainer:
-// - it sets the appropriate bindings with fasta files and nnotation, etc.
+// This process generates a command line to launch alphaFold with apptainer:
+// - it sets the appropriate bindings with fasta files and annotations, etc.
 // - it uses the alphaFoldOptions
 process alphaFoldLauncher {
   tag "${fastaFile}"

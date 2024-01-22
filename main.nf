@@ -110,8 +110,15 @@ workflow {
     main:
 
     fastaChecker(fastaFilesCh)
-    alphaFoldLauncher(fastaFilesCh) | alphaFold
-    colabFold()
+    if (launchAlphaFold){
+      alphaFoldLauncher(fastaFilesCh) | alphaFold
+    }
+    if (launchColabFold){
+      colabFold()
+    }
+    if (launchMassiveFold){
+      massiveFoldLauncher(fastaFilesCh) | massiveFold
+    }
 }
 
 workflow.onComplete {
