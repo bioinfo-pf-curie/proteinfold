@@ -104,7 +104,7 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 include { alphaFoldLauncher } from './nf-modules/local/process/alphaFoldLauncher'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { colabFold } from './nf-modules/local/process/colabFold'
-include { colabFoldSearch() } from './nf-modules/local/process/colabFoldSearch'
+include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 include { massiveFoldLauncher } from './nf-modules/local/process/massiveFoldLauncher'
 include { massiveFold } from './nf-modules/local/process/massiveFold'
