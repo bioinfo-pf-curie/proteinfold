@@ -51,9 +51,15 @@ if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-
 }
 
 // Get realpath for the annotations to avoid symlink issues in bindings with apptainer
-File alphaFoldDB = new File(params.genomes['alphafold'].database)
-params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
+if (params.launchAlphaFold){
+  File alphaFoldDB = new File(params.genomes.alphafold.database)
+  params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
+}
 
+if (params.launchColabFold){
+File colabFoldDB = new File(params.genomes.colabfold.database)
+params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
+}
 
 /*
 ==========================
@@ -98,7 +104,10 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 include { alphaFoldLauncher } from './nf-modules/local/process/alphaFoldLauncher'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { colabFold } from './nf-modules/local/process/colabFold'
+include { colabFoldSearch() } from './nf-modules/local/process/colabFoldSearch'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
+include { massiveFoldLauncher } from './nf-modules/local/process/massiveFoldLauncher'
+include { massiveFold } from './nf-modules/local/process/massiveFold'
 
 /*
 =====================================
@@ -114,6 +123,7 @@ workflow {
       alphaFoldLauncher(fastaFilesCh) | alphaFold
     }
     if (params.launchColabFold){
+      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
       colabFold()
     }
     if (params.launchMassiveFold){
