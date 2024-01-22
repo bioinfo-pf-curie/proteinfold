@@ -110,13 +110,13 @@ workflow {
     main:
 
     fastaChecker(fastaFilesCh)
-    if (launchAlphaFold){
+    if (params.launchAlphaFold){
       alphaFoldLauncher(fastaFilesCh) | alphaFold
     }
-    if (launchColabFold){
+    if (params.launchColabFold){
       colabFold()
     }
-    if (launchMassiveFold){
+    if (params.launchMassiveFold){
       massiveFoldLauncher(fastaFilesCh) | massiveFold
     }
 }
