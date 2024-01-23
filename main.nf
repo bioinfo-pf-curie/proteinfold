@@ -61,6 +61,11 @@ File colabFoldDB = new File(params.genomes.colabfold.database)
 params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
 }
 
+if (params.launchMassiveFold){
+  File massiveFoldDB = new File(params.genomes.massivefold.database)
+  params.massiveFoldDatabase = massiveFoldDB.getCanonicalPath()
+}
+
 /*
 ==========================
  BUILD CHANNELS
@@ -81,8 +86,12 @@ summary = [
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.fastaPath ?: null,
-  'AlphaFold Database' : params.alphaFoldDatabase,
-  'AlphaFold Options' : params.alphaFoldOptions,
+  'AlphaFold Database' : params.launchAlphaFold ? params.alphaFoldDatabase : null,
+  'AlphaFold Options' : params.launchAlphaFold ? params.alphaFoldOptions : null,
+  'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
+  'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
+  'MassiveFold Database' : params.launchMassiveFold ? params.massiveFoldDatabase : null,
+  'MassiveFold Options' : params.launchMassiveFold ? params.massiveFoldOptions : null,
   'Use GPU' : params.useGpu,
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,

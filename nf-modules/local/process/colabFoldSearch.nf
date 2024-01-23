@@ -40,7 +40,7 @@ process colabFoldSearch {
   """
   echo colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${fastaFilePrefix}" > search.txt
   colabfold_batch -h > help.txt
-  ls "${colabFoldDatabase}/"
+  echo "${colabFoldDatabase}/"
   """
 }
 
