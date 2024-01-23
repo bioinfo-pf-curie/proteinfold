@@ -105,6 +105,9 @@ flags.DEFINE_enum('models_to_relax', 'best', ['best', 'all', 'none'],
 flags.DEFINE_bool('enable_gpu_relax', True, 'Run relax on GPU if GPU is enabled.')
 flags.DEFINE_bool(
     'use_gpu', True, 'Enable NVIDIA runtime to run with GPUs.')
+flags.DEFINE_string(
+    'gpu_devices', 'all',
+    'Comma separated list of devices to pass to NVIDIA_VISIBLE_DEVICES.')
 
 FLAGS = flags.FLAGS
 
