@@ -102,6 +102,7 @@ flags.DEFINE_enum('models_to_relax', 'best', ['best', 'all', 'none'],
                         'distracting stereochemical violations but might help '
                         'in case you are having issues with the relaxation '
                         'stage.')
+flags.DEFINE_bool('enable_gpu_relax', True, 'Run relax on GPU if GPU is enabled.')
 flags.DEFINE_bool(
     'use_gpu', True, 'Enable NVIDIA runtime to run with GPUs.')
 
