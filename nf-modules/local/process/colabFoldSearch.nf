@@ -23,7 +23,7 @@ of the license and that you accept its terms.
 // This process predicts the protein structure with alphaFold
 process colabFoldSearch {
   label 'colabFold'
-  label 'extraMem'
+  label 'supraMem'
   label 'highCpu'
   publishDir "${params.outDir}/colabFoldSearch/", mode: 'copy'
   
@@ -38,7 +38,7 @@ process colabFoldSearch {
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   """
-  echo colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${fastaFilePrefix}" > search.txt
+  colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${fastaFilePrefix}" > search.txt
   colabfold_batch -h > help.txt
   echo "${colabFoldDatabase}/"
   """
