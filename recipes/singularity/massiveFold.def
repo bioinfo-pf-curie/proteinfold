@@ -7,7 +7,8 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/massivefold:MFv1.0.0-hh
   export PATH="$PATH:/app"
 
 %post
-  echo $'#! /bin/bash\npython /app/alphafold/run_alphafold.py "$@"' > /app/launch_alphafold.sh \
+  # echo -e does not work with ubuntu shell builtin
+  /bin/echo -e $'#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_alphafold.py "$@"' > /app/launch_alphafold.sh \
   && chmod +x /app/launch_alphafold.sh
 
 %runscript
