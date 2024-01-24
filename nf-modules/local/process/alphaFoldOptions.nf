@@ -14,15 +14,15 @@ of the license and that you accept its terms.
 
 */
 
-// This process generates a command line to launch massiveFold with apptainer:
+// This process generates a command line to launch alphaFold with apptainer:
 // - it sets the appropriate bindings with fasta files and annotations, etc.
 // - it uses the alphaFoldOptions
-process massiveFoldLauncher {
+process alphaFoldOptions {
   tag "${fastaFile}"
-  label 'alphaFoldLauncher'
+  label 'alphaFoldOptions'
   label 'minMem'
   label 'minCpu'
-  publishDir "${params.outDir}/massiveFoldLauncher", mode: 'copy'
+  publishDir "${params.outDir}/alphaFoldOptions", mode: 'copy'
 
   input:
   path fastaFile
@@ -33,7 +33,7 @@ process massiveFoldLauncher {
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   String apptainerRun = "${params.apptainerRun}"
-  String alphaFoldOptions = "${params.massiveFoldOptions}" + " "
+  String alphaFoldOptions = "${params.alphaFoldOptions}" + " "
   if (params.useGpu) {
     apptainerRun += " --nv" 
   }
@@ -41,7 +41,7 @@ process massiveFoldLauncher {
   echo -e "#! /bin/bash\n" > ${fastaFilePrefix}.sh
   echo -e "set -oeu pipefail\n" >> ${fastaFilePrefix}.sh
   echo -e "WORKDIR_NXF=\\\"\\\$1\\\"" >> ${fastaFilePrefix}.sh
-  echo -e "ALPHAFOLD_SIF=\\\""${params.geniac.singularityImagePath}/massive.sif"\\\"" >> ${fastaFilePrefix}.sh
+  echo -e "ALPHAFOLD_SIF=\\\""${params.geniac.singularityImagePath}/alphafold.sif"\\\"" >> ${fastaFilePrefix}.sh
   echo -e "ALPHAFOLD_TMPDIR=\\\"\\\$WORKDIR_NXF/alphafold_tmpdir\\\"\n" >> ${fastaFilePrefix}.sh
   echo -e "mkdir -p \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> ${fastaFilePrefix}.sh
   apptainer_options=\$(generate_launcher.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$WORKDIR_NXF)

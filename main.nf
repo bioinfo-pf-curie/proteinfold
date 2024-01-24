@@ -110,12 +110,11 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 */ 
 
 // Processes
-include { alphaFoldLauncher } from './nf-modules/local/process/alphaFoldLauncher'
+include { alphaFoldOptions } from './nf-modules/local/process/alphaFoldOptions'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
-include { massiveFoldLauncher } from './nf-modules/local/process/massiveFoldLauncher'
 include { massiveFold } from './nf-modules/local/process/massiveFold'
 
 /*
@@ -129,14 +128,14 @@ workflow {
 
     fastaChecker(fastaFilesCh)
     if (params.launchAlphaFold){
-      alphaFoldLauncher(fastaFilesCh) | alphaFold
+      alphaFoldOptions(fastaFilesCh) | alphaFold
     }
     if (params.launchColabFold){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
       colabFold()
     }
     if (params.launchMassiveFold){
-      massiveFoldLauncher(fastaFilesCh) | massiveFold
+      alphaFoldOptions(fastaFilesCh) | massiveFold
     }
 }
 
