@@ -26,6 +26,8 @@ process massiveFold {
   label 'extraMem'
   label 'highCpu'
   publishDir "${params.outDir}/massiveFold/", mode: 'copy'
+  containerOptions { (params.useGpu) ? '--nv --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp' : '-B \$PWD:/tmp' }
+  clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
   
   output:
   path "help.txt"

@@ -128,6 +128,9 @@ workflow {
 
     fastaChecker(fastaFilesCh)
     if (params.launchAlphaFold){
+      //alphaFoldLauncher(fastaFilesCh) | alphaFold
+      alphaFoldOptions()
+      alphaFoldLauncher(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
       alphaFoldOptions(fastaFilesCh) | alphaFold
     }
     if (params.launchColabFold){

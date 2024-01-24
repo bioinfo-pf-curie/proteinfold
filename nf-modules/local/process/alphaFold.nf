@@ -1,5 +1,5 @@
 /*
-Copyright Institut Curie 2023
+Copyright Institut Curie 2024
 
 This software is a computer program whose purpose is to
 provide a demo with geniac.
@@ -14,29 +14,30 @@ of the license and that you accept its terms.
 
 */
 
-
-/***********************************************
- * Some process with a software that has to be *
- * installed with a custom conda yml file      *
- ***********************************************/
-
-// This process predicts the protein structure with alphaFold
+// This process launches AlphaFold
+// - it uses the alphaFoldOptions
 process alphaFold {
-  tag "${alphaFoldLauncher}"
+  tag "${fastaFile}"
   label 'alphaFold'
   label 'extraMem'
   label 'highCpu'
   publishDir "${params.outDir}/alphaFold/", mode: 'copy'
-  
+  containerOptions { (params.useGpu) ? '--nv --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp' : '-B \$PWD:/tmp' }
+  clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
+
   input:
-  path alphaFoldLauncher
+  path fastaFile
+  path alphaFoldOptions
+  path alphaFoldDatabase
 
   output:
   path("*", type: 'dir')
 
   script:
+  String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   """
-  bash "${alphaFoldLauncher}" \$PWD
+  alphafold_options=\$(cat ${alphaFoldOptions})
+  launch_alphafold.sh --fasta_paths=${params.fastaPath}/${fastaFile} \${alphafold_options}
   """
 }
 

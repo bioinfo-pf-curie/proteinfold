@@ -26,6 +26,8 @@ process colabFold {
   label 'extraMem'
   label 'highCpu'
   publishDir "${params.outDir}/colabFold/", mode: 'copy'
+  containerOptions { (params.useGpu) ? '--nv' : '' }
+  clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
   
   output:
   path "help.txt"

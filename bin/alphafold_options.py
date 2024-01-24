@@ -102,7 +102,6 @@ flags.DEFINE_enum('models_to_relax', 'best', ['best', 'all', 'none'],
                         'distracting stereochemical violations but might help '
                         'in case you are having issues with the relaxation '
                         'stage.')
-flags.DEFINE_bool('enable_gpu_relax', True, 'Run relax on GPU if GPU is enabled.')
 flags.DEFINE_bool(
     'use_gpu', True, 'Enable NVIDIA runtime to run with GPUs.')
 flags.DEFINE_string(
@@ -118,7 +117,8 @@ def _create_bind(bind_name: str, path: str) -> Tuple[str, str]:
   """Create a bind point for each file and directory used by the model."""
   path = os.path.abspath(path)
   source_path = os.path.dirname(path) if bind_name != 'data_dir' else path
-  target_path = os.path.join(_ROOT_MOUNT_DIRECTORY, bind_name)
+  #target_path = os.path.join(_ROOT_MOUNT_DIRECTORY, bind_name)
+  target_path = os.path.join(FLAGS.data_dir, bind_name)
 
   logging.info('Binding %s -> %s', source_path, target_path)
 
@@ -183,12 +183,12 @@ def main(argv):
   command_args = []
 
   # Mount each fasta path as a unique target directory.
-  target_fasta_paths = []
-  for i, fasta_path in enumerate(FLAGS.fasta_paths):
-    bind, target_path = _create_bind(f'fasta_path_{i}', fasta_path)
-    binds.append(bind)
-    target_fasta_paths.append(target_path)
-  command_args.append(f'--fasta_paths={",".join(target_fasta_paths)}')
+  #target_fasta_paths = []
+  #for i, fasta_path in enumerate(FLAGS.fasta_paths):
+  #  bind, target_path = _create_bind(f'fasta_path_{i}', fasta_path)
+  #  binds.append(bind)
+  #  target_fasta_paths.append(target_path)
+  #command_args.append(f'--fasta_paths={",".join(target_fasta_paths)}')
 
   database_paths = [
       ('uniref90_database_path', uniref90_database_path),
@@ -220,9 +220,11 @@ def main(argv):
     if path:
       bind, target_path = _create_bind(name, path)
       binds.append(bind)
-      command_args.append(f'--{name}={target_path}')
+      #command_args.append(f'--{name}={target_path}')
+      command_args.append(f'--{name}={path}')
 
-  output_target_path = os.path.join(_ROOT_MOUNT_DIRECTORY, 'output')
+  #output_target_path = os.path.join(_ROOT_MOUNT_DIRECTORY, 'output')
+  output_target_path = "\$PWD"
   binds.append(f'{FLAGS.output_dir}:{output_target_path}')
   logging.info('Binding %s -> %s', FLAGS.output_dir, output_target_path)
 
@@ -230,7 +232,7 @@ def main(argv):
   binds.append(f'{tmp_dir}:{tmp_target_path}')
   logging.info('Binding %s -> %s', tmp_dir, tmp_target_path)
 
-  use_gpu_relax = FLAGS.enable_gpu_relax and FLAGS.use_gpu
+  use_gpu_relax = FLAGS.use_gpu
 
   command_args.extend([
       f'--output_dir={output_target_path}',
@@ -257,13 +259,14 @@ def main(argv):
   # Run the container.
   # Result is a dict with keys "message" (value = all output as a single string),
   # and "return_code" (value = integer return code)
-  print(' '.join(options) + ' ' + singularity_image + ' ' + ' '.join(command_args))
+  #print(' '.join(options) + ' ' + singularity_image + ' ' + ' '.join(command_args))
+  print(' '.join(command_args))
 
 
 if __name__ == '__main__':
   flags.mark_flags_as_required([
       'data_dir',
-      'fasta_paths',
+#      'fasta_paths',
       'max_template_date',
   ])
   app.run(main)

@@ -24,30 +24,14 @@ process alphaFoldOptions {
   label 'minCpu'
   publishDir "${params.outDir}/alphaFoldOptions", mode: 'copy'
 
-  input:
-  path fastaFile
-
   output:
-  path "*.sh"
+  path "alphafold_options.txt", emit: alphaFoldOptions
 
   script:
-  String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
-  String apptainerRun = "${params.apptainerRun}"
   String alphaFoldOptions = "${params.alphaFoldOptions}" + " "
-  if (params.useGpu) {
-    apptainerRun += " --nv" 
-  }
   """
-  echo -e "#! /bin/bash\n" > ${fastaFilePrefix}.sh
-  echo -e "set -oeu pipefail\n" >> ${fastaFilePrefix}.sh
-  echo -e "WORKDIR_NXF=\\\"\\\$1\\\"" >> ${fastaFilePrefix}.sh
-  echo -e "ALPHAFOLD_SIF=\\\""${params.geniac.singularityImagePath}/alphafold.sif"\\\"" >> ${fastaFilePrefix}.sh
-  echo -e "ALPHAFOLD_TMPDIR=\\\"\\\$WORKDIR_NXF/alphafold_tmpdir\\\"\n" >> ${fastaFilePrefix}.sh
-  echo -e "mkdir -p \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> ${fastaFilePrefix}.sh
-  apptainer_options=\$(generate_launcher.py --data_dir=${params.alphaFoldDatabase} --fasta_paths=${params.fastaPath}/${fastaFile} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$WORKDIR_NXF)
-  echo ${apptainerRun} \${apptainer_options} >> ${fastaFilePrefix}.sh
-  echo -e "rm -rf \\\"\\\$ALPHAFOLD_TMPDIR\\\"\n" >> ${fastaFilePrefix}.sh
-  echo -e "rm -rf ld.so.cache\n" >> ${fastaFilePrefix}.sh
+  alphafold_options=\$(alphafold_options.py --data_dir=${params.alphaFoldDatabase} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$PWD)
+  echo \${alphafold_options} >> alphafold_options.txt
   """
 }
 
