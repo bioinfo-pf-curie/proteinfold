@@ -2,7 +2,7 @@
 Copyright Institut Curie 2024
 
 This software is a computer program whose purpose is to
-provide a demo with geniac.
+predict 3D structure of proteins.
 You can use, modify and/ or redistribute the software under the terms
 of license (see the LICENSE file for more details).
 The software is distributed in the hope that it will be useful,
