@@ -32,15 +32,12 @@ process colabFoldSearch {
   path colabFoldDatabase
 
   output:
-  path "help.txt"
-  path "search.txt"
+  path("*", type: 'dir')
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   """
-  colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${fastaFilePrefix}" > search.txt
-  colabfold_batch -h > help.txt
-  echo "${colabFoldDatabase}/"
+  colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${fastaFilePrefix}"
   """
 }
 

@@ -28,13 +28,16 @@ process colabFold {
   publishDir "${params.outDir}/colabFold/", mode: 'copy'
   containerOptions { (params.useGpu) ? '--nv' : '' }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
-  
+
+  input:
+  path msas  
+
   output:
-  path "help.txt"
+  path("prediction/*", type: 'dir')
 
   script:
   """
-  colabfold_batch -h > help.txt
+  colabfold_batch ${msas} prediction
   """
 }
 
