@@ -27,7 +27,7 @@ process massiveFold {
 
   input:
   path fastaFile
-  path massiveFoldOptions
+  path alphaFoldOptions
   path massiveFoldDatabase
 
   output:
@@ -35,9 +35,10 @@ process massiveFold {
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
+  // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
-  massivefold_options=\$(cat ${alphaFoldOptions})
-  launch_massivefold.sh --fasta_paths=${params.fastaPath}/${fastaFile} \${alphafold_options}
+  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|num_multimer_predictions_per_model|g')
+  launch_alphafold.sh --fasta_paths=${params.fastaPath}/${fastaFile} \${alphafold_options}
   """
 }
 

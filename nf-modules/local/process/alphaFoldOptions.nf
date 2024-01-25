@@ -24,13 +24,16 @@ process alphaFoldOptions {
   label 'minCpu'
   publishDir "${params.outDir}/alphaFoldOptions", mode: 'copy'
 
+  input:
+  val alphaFoldOptions
+  val alphaFoldDatabase
+
   output:
   path "alphafold_options.txt", emit: alphaFoldOptions
 
   script:
-  String alphaFoldOptions = "${params.alphaFoldOptions}" + " "
   """
-  alphafold_options=\$(alphafold_options.py --data_dir=${params.alphaFoldDatabase} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$PWD/prediction)
+  alphafold_options=\$(alphafold_options.py --data_dir=${alphaFoldDatabase} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$PWD/prediction)
   echo \${alphafold_options} >> alphafold_options.txt
   """
 }

@@ -14,13 +14,7 @@ of the license and that you accept its terms.
 
 */
 
-
-/***********************************************
- * Some process with a software that has to be *
- * installed with a custom conda yml file      *
- ***********************************************/
-
-// This process predicts the protein structure with alphaFold
+// This process predicts the protein structure with colabFold
 process colabFold {
   label 'colabFold'
   label 'extraMem'

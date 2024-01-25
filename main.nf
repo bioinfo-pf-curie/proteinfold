@@ -127,16 +127,16 @@ workflow {
 
     fastaChecker(fastaFilesCh)
     if (params.launchAlphaFold){
-      alphaFoldOptions()
+      alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
       alphaFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     }
     if (params.launchColabFold){
-      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-      colabFold()
+      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase) | colabFold
     }
     if (params.launchMassiveFold){
-      alphaFoldOptions()
-      massiveFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+      // massiveFold is alphaFold-like, it uses alphaFold's options too
+      alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
+      massiveFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
     }
 }
 
