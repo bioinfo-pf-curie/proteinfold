@@ -31,7 +31,7 @@ process alphaFold {
   path alphaFoldDatabase
 
   output:
-  path("*", type: 'dir')
+  path("prediction/*", type: 'dir')
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')

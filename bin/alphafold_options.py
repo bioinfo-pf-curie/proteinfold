@@ -224,7 +224,7 @@ def main(argv):
       command_args.append(f'--{name}={path}')
 
   #output_target_path = os.path.join(_ROOT_MOUNT_DIRECTORY, 'output')
-  output_target_path = "\$PWD"
+  output_target_path = f'{FLAGS.output_dir}'
   binds.append(f'{FLAGS.output_dir}:{output_target_path}')
   logging.info('Binding %s -> %s', FLAGS.output_dir, output_target_path)
 

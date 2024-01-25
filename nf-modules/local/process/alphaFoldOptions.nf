@@ -30,7 +30,7 @@ process alphaFoldOptions {
   script:
   String alphaFoldOptions = "${params.alphaFoldOptions}" + " "
   """
-  alphafold_options=\$(alphafold_options.py --data_dir=${params.alphaFoldDatabase} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$PWD)
+  alphafold_options=\$(alphafold_options.py --data_dir=${params.alphaFoldDatabase} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$PWD/prediction)
   echo \${alphafold_options} >> alphafold_options.txt
   """
 }
