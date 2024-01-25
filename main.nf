@@ -128,10 +128,8 @@ workflow {
 
     fastaChecker(fastaFilesCh)
     if (params.launchAlphaFold){
-      //alphaFoldLauncher(fastaFilesCh) | alphaFold
       alphaFoldOptions()
-      alphaFoldLauncher(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-      alphaFoldOptions(fastaFilesCh) | alphaFold
+      alphaFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     }
     if (params.launchColabFold){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
