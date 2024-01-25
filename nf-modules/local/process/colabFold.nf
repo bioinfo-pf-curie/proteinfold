@@ -31,7 +31,7 @@ process colabFold {
 
   script:
   """
-  colabfold_batch ${msas} predictions
+  colabfold_batch ${params.colabFoldOptions} ${msas} predictions
   """
 }
 
