@@ -31,7 +31,7 @@ process massiveFold {
   path massiveFoldDatabase
 
   output:
-  path("prediction/*", type: 'dir')
+  path("predictions/*", type: 'dir')
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
