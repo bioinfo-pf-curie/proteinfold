@@ -27,11 +27,11 @@ process colabFold {
   path msas  
 
   output:
-  path("prediction/*", type: 'dir')
+  path("predictions/*", type: 'dir')
 
   script:
   """
-  colabfold_batch ${msas} prediction
+  colabfold_batch ${msas} predictions
   """
 }
 

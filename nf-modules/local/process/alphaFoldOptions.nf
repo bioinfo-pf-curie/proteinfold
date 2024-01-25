@@ -33,7 +33,7 @@ process alphaFoldOptions {
 
   script:
   """
-  alphafold_options=\$(alphafold_options.py --data_dir=${alphaFoldDatabase} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=\\\$PWD/prediction)
+  alphafold_options=\$(alphafold_options.py --data_dir=${alphaFoldDatabase} ${alphaFoldOptions} --use_gpu=${params.useGpu} --output_dir=predictions)
   echo \${alphafold_options} >> alphafold_options.txt
   """
 }
