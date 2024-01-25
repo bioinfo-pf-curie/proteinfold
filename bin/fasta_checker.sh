@@ -21,7 +21,7 @@ check_fasta_format() {
             # Sequence line
             sequence="$line"
             # Check if sequence contains only valid amino acid characters
-            if [[ ! "$sequence" =~ ^["$allowed_characters"]+$ ]]; then
+            if [[ ! "$sequence" =~ ^["$allowed_characters"]+:*$ ]]; then
                 echo "Error: Invalid characters in sequence for header '$header'."
 								unexpected_characters=$(echo "$sequence" | sed -e "s/["$allowed_characters"]//g" | grep -o '.' | sort -u | paste -sd '')
 								echo "Remove '$unexpected_characters' character(s) from the sequence."
