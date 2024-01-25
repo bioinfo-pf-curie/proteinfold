@@ -136,7 +136,8 @@ workflow {
       colabFold()
     }
     if (params.launchMassiveFold){
-      alphaFoldOptions(fastaFilesCh) | massiveFold
+      alphaFoldOptions()
+      massiveFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     }
 }
 

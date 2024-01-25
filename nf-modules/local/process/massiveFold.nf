@@ -14,27 +14,30 @@ of the license and that you accept its terms.
 
 */
 
-
-/***********************************************
- * Some process with a software that has to be *
- * installed with a custom conda yml file      *
- ***********************************************/
-
-// This process predicts the protein structure with alphaFold
+// This process launches massiveFold
+// - it uses the massiveFoldOptions
 process massiveFold {
+  tag "${fastaFile}"
   label 'massiveFold'
   label 'extraMem'
   label 'highCpu'
   publishDir "${params.outDir}/massiveFold/", mode: 'copy'
   containerOptions { (params.useGpu) ? '--nv --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp' : '-B \$PWD:/tmp' }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
-  
+
+  input:
+  path fastaFile
+  path massiveFoldOptions
+  path massiveFoldDatabase
+
   output:
-  path "help.txt"
+  path("prediction/*", type: 'dir')
 
   script:
+  String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   """
-  colabfold_batch -h > help.txt
+  massivefold_options=\$(cat ${alphaFoldOptions})
+  launch_massivefold.sh --fasta_paths=${params.fastaPath}/${fastaFile} \${alphafold_options}
   """
 }
 
