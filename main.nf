@@ -76,7 +76,7 @@ if (params.launchMassiveFold){
 ==========================
 */
 
-fastaFilesCh = Channel.fromPath("${fastaPath.getCanonicalPath()}/*.fasta")
+fastaFilesCh = Channel.fromPath("${params.fastaPath}/*.fasta")
 
 /*
 ===========================

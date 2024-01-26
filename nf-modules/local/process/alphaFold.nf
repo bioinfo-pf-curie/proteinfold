@@ -38,7 +38,7 @@ process alphaFold {
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   """
   alphafold_options=\$(cat ${alphaFoldOptions})
-  launch_alphafold.sh --fasta_paths=${params.fastaPath}/${fastaFile} \${alphafold_options}
+  launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options}
   """
 }
 
