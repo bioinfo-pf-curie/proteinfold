@@ -1,9 +1,36 @@
 {
   "parameters": [
+	 {
+      "name": "profile",
+      "label": "Configuration profile(s)",
+      "usage": "Configuration profile to use. Can use multiple (comma separated).",
+      "type": "string",
+      "choices": ["test", "singularity", "cluster"],
+      "nargs": "+",
+      "default_value": null,
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Mandatory arguments, nextflow"
+    },
+	 {
+      "name": "params-file",
+      "label": "Parameter options",
+      "usage": "Set the parameters of the pipeline using a JSON file configuration filei (i.e. 'params.json'). All parameters defined as JSON type must be this way. For example, the JSON can contain: \"alphaFoldOptions\": \"--max_template=2024-01-01 --multimer\". WARNING: passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which are not appreciated by nextflow.",
+      "type": "path",
+      "choices": [],
+      "nargs": "1",
+      "default_value": null,
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Other options, nextflow"
+    },
     {
+	  "origin": "pipeline",
       "name": "fastaPath",
       "label": "Input fasta directory",
-      "usage": "Path to the input directory which contains the fasta files",
+      "usage": "Path to the input directory which contains the fasta files.",
       "type": "path",
       "choices": [],
       "nargs": "1",
@@ -16,7 +43,7 @@
     {
       "name": "genomeAnnotationPath",
       "label": "Annotation path",
-      "usage": "Path to genome annotations folder",
+      "usage": "Path to genome/proteome annotations folder used to predict the protein 3D structure.",
       "type": "path",
       "choices": [],
       "nargs": "+",
@@ -29,11 +56,26 @@
     {
       "name": "alphaFoldOptions",
       "label": "alphaFold options",
-      "usage": "Prediction model options passed to alphaFold. This parameter must be set in a JSON file (i.e. 'params.json') and passed to nextflow with the option -params-file. For example, the JSON can contain: \"alphaFoldOptions\": \"--max_template=2024-01-01 --multimer\". WARNING: passing the option '--alphaFoldOptions' in command line may result in some errors when the option contains '-' or '--' characters which are not appreciated by nextflow.",
-      "type": "path",
+      "usage": "Prediction model options passed to AlphaFold or MassiveFold.",
+
+      "type": "JSON",
       "nargs": 1,
       "choices": [],
-      "default_value": "max_template_date=2024-01-01|random_seed=654321",
+      "default_value": "--max_template_date=2024-01-01 --random_seed=654321",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "colabFoldOptions",
+      "label": "colabFold options",
+      "usage": "Prediction model options passed to ColabFold.",
+
+      "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "--random-seed 654321 --model-type auto",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
