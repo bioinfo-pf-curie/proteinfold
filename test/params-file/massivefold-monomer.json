@@ -1,5 +1,5 @@
 {
 	"launchMassiveFold": "true"
-    "alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456"
-	"fastaPath": "test/data/monomer"
+	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456"
+	"fastaPath": "test/data/monomer2"
 }
