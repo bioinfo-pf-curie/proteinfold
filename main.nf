@@ -16,13 +16,14 @@ of the license and that you accept its terms.
 
 */
 
+
 /*
 ========================================================================================
-                         proteinfold
+                         @git_repo_name@
 ========================================================================================
- proteinfold analysis Pipeline.
+ @git_repo_name@ analysis Pipeline.
  #### Homepage / Documentation
- https://gitlab-ci-token:64_7sv5Kax23HxJyMudmk4j@gitlab.curie.fr/data-analysis/proteinfold.git
+ @git_url@
 ----------------------------------------------------------------------------------------
 */
 
@@ -44,12 +45,26 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 ===================================
 */
 
+// Check that any option to print the help of any tool is set to true
+Boolean printToolHelp = false
+if (params.collect().join(' ').find('Help=true')) {
+  printToolHelp = true
+}
+
 // Check that the option --fastaPath has been provided and contains the path to the fasta files
-File fastaPath = new File(params.fastaPath)
-//if (!fastaPath.exists()){
-if (!fastaPath.isDirectory()){
-  //exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' does not exist."
-  exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
+if (params.fastaPath != null ) {
+  System.out.println('has a value')
+  File fastaPath = new File(params.fastaPath)
+  if (!fastaPath.exists()){
+    exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' does not exist."
+  }
+  if (!fastaPath.isDirectory()){
+    exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
+  }
+} else {
+  if (!printToolHelp) {
+    exit 1, "ERROR: the fastaPath options is 'null'. Provide a value using the --fastaPath options."
+  }
 }
 
 // Check that alphaFoldOptions defines max_template_date=YYYY-MM-DD
@@ -120,12 +135,15 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 */ 
 
 // Processes
-include { alphaFoldOptions } from './nf-modules/local/process/alphaFoldOptions'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
+include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
+include { alphaFoldOptions } from './nf-modules/local/process/alphaFoldOptions'
 include { colabFold } from './nf-modules/local/process/colabFold'
+include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 include { massiveFold } from './nf-modules/local/process/massiveFold'
+include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
 
 /*
 =====================================
@@ -134,23 +152,68 @@ include { massiveFold } from './nf-modules/local/process/massiveFold'
 */
 
 workflow {
-    main:
+  main:
 
-    fastaChecker(fastaFilesCh)
-    if (params.launchAlphaFold){
-      alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-      alphaFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-    }
-    if (params.launchColabFold){
-      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase) | colabFold
-    }
-    if (params.launchMassiveFold){
-      // massiveFold is alphaFold-like, it uses alphaFold's options too
-      alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
-      massiveFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+  // Check the format of the fasta files
+  fastaChecker(fastaFilesCh)
+
+  // Launch the prediction of the prtein structure
+  if (params.launchAlphaFold){
+    alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
+    alphaFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+  }
+  if (params.launchColabFold){
+    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase) | colabFold
+  }
+  if (params.launchMassiveFold){
+    // massiveFold is alphaFold-like, it uses alphaFold's options too
+    alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
+    massiveFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+  }
+
+  // Generate the help for each tool
+  if(params.alphaFoldHelp){
+    alphaFoldHelp()
+  }
+  if(params.colabFoldHelp){
+    colabFoldHelp()
+  }
+  if(params.massiveFoldHelp){
+    massiveFoldHelp()
+  }
+}
+
+// Function to print the help of the tools
+def printFileContent(file) {
+    def inputFile = new File(file)
+    
+    if (inputFile.exists()) {
+        inputFile.eachLine { line ->
+            println line
+        }
+    } else {
+        System.out.println("File not found: $file")
     }
 }
 
 workflow.onComplete {
-  NFTools.makeReports(workflow, params, summary, customRunName, mqcReport)
+  if(printToolHelp){
+    if (params.alphaFoldHelp) {
+      NFTools.printGreenText("\n\n=====================================\nAlphaFold help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/alphaFoldHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nAlphaFold help, see options above.\n=====================================\n")
+    }
+    if (params.colabFoldHelp) {
+      NFTools.printGreenText("\n\n=====================================\nColabFold help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/colabFoldHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nColabFold help, see options above.\n=====================================\n")
+    }
+    if (params.massiveFoldHelp) {
+      NFTools.printGreenText("\n\n=====================================\nMassiveFold help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/massiveFoldHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nMassiveFold help, see options above.\n=====================================\n")
+    }
+  } else {
+    NFTools.makeReports(workflow, params, summary, customRunName, mqcReport)
+  }
 }
