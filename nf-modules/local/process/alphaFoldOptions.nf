@@ -14,11 +14,11 @@ of the license and that you accept its terms.
 
 */
 
-// This process generates a command line to launch alphaFold with apptainer:
-// - it sets the appropriate bindings with fasta files and annotations, etc.
-// - it uses the alphaFoldOptions
+// This process generates the correct list of options for AlphaFold
+// It capitalized on the run_singularity.py script from:
+//   - https://github.com/prehensilecode/alphafold_singularity
 process alphaFoldOptions {
-  tag "${fastaFile}"
+  tag "AFOptions"
   label 'alphaFoldOptions'
   label 'minMem'
   label 'minCpu'
