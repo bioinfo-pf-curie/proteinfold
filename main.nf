@@ -57,6 +57,10 @@ if (params.launchAlphaFold){
 }
 
 if (params.launchColabFold){
+  if (!params.useGpu){
+    exit 1, "ERROR: ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
+  }
+
 File colabFoldDB = new File(params.genomes.colabfold.database)
 params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
 }

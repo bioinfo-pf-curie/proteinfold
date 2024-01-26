@@ -14,13 +14,19 @@ of the license and that you accept its terms.
 
 */
 
-// This process predicts the protein structure with colabFold
+// This process predicts the protein structure with ColabFold
+// see:
+//   - https://github.com/sokrypton/ColabFold
+//   - https://github.com/YoshitakaMo/localcolabfold
+// The process takes as input the directory (i.e. msas) where is located
+// the a3m file created by the process colabFoldSearch 
 process colabFold {
+  tag "${msas}"
   label 'colabFold'
   label 'extraMem'
   label 'highCpu'
-  publishDir "${params.outDir}/colabFold/", mode: 'copy'
-  containerOptions { (params.useGpu) ? '--nv' : '' }
+  publishDir "${params.outDir}/colabFold/", mode: 'copy', saveAs: { "${msas}" }
+  containerOptions { (params.useGpu) ? '--nv -B params.colabFoldDatabase:/cache/colabfold' : '' }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
   input:

@@ -14,14 +14,13 @@ of the license and that you accept its terms.
 
 */
 
-
-/***********************************************
- * Some process with a software that has to be *
- * installed with a custom conda yml file      *
- ***********************************************/
-
-// This process predicts the protein structure with alphaFold
+// This process search the ColabFold database to generate a a3m file
+// used by ColabFold to predict the proteini 3D structure with
+// see:
+//   - https://github.com/sokrypton/ColabFold
+//   - https://github.com/YoshitakaMo/localcolabfold
 process colabFoldSearch {
+  tag { "${fastaFile}".replace('.fasta', '') }
   label 'colabFold'
   label 'supraMem'
   label 'highCpu'
