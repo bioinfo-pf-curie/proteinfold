@@ -26,7 +26,7 @@ process colabFold {
   label 'extraMem'
   label 'highCpu'
   publishDir "${params.outDir}/colabFold/", mode: 'copy', saveAs: { "${msas}" }
-  containerOptions { (params.useGpu) ? '--nv -B params.colabFoldDatabase:/cache/colabfold' : '' }
+  containerOptions { (params.useGpu) ? "--nv -B ${params.colabFoldDatabase}:/cache/colabfold" : '' }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
   input:
