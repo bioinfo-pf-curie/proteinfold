@@ -138,6 +138,7 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
 include { alphaFoldOptions } from './nf-modules/local/process/alphaFoldOptions'
+include { alphaFoldSearch } from './nf-modules/local/process/alphaFoldSearch'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
@@ -160,7 +161,8 @@ workflow {
   // Launch the prediction of the prtein structure
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-    alphaFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    alphaFoldSearch(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    alphaFold(alphaFoldSearch.out.msas, alphaFoldSearch.out.fastaFile, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
   }
   if (params.launchColabFold){
     colabFoldSearch(fastaFilesCh, params.colabFoldDatabase) | colabFold
