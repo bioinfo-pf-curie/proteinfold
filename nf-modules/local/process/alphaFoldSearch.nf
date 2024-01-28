@@ -20,10 +20,10 @@ of the license and that you accept its terms.
 process alphaFoldSearch {
   tag { "${fastaFile}".replace('.fasta', '') }
   label 'alphaFold'
-  label 'maxMem'
-  label 'highCpu'
+  label 'medMem'
+  label 'medCpu'
   publishDir path: { "${params.outDir}/alphaFoldSearch/${fastaFile}".replace('.fasta', '') }, mode: 'copy'
-
+  containerOptions "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp"
   input:
   path fastaFile
   path alphaFoldOptions
