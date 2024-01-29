@@ -1,5 +1,5 @@
 diff --git a/alphafold/data/pipeline.py b/alphafold/data/pipeline.py
-index bae5db0..dce72ea 100644
+index bae5db0..2136973 100644
 --- a/alphafold/data/pipeline.py
 +++ b/alphafold/data/pipeline.py
 @@ -129,7 +129,8 @@ class DataPipeline:
@@ -20,22 +20,36 @@ index bae5db0..dce72ea 100644
  
    def process(self, input_fasta_path: str, msa_output_dir: str) -> FeatureDict:
      """Runs alignment tools on the input sequence and creates features."""
-@@ -167,6 +169,7 @@ class DataPipeline:
+@@ -167,6 +169,8 @@ class DataPipeline:
      num_res = len(input_sequence)
  
      uniref90_out_path = os.path.join(msa_output_dir, 'uniref90_hits.sto')
 +
++    logging.info('START jackhmmer uniref90 <<<')
      jackhmmer_uniref90_result = run_msa_tool(
          msa_runner=self.jackhmmer_uniref90_runner,
          input_fasta_path=input_fasta_path,
-@@ -183,6 +186,41 @@ class DataPipeline:
+@@ -174,7 +178,9 @@ class DataPipeline:
+         msa_format='sto',
+         use_precomputed_msas=self.use_precomputed_msas,
+         max_sto_sequences=self.uniref_max_hits)
++    logging.info('END jackhmmer uniref90 >>>')
+     mgnify_out_path = os.path.join(msa_output_dir, 'mgnify_hits.sto')
++    logging.info('START jackhmmer mgnify <<<')
+     jackhmmer_mgnify_result = run_msa_tool(
+         msa_runner=self.jackhmmer_mgnify_runner,
+         input_fasta_path=input_fasta_path,
+@@ -182,6 +188,46 @@ class DataPipeline:
+         msa_format='sto',
          use_precomputed_msas=self.use_precomputed_msas,
          max_sto_sequences=self.mgnify_max_hits)
- 
++    logging.info('END jackhmmer mgnify >>>')
++
 +    # This step has been moved here to generate the msas files to avoid some computions
 +    # done twice (typically when --only_msas is True and then when --use_precomputed_msas is True
 +    if self._use_small_bfd:
 +      bfd_out_path = os.path.join(msa_output_dir, 'small_bfd_hits.sto')
++      logging.info('START jackhmmer small bfd <<<')
 +      jackhmmer_small_bfd_result = run_msa_tool(
 +          msa_runner=self.jackhmmer_small_bfd_runner,
 +          input_fasta_path=input_fasta_path,
@@ -43,10 +57,12 @@ index bae5db0..dce72ea 100644
 +          msa_format='sto',
 +          use_precomputed_msas=self.use_precomputed_msas,
 +          max_sto_sequences=self.bfd_max_hits)
++      logging.info('END jackhmmer small bfd >>>')
 +      # This step below will be done bwlo when --only_msas is False
 +      #bfd_msa = parsers.parse_stockholm(jackhmmer_small_bfd_result['sto'])
 +    else:
 +      bfd_out_path = os.path.join(msa_output_dir, 'bfd_uniref_hits.a3m')
++      logging.info('START hhblits bfd uniref <<<')
 +      hhblits_bfd_uniref_result = run_msa_tool(
 +          msa_runner=self.hhblits_bfd_uniref_runner,
 +          input_fasta_path=input_fasta_path,
@@ -54,6 +70,7 @@ index bae5db0..dce72ea 100644
 +          msa_format='a3m',
 +          use_precomputed_msas=self.use_precomputed_msas,
 +          max_sto_sequences=self.bfd_max_hits)
++      logging.info('END hhblits bfd uniref >>>')
 +      # This step below will be done bwlo when --only_msas is False
 +      #bfd_msa = parsers.parse_a3m(hhblits_bfd_uniref_result['a3m'])
 +
@@ -66,11 +83,10 @@ index bae5db0..dce72ea 100644
 +      bfd_msa = parsers.parse_stockholm(jackhmmer_small_bfd_result['sto'])
 +    else:
 +      bfd_msa = parsers.parse_a3m(hhblits_bfd_uniref_result['a3m'])
-+
+ 
      msa_for_templates = jackhmmer_uniref90_result['sto']
      msa_for_templates = parsers.deduplicate_stockholm_msa(msa_for_templates)
-     msa_for_templates = parsers.remove_empty_columns_from_stockholm_msa(
-@@ -212,27 +250,6 @@ class DataPipeline:
+@@ -212,27 +258,6 @@ class DataPipeline:
        pdb_template_hits = self.template_searcher.get_template_hits(
          output_string=pdb_templates_result, input_sequence=input_sequence)
  
