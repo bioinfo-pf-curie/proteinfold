@@ -20,8 +20,8 @@ of the license and that you accept its terms.
 process massiveFold {
   tag "${fastaFile}"
   label 'massiveFold'
-  label 'medMem'
-  label 'medCpu'
+  label 'highMem'
+  label 'highCpu'
   publishDir path: { "${params.outDir}/massiveFoldSearch/${fastaFile}".replace('.fasta', '') }, mode: 'copy'
   containerOptions "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp"
 
