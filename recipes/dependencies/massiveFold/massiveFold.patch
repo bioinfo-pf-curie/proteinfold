@@ -114,6 +114,28 @@ index bae5db0..2136973 100644
      templates_result = self.template_featurizer.get_templates(
          query_sequence=input_sequence,
          hits=pdb_template_hits)
+diff --git a/alphafold/data/pipeline_multimer.py b/alphafold/data/pipeline_multimer.py
+index ce3a2fe..b789cac 100644
+--- a/alphafold/data/pipeline_multimer.py
++++ b/alphafold/data/pipeline_multimer.py
+@@ -175,7 +175,8 @@ class DataPipeline:
+                jackhmmer_binary_path: str,
+                uniprot_database_path: str,
+                max_uniprot_hits: int = 50000,
+-               use_precomputed_msas: bool = False):
++               use_precomputed_msas: bool = False,
++               only_msas: bool = False):
+     """Initializes the data pipeline.
+ 
+     Args:
+@@ -193,6 +194,7 @@ class DataPipeline:
+         database_path=uniprot_database_path)
+     self._max_uniprot_hits = max_uniprot_hits
+     self.use_precomputed_msas = use_precomputed_msas
++    self.only_msas = only_msas
+ 
+   def _process_single_chain(
+       self,
 diff --git a/alphafold/data/tools/hhblits.py b/alphafold/data/tools/hhblits.py
 index 53a44b0..6014513 100644
 --- a/alphafold/data/tools/hhblits.py
