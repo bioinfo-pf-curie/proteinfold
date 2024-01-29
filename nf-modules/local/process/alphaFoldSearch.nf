@@ -24,6 +24,7 @@ process alphaFoldSearch {
   label 'medCpu'
   publishDir path: { "${params.outDir}/alphaFoldSearch/${fastaFile}".replace('.fasta', '') }, mode: 'copy'
   containerOptions "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp"
+
   input:
   path fastaFile
   path alphaFoldOptions
