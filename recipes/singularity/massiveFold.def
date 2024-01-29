@@ -6,10 +6,15 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/massivefold:MFv1.0.0-hh
   export PATH="/opt/conda/bin:/usr/local/cuda-11.1/bin:$PATH"
   export PATH="$PATH:/app"
 
+%files
+  massiveFold/massiveFold.patch /app/alphafold/massiveFold.patch
+
 %post
   # echo -e does not work with ubuntu shell builtin
   /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_alphafold.py "$@"' > /app/launch_alphafold.sh \
   && chmod +x /app/launch_alphafold.sh
+  cd /app/alphafold \
+  && patch -p1 < massiveFold.patch
 
 %runscript
   cd /app/alphafold
