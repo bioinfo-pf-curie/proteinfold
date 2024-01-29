@@ -144,7 +144,7 @@ include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 include { massiveFold } from './nf-modules/local/process/massiveFold'
-include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldiSearch'
+include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldSearch'
 include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
 
 /*
