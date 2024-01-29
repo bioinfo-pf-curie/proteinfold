@@ -23,8 +23,8 @@ of the license and that you accept its terms.
 process colabFold {
   tag "${msas}"
   label 'colabFold'
-  label 'extraMem'
-  label 'highCpu'
+  label 'medMem'
+  label 'medCpu'
   publishDir "${params.outDir}/colabFold/", mode: 'copy', saveAs: { "${msas}" }
   containerOptions { (params.useGpu) ? "--nv -B ${params.colabFoldDatabase}:/cache/colabfold" : '' }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
