@@ -144,6 +144,7 @@ include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 include { massiveFold } from './nf-modules/local/process/massiveFold'
+include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldiSearch'
 include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
 
 /*
@@ -170,7 +171,8 @@ workflow {
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
-    massiveFold(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    massiveFoldSearch(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    massiveFold(massiveFoldSearch.out.msas, massiveFoldSearch.out.fastaFile, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
   }
 
   // Generate the help for each tool
