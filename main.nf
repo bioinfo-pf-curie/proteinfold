@@ -172,7 +172,7 @@ workflow {
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
     massiveFoldSearch(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-    massiveFold(massiveFoldSearch.out.msas, massiveFoldSearch.out.fastaFile, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    massiveFold(massiveFoldSearch.out.msas, massiveFoldSearch.out.fastaFile, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
   }
 
   // Generate the help for each tool

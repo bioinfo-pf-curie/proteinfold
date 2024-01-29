@@ -37,7 +37,7 @@ process massiveFoldSearch {
   script:
   // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
-  alphafold_options=\$(cat ${alphaFoldOptions})
+  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|num_predictions_per_model|g')
   launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options} --only_msas
   """
 }
