@@ -1,6 +1,6 @@
-# RNA-seq 
+# ProteinFold
 
-**Institut Curie - Nextflow rna-seq analysis pipeline**
+**Institut Curie - Nextflow ProteinFold analysis pipeline**
 
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.10.0-brightgreen.svg)](https://www.nextflow.io/)
 [![MultiQC](https://img.shields.io/badge/MultiQC-1.11-blue.svg)](https://multiqc.info/)
