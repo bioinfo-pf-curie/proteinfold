@@ -1,5 +1,5 @@
 diff --git a/alphafold/data/pipeline.py b/alphafold/data/pipeline.py
-index bae5db0..8c23093 100644
+index bae5db0..d8925db 100644
 --- a/alphafold/data/pipeline.py
 +++ b/alphafold/data/pipeline.py
 @@ -129,7 +129,8 @@ class DataPipeline:
@@ -7,7 +7,7 @@ index bae5db0..8c23093 100644
                 no_templates: bool = False,
                 bfd_max_hits: int = 10000,
 -               use_precomputed_msas: bool = False):
-+               use_precomputed_msas: bool = False),
++               use_precomputed_msas: bool = False,
 +               only_msas: bool = False):
      """Initializes the data pipeline."""
      self._use_small_bfd = use_small_bfd
