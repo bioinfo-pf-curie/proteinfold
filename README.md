@@ -9,7 +9,7 @@
 ### Introduction
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. 
-It comes with conda / singularity containers making installation easier and results highly reproducible.
+It comes with singularity/apptainer containers making installation easier and results highly reproducible.
 
 
 ### Pipeline summary
@@ -130,9 +130,9 @@ sbatch launcher
 ### Full Documentation
 
 1. [Installation](docs/installation.md)
-2. [Reference genomes](docs/referenceGenomes.md)
+2. [Reference annotations](docs/referenceGenomes.md)
 3. [Running the pipeline](docs/usage.md)
-4. [Output and how to interpret the results](docs/output.md)
+4. [Output of the pipelines](docs/output.md)
 
 #### Credits
 
