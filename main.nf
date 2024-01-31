@@ -166,7 +166,8 @@ workflow {
     alphaFold(alphaFoldSearch.out.msas, alphaFoldSearch.out.fastaFile, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
   }
   if (params.launchColabFold){
-    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase) | colabFold
+    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+    colabFold(colabFoldSearch.out.msas, params.colabFoldDatabase)
   }
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too

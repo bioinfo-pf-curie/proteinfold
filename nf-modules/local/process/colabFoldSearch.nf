@@ -31,7 +31,7 @@ process colabFoldSearch {
   path colabFoldDatabase
 
   output:
-  path("*", type: 'dir')
+  path("*", type: 'dir', emit: msas)
 
   script:
   String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
