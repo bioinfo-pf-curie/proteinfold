@@ -159,7 +159,7 @@ workflow {
   // Check the format of the fasta files
   fastaChecker(fastaFilesCh)
 
-  // Launch the prediction of the prtein structure
+  // Launch the prediction of the protein 3D structure
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
     alphaFoldSearch(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
