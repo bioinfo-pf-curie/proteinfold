@@ -1,0 +1,5 @@
+{
+	"launchColabFold": "true",
+	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2",
+	"fastaPath": "test/data/monomer2"
+}

@@ -14,11 +14,22 @@ import nextflow.Channel
 class NFTools {
 
     static final Logger log = LoggerFactory.getLogger(Nextflow.class)
+    
+    public static void printGreenText(text) {
+    // ANSI escape code for green color
+    def greenColor = "\u001B[32m"
+    
+    // ANSI escape code to reset color
+    def resetColor = "\u001B[0m"
+
+    // Print text in green color
+    log.info "${greenColor}${text}${resetColor}"
+    }
 
     private static LinkedHashMap generateLogColors(Boolean monochromeLogs = false) {
          Map colors = monochromeLogs ? new MonoChrome().palette() : new PolyChrome().palette()
          return colors as LinkedHashMap
-     }
+    }
 
 
     /**********************************************
@@ -106,8 +117,9 @@ class NFTools {
      *************************************************/
 
      private static Map formatParameterHelpData(params) {
-
-        Map result = [name: params.get('name'), value: '', usage: params.get('usage')]
+        String dash_value = params.get('group').find("nextflow") ? '-' : '--'
+        dash_value = params.get('type') == 'JSON' ? '' : dash_value
+        Map result = [name: dash_value + params.get('name'), value: '', usage: params.get('usage')]
         // value describes the expected input for the param
         result.value =  [params.type == boolean.toString() ? '' : params.type.toString().toUpperCase(), params.choices ?: ''].join(' ')
         return result
@@ -132,7 +144,7 @@ class NFTools {
                     usage << it.pop()
                 })
                 usage = usage.join("\n" + " " * usagePadding)
-                sprintf("%${indent}s%-${maxParamNameLength + padding}s %-${maxValueLength + padding}s %s\n", "", "--${paramHelpData.name}", "${paramHelpData.value}", "${usage}")
+                sprintf("%${indent}s%-${maxParamNameLength + padding}s %-${maxValueLength + padding}s %s\n", "", "${paramHelpData.name}", "${paramHelpData.value}", "${usage}")
 
         }
         String.format("%s:\n%s", groupName.toUpperCase(), paramsFormattedList.join()).stripIndent()
@@ -158,11 +170,6 @@ class NFTools {
 =======================================================
 Available Profiles
    -profile test                        Run the test dataset
-   -profile conda                       Build a new conda environment before running the pipeline. Use `--condaCacheDir` to define the conda cache path
-   -profile multiconda                  Build a new conda environment per process before running the pipeline. Use `--condaCacheDir` to define the conda cache path
-   -profile path                        Use the installation path defined for all tools. Use `--globalPath` to define the insallation path
-   -profile multipath                   Use the installation paths defined for each tool. Use `--globalPath` to define the insallation path
-   -profile docker                      Use the Docker images for each process
    -profile singularity                 Use the Singularity images for each process. Use `--singularityPath` to define the insallation path
    -profile cluster                     Run the workflow on the cluster, instead of locally
 """)
@@ -178,14 +185,22 @@ Available Profiles
 
     static String helpMessage(paramsWithUsage, workflow) {
         def CLIHelpMsg = []
-        paramsWithUsage.each {it.group == "Mandatory arguments" ? CLIHelpMsg << "--" + it.name << it.type.toUpperCase() : ""}
+        //paramsWithUsage.each { it.group.find("Mandatory arguments") ? CLIHelpMsg << it.name << it.type.toUpperCase() : ""}
+        paramsWithUsage.each { if (it.group.find("Mandatory arguments")) {
+                                 it.group.find("nextflow") ? CLIHelpMsg << '-' + it.name : CLIHelpMsg << '--' + it.name
+                                 CLIHelpMsg << it.type.toUpperCase()
+                               }
+                             }
+ //? CLIHelpMsg << it.name << it.type.toUpperCase() : ""}
+
+//it.group.find("Mandatory arguments") ? CLIHelpMsg << it.group.find("nextflow") ? '-' : '--' << it.name << it.type.toUpperCase() : ""}
         log.info String.format("""\
 
             Usage:
 
             The typical command for running the pipeline is as follows:
 
-            nextflow run main.nf ${CLIHelpMsg.join(" ")} -profile PROFILES
+            nextflow run main.nf -params-file params.json ${CLIHelpMsg.join(" ")} 
 
         %s
         %s

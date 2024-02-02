@@ -1,0 +1,280 @@
+diff --git a/alphafold/data/pipeline.py b/alphafold/data/pipeline.py
+index bae5db0..d8925db 100644
+--- a/alphafold/data/pipeline.py
++++ b/alphafold/data/pipeline.py
+@@ -129,7 +129,8 @@ class DataPipeline:
+                uniref_max_hits: int = 10000,
+                no_templates: bool = False,
+                bfd_max_hits: int = 10000,
+-               use_precomputed_msas: bool = False):
++               use_precomputed_msas: bool = False,
++               only_msas: bool = False):
+     """Initializes the data pipeline."""
+     self._use_small_bfd = use_small_bfd
+     self.jackhmmer_uniref90_runner = jackhmmer.Jackhmmer(
+@@ -153,6 +154,7 @@ class DataPipeline:
+     self.no_templates=no_templates
+     self.bfd_max_hits = bfd_max_hits
+     self.use_precomputed_msas = use_precomputed_msas
++    self.only_msas = only_msas
+ 
+   def process(self, input_fasta_path: str, msa_output_dir: str) -> FeatureDict:
+     """Runs alignment tools on the input sequence and creates features."""
+@@ -167,6 +169,7 @@ class DataPipeline:
+     num_res = len(input_sequence)
+ 
+     uniref90_out_path = os.path.join(msa_output_dir, 'uniref90_hits.sto')
++    logging.info('START jackhmmer uniref90 <<<')
+     jackhmmer_uniref90_result = run_msa_tool(
+         msa_runner=self.jackhmmer_uniref90_runner,
+         input_fasta_path=input_fasta_path,
+@@ -174,7 +177,9 @@ class DataPipeline:
+         msa_format='sto',
+         use_precomputed_msas=self.use_precomputed_msas,
+         max_sto_sequences=self.uniref_max_hits)
++    logging.info('END jackhmmer uniref90 >>>')
+     mgnify_out_path = os.path.join(msa_output_dir, 'mgnify_hits.sto')
++    logging.info('START jackhmmer mgnify <<<')
+     jackhmmer_mgnify_result = run_msa_tool(
+         msa_runner=self.jackhmmer_mgnify_runner,
+         input_fasta_path=input_fasta_path,
+@@ -182,25 +187,37 @@ class DataPipeline:
+         msa_format='sto',
+         use_precomputed_msas=self.use_precomputed_msas,
+         max_sto_sequences=self.mgnify_max_hits)
++    logging.info('END jackhmmer mgnify >>>')
+ 
+     msa_for_templates = jackhmmer_uniref90_result['sto']
+     msa_for_templates = parsers.deduplicate_stockholm_msa(msa_for_templates)
+     msa_for_templates = parsers.remove_empty_columns_from_stockholm_msa(
+         msa_for_templates)
+ 
+-    if self.template_searcher.input_format == 'sto':
+-      pdb_templates_result = self.template_searcher.query(msa_for_templates)
+-    elif self.template_searcher.input_format == 'a3m':
+-      uniref90_msa_as_a3m = parsers.convert_stockholm_to_a3m(msa_for_templates)
+-      pdb_templates_result = self.template_searcher.query(uniref90_msa_as_a3m)
+-    else:
+-      raise ValueError('Unrecognized template input format: '
+-                       f'{self.template_searcher.input_format}')
+-
+     pdb_hits_out_path = os.path.join(
+         msa_output_dir, f'pdb_hits.{self.template_searcher.output_format}')
+-    with open(pdb_hits_out_path, 'w') as f:
+-      f.write(pdb_templates_result)
++
++    if self.use_precomputed_msas:
++      logging.info(f'START read pdb_hits.{self.template_searcher.output_format} file <<<')
++      with open(pdb_hits_out_path, 'r') as f:
++        pdb_templates_result = f.read()
++      logging.info(f'END read pdb_hits.{self.template_searcher.output_format} file >>>')
++    else:
++      logging.info('START query MSA templates <<<')
++      if self.template_searcher.input_format == 'sto':
++        pdb_templates_result = self.template_searcher.query(msa_for_templates)
++      elif self.template_searcher.input_format == 'a3m':
++        uniref90_msa_as_a3m = parsers.convert_stockholm_to_a3m(msa_for_templates)
++        pdb_templates_result = self.template_searcher.query(uniref90_msa_as_a3m)
++      else:
++        raise ValueError('Unrecognized template input format: '
++                         f'{self.template_searcher.input_format}')
++      logging.info('END query MSA templates >>>')
++      
++      logging.info(f'START write pdb_hits.{self.template_searcher.output_format} file <<<')
++      with open(pdb_hits_out_path, 'w') as f:
++        f.write(pdb_templates_result)
++      logging.info(f'END write pdb_hits.{self.template_searcher.output_format} file >>>')
+ 
+     uniref90_msa = parsers.parse_stockholm(jackhmmer_uniref90_result['sto'])
+     mgnify_msa = parsers.parse_stockholm(jackhmmer_mgnify_result['sto'])
+@@ -214,6 +231,7 @@ class DataPipeline:
+ 
+     if self._use_small_bfd:
+       bfd_out_path = os.path.join(msa_output_dir, 'small_bfd_hits.sto')
++      logging.info('START jackhmmer small bfd <<<')
+       jackhmmer_small_bfd_result = run_msa_tool(
+           msa_runner=self.jackhmmer_small_bfd_runner,
+           input_fasta_path=input_fasta_path,
+@@ -221,9 +239,11 @@ class DataPipeline:
+           msa_format='sto',
+           use_precomputed_msas=self.use_precomputed_msas,
+           max_sto_sequences=self.bfd_max_hits)
++      logging.info('END jackhmmer small bfd >>>')
+       bfd_msa = parsers.parse_stockholm(jackhmmer_small_bfd_result['sto'])
+     else:
+       bfd_out_path = os.path.join(msa_output_dir, 'bfd_uniref_hits.a3m')
++      logging.info('START hhblits bfd uniref <<<')
+       hhblits_bfd_uniref_result = run_msa_tool(
+           msa_runner=self.hhblits_bfd_uniref_runner,
+           input_fasta_path=input_fasta_path,
+@@ -231,11 +251,13 @@ class DataPipeline:
+           msa_format='a3m',
+           use_precomputed_msas=self.use_precomputed_msas,
+           max_sto_sequences=self.bfd_max_hits)
++      logging.info('END hhblits bfd uniref >>>')
+       bfd_msa = parsers.parse_a3m(hhblits_bfd_uniref_result['a3m'])
+ 
+-    templates_result = self.template_featurizer.get_templates(
+-        query_sequence=input_sequence,
+-        hits=pdb_template_hits)
++    if not self.only_msas:
++      templates_result = self.template_featurizer.get_templates(
++          query_sequence=input_sequence,
++          hits=pdb_template_hits)
+ 
+     sequence_features = make_sequence_features(
+         sequence=input_sequence,
+@@ -249,9 +271,13 @@ class DataPipeline:
+     logging.info('MGnify MSA size: %d sequences.', len(mgnify_msa))
+     logging.info('Final (deduplicated) MSA size: %d sequences.',
+                  msa_features['num_alignments'][0])
+-    if not self.no_templates:
+-        logging.info('Total number of templates (NB: this can include bad '
+-                     'templates and is later filtered to top 4): %d.',
+-                     templates_result.features['template_domain_names'].shape[0])
+ 
+-    return {**sequence_features, **msa_features, **templates_result.features}
++    if self.only_msas:
++      return {**sequence_features, **msa_features}
++    else:
++      if not self.no_templates:
++          logging.info('Total number of templates (NB: this can include bad '
++                       'templates and is later filtered to top 4): %d.',
++                       templates_result.features['template_domain_names'].shape[0])
++
++      return {**sequence_features, **msa_features, **templates_result.features}
+diff --git a/alphafold/data/pipeline_multimer.py b/alphafold/data/pipeline_multimer.py
+index ce3a2fe..745e9cc 100644
+--- a/alphafold/data/pipeline_multimer.py
++++ b/alphafold/data/pipeline_multimer.py
+@@ -175,7 +175,8 @@ class DataPipeline:
+                jackhmmer_binary_path: str,
+                uniprot_database_path: str,
+                max_uniprot_hits: int = 50000,
+-               use_precomputed_msas: bool = False):
++               use_precomputed_msas: bool = False,
++               only_msas: bool = False):
+     """Initializes the data pipeline.
+ 
+     Args:
+@@ -193,6 +194,7 @@ class DataPipeline:
+         database_path=uniprot_database_path)
+     self._max_uniprot_hits = max_uniprot_hits
+     self.use_precomputed_msas = use_precomputed_msas
++    self.only_msas = only_msas
+ 
+   def _process_single_chain(
+       self,
+@@ -224,9 +226,13 @@ class DataPipeline:
+   def _all_seq_msa_features(self, input_fasta_path, msa_output_dir):
+     """Get MSA features for unclustered uniprot, for pairing."""
+     out_path = os.path.join(msa_output_dir, 'uniprot_hits.sto')
++    logging.info('START Get MSA features for unclustered uniprot, for pairing <<<')
+     result = pipeline.run_msa_tool(
+         self._uniprot_msa_runner, input_fasta_path, out_path, 'sto',
+         self.use_precomputed_msas)
++    logging.info('END Get MSA features for unclustered uniprot, for pairing >>>')
++
++
+     msa = parsers.parse_stockholm(result['sto'])
+     msa = msa.truncate(max_seqs=self._max_uniprot_hits)
+ 
+@@ -276,6 +282,9 @@ class DataPipeline:
+       all_chain_features[chain_id] = chain_features
+       sequence_features[fasta_chain.sequence] = chain_features
+ 
++    if self.only_msas:
++        return
++
+     all_chain_features = add_assembly_features(all_chain_features)
+ 
+     np_example = feature_processing.pair_and_merge(
+diff --git a/alphafold/data/tools/hhblits.py b/alphafold/data/tools/hhblits.py
+index 53a44b0..6014513 100644
+--- a/alphafold/data/tools/hhblits.py
++++ b/alphafold/data/tools/hhblits.py
+@@ -35,7 +35,7 @@ class HHBlits:
+                *,
+                binary_path: str,
+                databases: Sequence[str],
+-               n_cpu: int = 4,
++               n_cpu: int = os.getenv('AF_HHBLITS_N_CPU', 4),
+                n_iter: int = 3,
+                e_value: float = 0.001,
+                maxseq: int = 1_000_000,
+diff --git a/alphafold/data/tools/jackhmmer.py b/alphafold/data/tools/jackhmmer.py
+index 68997f8..1ae1af8 100644
+--- a/alphafold/data/tools/jackhmmer.py
++++ b/alphafold/data/tools/jackhmmer.py
+@@ -35,7 +35,7 @@ class Jackhmmer:
+                *,
+                binary_path: str,
+                database_path: str,
+-               n_cpu: int = 8,
++               n_cpu: int = os.getenv('AF_JACKHMMER_N_CPU', 8),
+                n_iter: int = 1,
+                e_value: float = 0.0001,
+                z_value: Optional[int] = None,
+diff --git a/run_alphafold.py b/run_alphafold.py
+index 92c231b..c2278d4 100644
+--- a/run_alphafold.py
++++ b/run_alphafold.py
+@@ -159,7 +159,7 @@ flags.DEFINE_list('models_to_use',None, 'specify which models in model_preset th
+                   'for monomer_ptm as model_X_ptm, with X the number of the model, '
+                   'for multimer as model_X_multimer_vY with X the number of the model and Y '
+                   ' the version of the model.')
+-flags.DEFINE_boolean('alignments_only', False, 'Whether to generate only alignments. '
++flags.DEFINE_boolean('only_msas', False, 'Whether to generate only alignments. '
+                      'Only alignments will be generated by the data pipeline, '
+                      'the modelling will not be performed')
+ flags.DEFINE_boolean('no_templates',False, 'will not use any template, will be faster than filter by date')
+@@ -205,7 +205,7 @@ def predict_structure(
+     benchmark: bool,
+     random_seed: int,
+     models_to_relax: ModelsToRelax,
+-    alignments_only: bool):
++    only_msas: bool):
+   """Predicts structure using AlphaFold for the given sequence."""
+   logging.info('Predicting %s', fasta_name)
+   timings = {}
+@@ -223,8 +223,8 @@ def predict_structure(
+       msa_output_dir=msa_output_dir)
+   timings['features'] = time.time() - t_0
+ 
+-  if alignments_only:
+-    logging.info('Alignments have been generated, stopping now.')
++  if only_msas:
++    logging.info('Options only_msas: process is now completed.')
+     return
+ 
+   # Write out features as a pickled dictionary.
+@@ -429,7 +429,8 @@ def main(argv):
+       use_precomputed_msas=FLAGS.use_precomputed_msas,
+       mgnify_max_hits=FLAGS.mgnify_max_hits,
+       uniref_max_hits=FLAGS.uniref_max_hits,
+-      bfd_max_hits=FLAGS.bfd_max_hits)
++      bfd_max_hits=FLAGS.bfd_max_hits,
++      only_msas=FLAGS.only_msas)
+ 
+   num_predictions_per_model = FLAGS.num_predictions_per_model
+   if run_multimer_system:
+@@ -439,7 +440,8 @@ def main(argv):
+         jackhmmer_binary_path=FLAGS.jackhmmer_binary_path,
+         uniprot_database_path=FLAGS.uniprot_database_path,
+         use_precomputed_msas=FLAGS.use_precomputed_msas,
+-        max_uniprot_hits=FLAGS.uniprot_max_hits)
++        max_uniprot_hits=FLAGS.uniprot_max_hits,
++        only_msas=FLAGS.only_msas)
+   else:
+     data_pipeline = monomer_data_pipeline
+ 
+@@ -509,8 +511,7 @@ def main(argv):
+         benchmark=FLAGS.benchmark,
+         random_seed=random_seed,
+         models_to_relax=FLAGS.models_to_relax,
+-        alignments_only=FLAGS.alignments_only)
+-
++        only_msas=FLAGS.only_msas)
+ 
+ if __name__ == '__main__':
+   flags.mark_flags_as_required([
