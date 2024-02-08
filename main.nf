@@ -103,7 +103,7 @@ if (params.launchColabFold) {
 } else {
   // This allows the processing of msas chain by chain
   // in the multimer mode to speedup computation
-  fastaFilesCh = Channel.fromPath("${projectDir}/fasta/*.fasta")
+  fastaFilesCh = Channel.fromPath("${params.fastaPath}/*.fasta")
                    .map { fastaFile -> 
                      String protein = fastaFile.toString()
                                         .replaceAll(".*/", "")
@@ -182,7 +182,7 @@ workflow {
   main:
 
   // Check the format of the fasta files
-  fastaChecker(fastaFilesCh)
+  fastaChecker(Channel.fromPath("${params.fastaPath}/*.fasta"))
 
   // Launch the prediction of the protein 3D structure
   if (params.launchAlphaFold){
