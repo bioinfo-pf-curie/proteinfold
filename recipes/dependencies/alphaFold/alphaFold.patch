@@ -145,7 +145,7 @@ index a90eb57..36e0835 100644
 +                   templates_result.features['template_domain_names'].shape[0])
 +      return {**sequence_features, **msa_features, **templates_result.features}
 diff --git a/alphafold/data/pipeline_multimer.py b/alphafold/data/pipeline_multimer.py
-index 3314598..c8c05ff 100644
+index 3314598..532fb28 100644
 --- a/alphafold/data/pipeline_multimer.py
 +++ b/alphafold/data/pipeline_multimer.py
 @@ -175,7 +175,9 @@ class DataPipeline:
@@ -222,8 +222,8 @@ index 3314598..c8c05ff 100644
      for chain_id, fasta_chain in chain_id_map.items():
 +      chain_id_step = chain_id_step + 1
 +      if self.chain_id_num is not None and self.only_msas:
-+        sequence_features[fasta_chain.sequence] = fasta_chain.sequence
 +        if self.chain_id_num != chain_id_step:
++          sequence_features[fasta_chain.sequence] = fasta_chain.sequence
 +          continue
        if fasta_chain.sequence in sequence_features:
 +        logging.info(f"Similar sequence already was present for chain_id {str(chain_id)}")
