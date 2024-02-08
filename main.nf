@@ -98,7 +98,32 @@ if (params.launchMassiveFold){
 ==========================
 */
 
-fastaFilesCh = Channel.fromPath("${params.fastaPath}/*.fasta")
+if (params.launchColabFold) {
+  fastaFilesCh = Channel.fromPath("${params.fastaPath}/*.fasta")
+} else {
+  // This allows the processing of msas chain by chain
+  // in the multimer mode to speedup computation
+  fastaFilesCh = Channel.fromPath("${projectDir}/fasta/*.fasta")
+                   .map { fastaFile -> 
+                     String protein = fastaFile.toString()
+                                        .replaceAll(".*/", "")
+                                        .replaceAll(".fasta", "")
+                     tuple(protein, file(fastaFile))
+                   }
+  
+  fastaChainsCh = fastaFilesCh
+                    .map { protein, fastaFile ->
+                      System.out.println(protein)
+                      System.out.println(fastaFile)
+                      int nbChain = fastaFile.countFasta()
+                      (1..nbChain).collect { chainIdNum ->
+                        tuple(protein, file(fastaFile), chainIdNum)
+                      }
+                    }.collect()
+                     .flatten()
+                     .collate(3)
+}
+
 
 /*
 ===========================
@@ -162,8 +187,15 @@ workflow {
   // Launch the prediction of the protein 3D structure
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-    alphaFoldSearch(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-    alphaFold(alphaFoldSearch.out.msas, alphaFoldSearch.out.fastaFile, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    msasCh = alphaFoldSearch.out.msas
+               .groupTuple()
+               .map { it ->
+                 it[1] = it[1].flatten()
+                 it
+               }
+    msasCh = fastaFilesCh.join(msasCh)
+    alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
   }
   if (params.launchColabFold){
     colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
