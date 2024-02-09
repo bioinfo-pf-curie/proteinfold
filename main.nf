@@ -202,7 +202,7 @@ workflow {
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
-    massiveFoldSearch(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
     msasCh = massiveFoldSearch.out.msas
                .groupTuple()
                .map { it ->
