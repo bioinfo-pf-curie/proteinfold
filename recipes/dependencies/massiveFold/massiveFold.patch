@@ -144,28 +144,30 @@ index bae5db0..d8925db 100644
 +
 +      return {**sequence_features, **msa_features, **templates_result.features}
 diff --git a/alphafold/data/pipeline_multimer.py b/alphafold/data/pipeline_multimer.py
-index ce3a2fe..745e9cc 100644
+index ce3a2fe..c6e37f8 100644
 --- a/alphafold/data/pipeline_multimer.py
 +++ b/alphafold/data/pipeline_multimer.py
-@@ -175,7 +175,8 @@ class DataPipeline:
+@@ -175,7 +175,9 @@ class DataPipeline:
                 jackhmmer_binary_path: str,
                 uniprot_database_path: str,
                 max_uniprot_hits: int = 50000,
 -               use_precomputed_msas: bool = False):
 +               use_precomputed_msas: bool = False,
-+               only_msas: bool = False):
++               only_msas: bool = False,
++               chain_id_num: int = None):
      """Initializes the data pipeline.
  
      Args:
-@@ -193,6 +194,7 @@ class DataPipeline:
+@@ -193,6 +195,8 @@ class DataPipeline:
          database_path=uniprot_database_path)
      self._max_uniprot_hits = max_uniprot_hits
      self.use_precomputed_msas = use_precomputed_msas
 +    self.only_msas = only_msas
++    self.chain_id_num = chain_id_num
  
    def _process_single_chain(
        self,
-@@ -224,9 +226,13 @@ class DataPipeline:
+@@ -224,9 +228,13 @@ class DataPipeline:
    def _all_seq_msa_features(self, input_fasta_path, msa_output_dir):
      """Get MSA features for unclustered uniprot, for pairing."""
      out_path = os.path.join(msa_output_dir, 'uniprot_hits.sto')
@@ -179,7 +181,76 @@ index ce3a2fe..745e9cc 100644
      msa = parsers.parse_stockholm(result['sto'])
      msa = msa.truncate(max_seqs=self._max_uniprot_hits)
  
-@@ -276,6 +282,9 @@ class DataPipeline:
+@@ -240,10 +248,22 @@ class DataPipeline:
+              if k in valid_feats}
+     return feats
+ 
++  def _chain_id_num_msas_done(self,
++          chain_id_step: int,
++          chain_id_map_dict: dict):
++    """When --only_msas is True and --chain_id_num has some some,"""
++    """it print a message and exit the program."""
++
++    if self.chain_id_num is not None and self.chain_id_num == chain_id_step:
++      logging.info(f"--only_msas is True and --chain_id_num is {self.chain_id_num}."
++                   f"The msas have been perform for chain_id {list(chain_id_map_dict.keys())[self.chain_id_num - 1]}.")
++      exit(0)
++
+   def process(self,
+               input_fasta_path: str,
+               msa_output_dir: str) -> pipeline.FeatureDict:
+     """Runs alignment tools on the input sequences and creates features."""
++
+     with open(input_fasta_path) as f:
+       input_fasta_str = f.read()
+     input_seqs, input_descs = parsers.parse_fasta(input_fasta_str)
+@@ -256,11 +276,36 @@ class DataPipeline:
+                            for chain_id, fasta_chain in chain_id_map.items()}
+       json.dump(chain_id_map_dict, f, indent=4, sort_keys=True)
+ 
++    if self.chain_id_num is not None:
++        if self.chain_id_num < 1 or self.chain_id_num > len(chain_id_map_dict):
++            logging.error(f"ERROR: --chain_id_num option is {str(self.chain_id_num)}. Its value must be in the range [1, {len(chain_id_map_dict)}].")
++            exit(1)
++
++
+     all_chain_features = {}
+     sequence_features = {}
+     is_homomer_or_monomer = len(set(input_seqs)) == 1
++    chain_id_step = 0
+     for chain_id, fasta_chain in chain_id_map.items():
++      chain_id_step = chain_id_step + 1
++      if self.chain_id_num is not None and self.only_msas:
++        if self.chain_id_num != chain_id_step:
++          sequence_features[fasta_chain.sequence] = fasta_chain.sequence
++          continue
+       if fasta_chain.sequence in sequence_features:
++        logging.info(f"Similar sequence already was present for chain_id {str(chain_id)}")
++        # Just create directory and log info to mention that
++        # the same chain was already processed
++        chain_msa_output_dir = os.path.join(msa_output_dir, chain_id)
++        if not os.path.exists(chain_msa_output_dir):
++          os.makedirs(chain_msa_output_dir)
++        with open(os.path.join(chain_msa_output_dir, 'log.txt'), 'w') as log:
++          log.write(f"Similar chain was already processed for msas.\n")
++
++        # If --only_msas is True and --chain_id_num has some value, we exit
++        self._chain_id_num_msas_done(chain_id_step=chain_id_step,
++                chain_id_map_dict=chain_id_map_dict)
++
+         all_chain_features[chain_id] = copy.deepcopy(
+             sequence_features[fasta_chain.sequence])
+         continue
+@@ -270,12 +315,17 @@ class DataPipeline:
+           description=fasta_chain.description,
+           msa_output_dir=msa_output_dir,
+           is_homomer_or_monomer=is_homomer_or_monomer)
+-
++      self._chain_id_num_msas_done(chain_id_step=chain_id_step,
++              chain_id_map_dict=chain_id_map_dict)
++      
+       chain_features = convert_monomer_features(chain_features,
+                                                 chain_id=chain_id)
        all_chain_features[chain_id] = chain_features
        sequence_features[fasta_chain.sequence] = chain_features
  
