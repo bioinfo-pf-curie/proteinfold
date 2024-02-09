@@ -189,7 +189,7 @@ index ce3a2fe..c6e37f8 100644
 +          chain_id_step: int,
 +          chain_id_map_dict: dict):
 +    """When --only_msas is True and --chain_id_num has some some,"""
-+    """it print a message and exit the program."""
++    """it prints a message and exit the program."""
 +
 +    if self.chain_id_num is not None and self.chain_id_num == chain_id_step:
 +      logging.info(f"--only_msas is True and --chain_id_num is {self.chain_id_num}."

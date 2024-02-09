@@ -17,17 +17,16 @@ of the license and that you accept its terms.
 // This process launches massiveFold
 // - it uses the massiveFoldOptions
 process massiveFold {
-  tag { "${fastaFile}".replace('.fasta', '') }
+  tag "${protein}" 
   label 'massiveFold'
   label 'medMem'
   label 'medCpu'
-  publishDir path: { "${params.outDir}/alphaFold/${fastaFile}".replace('.fasta', '') }, mode: 'copy'
+  publishDir path: "${params.outDir}/massiveFold/${protein}", mode: 'copy'
   containerOptions { (params.useGpu) ? "--nv --env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
   input:
-  path msas
-  path fastaFile
+  tuple val(protein), path(fastaFile), path("msas/*")
   path alphaFoldOptions
   path massiveFoldDatabase
 
@@ -37,6 +36,8 @@ process massiveFold {
   script:
   // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
+  mkdir -p predictions/${protein}
+  ln -s \$(realpath msas) predictions/${protein}/msas
   alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|num_predictions_per_model|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')
   launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options}
   """

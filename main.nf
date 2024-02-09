@@ -98,31 +98,29 @@ if (params.launchMassiveFold){
 ==========================
 */
 
-if (params.launchColabFold) {
-  fastaFilesCh = Channel.fromPath("${params.fastaPath}/*.fasta")
-} else {
-  // This allows the processing of msas chain by chain
-  // in the multimer mode to speedup computation
-  fastaFilesCh = Channel.fromPath("${params.fastaPath}/*.fasta")
-                   .map { fastaFile -> 
-                     String protein = fastaFile.toString()
-                                        .replaceAll(".*/", "")
-                                        .replaceAll(".fasta", "")
-                     tuple(protein, file(fastaFile))
-                   }
-  
-  fastaChainsCh = fastaFilesCh
-                    .map { protein, fastaFile ->
-                      System.out.println(protein)
-                      System.out.println(fastaFile)
-                      int nbChain = fastaFile.countFasta()
-                      (1..nbChain).collect { chainIdNum ->
-                        tuple(protein, file(fastaFile), chainIdNum)
-                      }
-                    }.collect()
-                     .flatten()
-                     .collate(3)
-}
+fastaPathCh = Channel.fromPath("${params.fastaPath}/*.fasta")
+
+// This allows the processing of msas chain by chain
+// in the multimer mode to speedup computation
+fastaFilesCh = fastaPathCh
+                 .map { fastaFile -> 
+                   String protein = fastaFile.toString()
+                                      .replaceAll(".*/", "")
+                                      .replaceAll(".fasta", "")
+                   tuple(protein, file(fastaFile))
+                 }
+
+fastaChainsCh = fastaFilesCh
+                  .map { protein, fastaFile ->
+                    System.out.println(protein)
+                    System.out.println(fastaFile)
+                    int nbChain = fastaFile.countFasta()
+                    (1..nbChain).collect { chainIdNum ->
+                      tuple(protein, file(fastaFile), chainIdNum)
+                    }
+                  }.collect()
+                   .flatten()
+                   .collate(3)
 
 
 /*
@@ -182,7 +180,7 @@ workflow {
   main:
 
   // Check the format of the fasta files
-  fastaChecker(Channel.fromPath("${params.fastaPath}/*.fasta"))
+  fastaChecker(fastaPathCh)
 
   // Launch the prediction of the protein 3D structure
   if (params.launchAlphaFold){
@@ -205,7 +203,14 @@ workflow {
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
     massiveFoldSearch(fastaFilesCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-    massiveFold(massiveFoldSearch.out.msas, massiveFoldSearch.out.fastaFile, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    msasCh = massiveFoldSearch.out.msas
+               .groupTuple()
+               .map { it ->
+                 it[1] = it[1].flatten()
+                 it
+               }
+    msasCh = fastaFilesCh.join(msasCh)
+    massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
   }
 
   // Generate the help for each tool
