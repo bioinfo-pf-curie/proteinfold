@@ -38,7 +38,7 @@ process massiveFold {
   """
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas) predictions/${protein}/msas
-  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|num_predictions_per_model|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')
+  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')
   launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options}
   """
 }

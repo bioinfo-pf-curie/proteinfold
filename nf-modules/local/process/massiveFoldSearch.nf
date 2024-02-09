@@ -39,7 +39,7 @@ process massiveFoldSearch {
   script:
   // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
-  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|num_predictions_per_model|g')
+  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g')
   launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options} --only_msas --chain_id_num ${chainIdNum}
   if [[ -f "predictions/${protein}/msas/chain_id_map.json" ]]; then
     mv predictions/${protein}/msas/chain_id_map.json predictions/${protein}/msas/chain_id_map_${chainIdNum}.json
