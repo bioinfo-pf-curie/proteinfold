@@ -67,14 +67,17 @@ OTHER OPTIONS:
     --colabFoldDatabase   PATH      Path to the database required by ColabFold.
     --colabFoldHelp                 Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
     colabFoldOptions      JSON      Prediction model options passed to ColabFold.
+    --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction.
+                                    Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
     --launchAlphaFold               Launch AlphaFold.
     --launchColabFold               Launch ColabFold.
     --launchMassiveFold             Launch MassiveFold.
     --massiveFoldDatabase PATH      Path to the database required by MassiveFold.
-    --massiveFoldHelp               Display all the options available to run MassiveFold. Use this option in combination with -profile 
+    --massiveFoldHelp               Display all the options available to run MassiveFold. Use this option in combination with -profile
                                     singularity.
-    massiveFoldOptions    JSON      Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are 
+    massiveFoldOptions    JSON      Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are
                                     passed using the --alphaFoldOptions option.
+    --onlyMsas                      When true, the pipeline will only generate the multiple sequence alignments (msas).
     --outDir              PATH      The output directory where the results will be saved
     --useGpu                        Run the prediction model on GPU. While AlphaFold and MassiveFold can run on CPU, ColabFold requires GPU only.
 
@@ -83,7 +86,6 @@ Available Profiles
    -profile test                        Run the test dataset
    -profile singularity                 Use the Singularity images for each process. Use `--singularityPath` to define the insallation path
    -profile cluster                     Run the workflow on the cluster, instead of locally
-
 
 ```
 

@@ -211,6 +211,34 @@
       "group": "Other options"
     },
     {
+      "name": "fromMsas",
+      "label": "from msas",
+      "usage": "Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction. Typically the path could be the results of the pipeline launcded with the --onlyMsas option.",
+
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "onlyMsas",
+      "label": "only msas",
+      "usage": "When true, the pipeline will only generate the multiple sequence alignments (msas).",
+
+      "type": "boolean",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
       "name": "outDir",
       "label": "Output directory",
       "usage": "The output directory where the results will be saved",
