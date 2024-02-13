@@ -86,6 +86,11 @@ File colabFoldDB = new File(params.genomes.colabfold.database)
 params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
 }
 
+if (params.launchOpenFold){
+  File openFoldDB = new File(params.genomes.openfold.database)
+  params.openFoldDatabase = openFoldDB.getCanonicalPath()
+}
+
 if (params.launchMassiveFold){
   File massiveFoldDB = new File(params.genomes.massivefold.database)
   params.massiveFoldDatabase = massiveFoldDB.getCanonicalPath()
