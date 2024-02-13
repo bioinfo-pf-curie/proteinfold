@@ -53,7 +53,6 @@ if (params.collect().join(' ').find('Help=true')) {
 
 // Check that the option --fastaPath has been provided and contains the path to the fasta files
 if (params.fastaPath != null ) {
-  System.out.println('has a value')
   File fastaPath = new File(params.fastaPath)
   if (!fastaPath.exists()){
     exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' does not exist."
@@ -92,6 +91,11 @@ if (params.launchMassiveFold){
   params.massiveFoldDatabase = massiveFoldDB.getCanonicalPath()
 }
 
+
+if (params.onlyMsas && params.fromMsas != null){
+  exit 1, "ERROR: the --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
+}
+
 /*
 ==========================
  BUILD CHANNELS
@@ -122,6 +126,53 @@ fastaChainsCh = fastaFilesCh
                    .flatten()
                    .collate(3)
 
+// This allows the settings of the channel when msas already exist
+if(params.fromMsas != null){
+
+  File fromMsas = new File(params.fromMsas)
+  if (!fromMsas.exists()){
+    exit 1, "ERROR: the path to the msas folder '" + params.fromMsas + "' does not exist."
+  }
+  if (!fromMsas.isDirectory()){
+    exit 1, "ERROR: the path to the msas folder '" + params.fromMsas + "' is not a directory."
+  }
+
+  msasCh = Channel.fromPath("${params.fromMsas}/*", type: 'dir')
+                .map { msas -> 
+                  String protein = msas.toString()
+                                    .replaceAll(".*/", "")
+                  tuple(protein, file(msas))
+                }
+  
+  proteinInMsas = msasCh.map { it[0]}.collect().map { tuple ('list', it) }
+  proteinInFasta = fastaFilesCh.map { it[0]}.collect().map { tuple ('list', it) }
+  proteinUnion = proteinInMsas.join(proteinInFasta)
+
+  // Print warning if the msas is present but not the fasta file  
+  proteinUnion
+    .map{
+      elementsNotPresent(it[2].toList(), it[1].toList())
+        .each{ prot ->
+                 String msg
+                 msg = "WARNING - MSAS folder is present but not FASTA file available for protein '"
+                 msg = msg + prot + "'. The protein will be ignored."
+                 NFTools.printOrangeText(msg)
+        }
+    }
+    
+  // Print warning if the fasta file is present but not the msas folder
+  proteinUnion
+    .map{
+      elementsNotPresent(it[1].toList(), it[2].toList())
+        .each{ prot ->
+          String msg
+          msg = "WARNING - FASTA file is present but no MSAS folder available for protein '"
+          msg = msg + prot + "'. The protein will be ignored."
+          NFTools.printOrangeText(msg)
+        }
+    }
+
+}
 
 /*
 ===========================
@@ -140,6 +191,7 @@ summary = [
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'MassiveFold Database' : params.launchMassiveFold ? params.massiveFoldDatabase : null,
   'MassiveFold Options' : params.launchMassiveFold ? params.massiveFoldOptions : null,
+  'Perform only msas' : params.onlyMsas,
   'Use GPU' : params.useGpu,
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,
@@ -186,31 +238,37 @@ workflow {
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
     alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-    msasCh = alphaFoldSearch.out.msas
-               .groupTuple()
-               .map { it ->
-                 it[1] = it[1].flatten()
-                 it
-               }
-    msasCh = fastaFilesCh.join(msasCh)
-    alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    if (!params.onlyMsas){
+      msasCh = alphaFoldSearch.out.msas
+                 .groupTuple()
+                 .map { it ->
+                   it[1] = it[1].flatten()
+                   it
+                 }
+      msasCh = fastaFilesCh.join(msasCh)
+      alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    }
   }
   if (params.launchColabFold){
     colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-    colabFold(colabFoldSearch.out.msas, params.colabFoldDatabase)
+    if (!params.onlyMsas){
+      colabFold(colabFoldSearch.out.msas, params.colabFoldDatabase)
+    }
   }
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
     massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-    msasCh = massiveFoldSearch.out.msas
-               .groupTuple()
-               .map { it ->
-                 it[1] = it[1].flatten()
-                 it
-               }
-    msasCh = fastaFilesCh.join(msasCh)
-    massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    if (!params.onlyMsas){
+      msasCh = massiveFoldSearch.out.msas
+                 .groupTuple()
+                 .map { it ->
+                   it[1] = it[1].flatten()
+                   it
+                 }
+      msasCh = fastaFilesCh.join(msasCh)
+      massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    }
   }
 
   // Generate the help for each tool
