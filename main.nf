@@ -136,7 +136,7 @@ fastaChainsCh = fastaFilesCh
                    .flatten()
                    .collate(3)
 
-// This allows the settings of the channel when msas already exist
+// set the msasCh when the pipeline is launched using existing msas
 if(params.fromMsas != null){
 
   File fromMsas = new File(params.fromMsas)
@@ -245,10 +245,12 @@ workflow {
   // Check the format of the fasta files
   fastaChecker(fastaPathCh)
 
-  // Launch the prediction of the protein 3D structure
+  // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    if (params.fromMsas == null){
+      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    }
     if (!params.onlyMsas){
       msasCh = alphaFoldSearch.out.msas
                  .groupTuple()
@@ -260,16 +262,26 @@ workflow {
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     }
   }
+
+
+  // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
-    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+    if (params.fromMsas == null){
+      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+    }
     if (!params.onlyMsas){
       colabFold(colabFoldSearch.out.msas, params.colabFoldDatabase)
     }
   }
+
+
+  // Launch the prediction of the protein 3D structure with MassiveFold
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
-    massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    if (params.fromMsas == null){
+      massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+    }
     if (!params.onlyMsas){
       msasCh = massiveFoldSearch.out.msas
                  .groupTuple()
