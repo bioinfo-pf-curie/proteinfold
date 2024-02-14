@@ -20,23 +20,22 @@ of the license and that you accept its terms.
 //   - https://github.com/sokrypton/ColabFold
 //   - https://github.com/YoshitakaMo/localcolabfold
 process colabFoldSearch {
-  tag { "${fastaFile}".replace('.fasta', '') }
+  tag "${protein}"
   label 'colabFold'
   label 'supraMem'
   label 'highCpu'
   publishDir "${params.outDir}/colabFoldSearch/", mode: 'copy'
   
   input:
-  path fastaFile
+  tuple val(protein), path(fastaFile)
   path colabFoldDatabase
 
   output:
   path("*", type: 'dir', emit: msas)
 
   script:
-  String fastaFilePrefix = "${fastaFile}".replace('.fasta', '')
   """
-  colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${fastaFilePrefix}"
+  colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${protein}"
   """
 }
 
