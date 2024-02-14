@@ -24,7 +24,13 @@ process massiveFoldSearch {
   label 'massiveFold'
   label 'highMem'
   label 'highCpu'
-  publishDir path: { "${params.outDir}/massiveFoldSearch/${protein}" }, mode: 'copy'
+  publishDir path: "${params.outDir}/massiveFoldSearch",
+             mode: 'copy',
+             saveAs: {
+               String msasDirName = it.replaceAll(".*/", "")
+               msasDirName = "${protein}/${msasDirName}"
+               return msasDirName
+           }
   containerOptions "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp"
 
   input:

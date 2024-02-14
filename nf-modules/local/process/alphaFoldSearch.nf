@@ -24,7 +24,13 @@ process alphaFoldSearch {
   label 'alphaFold'
   label 'highMem'
   label 'highCpu'
-  publishDir path: { "${params.outDir}/alphaFoldSearch/${protein}" }, mode: 'copy'
+  publishDir path: "${params.outDir}/alphaFoldSearch",
+             mode: 'copy',
+             saveAs: {
+               String msasDirName = it.replaceAll(".*/", "")
+               msasDirName = "${protein}/${msasDirName}"
+               return msasDirName
+           }
   containerOptions "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp"
 
   input:
