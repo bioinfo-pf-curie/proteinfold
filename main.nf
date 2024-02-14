@@ -148,6 +148,16 @@ if(params.fromMsas != null){
   proteinInFasta = fastaFilesCh.map { it[0]}.collect().map { tuple ('list', it) }
   proteinUnion = proteinInMsas.join(proteinInFasta)
 
+  // Function which returns elements which are present in list2
+  // but not in list1
+  def elementsNotPresent (ArrayList list1, ArrayList list2){
+  
+    def elementsNotInList1 = list2.findAll { !list1.contains(it) }
+  
+    return elementsNotInList1
+  
+  }
+
   // Print warning if the msas is present but not the fasta file  
   proteinUnion
     .map{
