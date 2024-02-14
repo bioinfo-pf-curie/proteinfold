@@ -248,17 +248,19 @@ workflow {
   // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-    if (params.fromMsas == null){
+    if (params.onlyMsas){
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-    }
-    if (!params.onlyMsas){
-      msasCh = alphaFoldSearch.out.msas
-                 .groupTuple()
-                 .map { it ->
-                   it[1] = it[1].flatten()
-                   it
-                 }
-      msasCh = fastaFilesCh.join(msasCh)
+    } else {
+      if (params.fromMsas != null){
+        msasCh = fastaFilesCh.join(msasCh)
+      } else {
+        msasCh = alphaFoldSearch.out.msas
+                   .groupTuple()
+                   .map { it ->
+                     it[1] = it[1].flatten()
+                     it
+                   }
+      }
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     }
   }
@@ -266,10 +268,10 @@ workflow {
 
   // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
-    if (params.fromMsas == null){
+    if (params.onlyMsas){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-    }
-    if (!params.onlyMsas){
+    } else {
+      // TODO: take into account the fromMsas option
       colabFold(colabFoldSearch.out.msas, params.colabFoldDatabase)
     }
   }
@@ -279,17 +281,19 @@ workflow {
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
-    if (params.fromMsas == null){
+    if (params.onlyMsas){
       massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-    }
-    if (!params.onlyMsas){
-      msasCh = massiveFoldSearch.out.msas
-                 .groupTuple()
-                 .map { it ->
-                   it[1] = it[1].flatten()
-                   it
-                 }
-      msasCh = fastaFilesCh.join(msasCh)
+    } else {
+      if (params.fromMsas != null){
+        msasCh = fastaFilesCh.join(msasCh)
+      } else {
+        msasCh = massiveFoldSearch.out.msas
+                   .groupTuple()
+                   .map { it ->
+                     it[1] = it[1].flatten()
+                     it
+                   }
+      }
       massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
     }
   }
