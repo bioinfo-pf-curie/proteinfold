@@ -126,8 +126,6 @@ fastaFilesCh = fastaPathCh
 
 fastaChainsCh = fastaFilesCh
                   .map { protein, fastaFile ->
-                    System.out.println(protein)
-                    System.out.println(fastaFile)
                     int nbChain = fastaFile.countFasta()
                     (1..nbChain).collect { chainIdNum ->
                       tuple(protein, file(fastaFile), chainIdNum)
@@ -271,8 +269,15 @@ workflow {
     if (params.onlyMsas){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
     } else {
+      if (params.fromMsas != null){
+        msasCh = msasCh.map { it -> 
+                          it[1]
+                        }
+      } else {
+        msasCh = colabFoldSearch.out.msas
+      }
       // TODO: take into account the fromMsas option
-      colabFold(colabFoldSearch.out.msas, params.colabFoldDatabase)
+      colabFold(msasCh, params.colabFoldDatabase)
     }
   }
 
