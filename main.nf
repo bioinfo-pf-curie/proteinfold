@@ -246,7 +246,7 @@ workflow {
   // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-    if (params.onlyMsas){
+    if (params.onlyMsas || params.fromMsas == null){
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     } else {
       if (params.fromMsas != null){
@@ -266,7 +266,7 @@ workflow {
 
   // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
-    if (params.onlyMsas){
+    if (params.onlyMsas || params.fromMsas == null){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
     } else {
       if (params.fromMsas != null){
@@ -276,7 +276,6 @@ workflow {
       } else {
         msasCh = colabFoldSearch.out.msas
       }
-      // TODO: take into account the fromMsas option
       colabFold(msasCh, params.colabFoldDatabase)
     }
   }
@@ -286,7 +285,7 @@ workflow {
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
-    if (params.onlyMsas){
+    if (params.onlyMsas || params.fromMsas == null){
       massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
     } else {
       if (params.fromMsas != null){
