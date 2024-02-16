@@ -246,12 +246,13 @@ workflow {
   // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-    if (params.onlyMsas || params.fromMsas == null){
+    if (params.onlyMsas){
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
+        alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
         msasCh = alphaFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
@@ -266,7 +267,7 @@ workflow {
 
   // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
-    if (params.onlyMsas || params.fromMsas == null){
+    if (params.onlyMsas){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
     } else {
       if (params.fromMsas != null){
@@ -274,6 +275,7 @@ workflow {
                           it[1]
                         }
       } else {
+        colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
         msasCh = colabFoldSearch.out.msas
       }
       colabFold(msasCh, params.colabFoldDatabase)
@@ -285,12 +287,13 @@ workflow {
   if (params.launchMassiveFold){
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
-    if (params.onlyMsas || params.fromMsas == null){
+    if (params.onlyMsas){
       massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
+        massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
         msasCh = massiveFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
