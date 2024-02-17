@@ -200,6 +200,7 @@ summary = [
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'MassiveFold Database' : params.launchMassiveFold ? params.massiveFoldDatabase : null,
   'MassiveFold Options' : params.launchMassiveFold ? params.massiveFoldOptions : null,
+  'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
   'Perform only msas' : params.onlyMsas,
   'Use GPU' : params.useGpu,
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
