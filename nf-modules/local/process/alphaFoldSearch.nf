@@ -39,8 +39,7 @@ process alphaFoldSearch {
   path alphaFoldDatabase
 
   output:
-  tuple val(protein), path("predictions/${protein}/msas/*"), emit: msas
-  path fastaFile, emit: fastaFile
+  tuple val(protein), path(fastaFile), path("predictions/${protein}/msas/*"), emit: msas
 
   script:
   """
