@@ -254,12 +254,14 @@ workflow {
         msasCh = fastaFilesCh.join(msasCh)
       } else {
         alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+        alphaFoldSearch.out.msas.view()
         msasCh = alphaFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
-                     it[1] = it[1].flatten()
+                     it[2] = it[2].flatten()
                      it
                    }
+        msasCh.view()
       }
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     }
@@ -298,7 +300,7 @@ workflow {
         msasCh = massiveFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
-                     it[1] = it[1].flatten()
+                     it[2] = it[2].flatten()
                      it
                    }
       }

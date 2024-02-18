@@ -37,7 +37,7 @@ process alphaFold {
   script:
   """
   mkdir -p predictions/${protein}
-  ln -s \$(realpath msas/${protein}) predictions/${protein}/msas
+  ln -s \$(realpath msas/) predictions/${protein}/msas
   alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')
   launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options}
   """
