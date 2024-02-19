@@ -149,9 +149,12 @@ if(params.fromMsas != null){
                 .map { msas -> 
                   String protein = msas.toString()
                                     .replaceAll(".*/", "")
-                  tuple(protein, file(msas))
+                  File proteinMsasDir = new File("${params.fromMsas}/${protein}")
+                  msasFileList = [] 
+                  proteinMsasDir.eachFile {file -> msasFileList.add(file.path)}
+                  tuple(protein, msasFileList)
                 }
-  
+ 
   proteinInMsas = msasCh.map { it[0]}.collect().map { tuple ('list', it) }
   proteinInFasta = fastaFilesCh.map { it[0]}.collect().map { tuple ('list', it) }
   proteinUnion = proteinInMsas.join(proteinInFasta)
@@ -254,14 +257,13 @@ workflow {
         msasCh = fastaFilesCh.join(msasCh)
       } else {
         alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-        alphaFoldSearch.out.msas.view()
         msasCh = alphaFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
-                     it[2] = it[2].flatten()
+                     it[1] = it[1].flatten()
                      it
                    }
-        msasCh.view()
+        msasCh = fastaFilesCh.join(msasCh)
       }
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     }
@@ -300,9 +302,10 @@ workflow {
         msasCh = massiveFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
-                     it[2] = it[2].flatten()
+                     it[1] = it[1].flatten()
                      it
                    }
+        msasCh = fastaFilesCh.join(msasCh)
       }
       massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
     }
