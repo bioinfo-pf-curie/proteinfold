@@ -21,7 +21,7 @@ of the license and that you accept its terms.
 // The process takes as input the directory (i.e. msas) where is located
 // the a3m file created by the process colabFoldSearch 
 process colabFold {
-  tag "${msas}"
+  tag "${protein}"
   label 'colabFold'
   label 'medMem'
   label 'medCpu'
