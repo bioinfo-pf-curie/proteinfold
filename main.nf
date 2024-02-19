@@ -275,11 +275,7 @@ workflow {
     if (params.onlyMsas){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
     } else {
-      if (params.fromMsas != null){
-        msasCh = msasCh.map { it -> 
-                          it[1]
-                        }
-      } else {
+      if (params.fromMsas == null){
         colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
         msasCh = colabFoldSearch.out.msas
       }
