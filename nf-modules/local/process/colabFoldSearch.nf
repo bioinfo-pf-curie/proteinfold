@@ -31,7 +31,7 @@ process colabFoldSearch {
   path colabFoldDatabase
 
   output:
-  path("*", type: 'dir', emit: msas)
+  tuple val(protein), path("*", type: 'dir', emit: msas)
 
   script:
   """
