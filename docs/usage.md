@@ -89,7 +89,7 @@ Define the options in a JSON file, for example:
 {
 	"launchAlphaFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
-	"fastaPath": "test/data/monomer2"
+	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
 
@@ -108,7 +108,7 @@ Define the options in a JSON file, for example:
 {
 	"launchAlphaFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
-	"fastaPath": "test/data/multimer/alphafold"
+	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
 ```
 
@@ -136,7 +136,7 @@ Define the options in a JSON file, for example:
 {
 	"launchColabFold": "true",
 	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2",
-	"fastaPath": "test/data/monomer2"
+	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
 
@@ -155,7 +155,7 @@ Define the options in a JSON file, for example:
 {
 	"launchColabFold": "true",
 	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2_multimer_v3",
-	"fastaPath": "test/data/multimer/colabfold"
+	"fastaPath": "test/data/fasta/multimer/colabfold"
 }
 ```
 
@@ -185,7 +185,7 @@ Define the options in a JSON file, for example:
 {
 	"launchMassiveFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
-	"fastaPath": "test/data/monomer2"
+	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
 
@@ -204,7 +204,7 @@ Define the options in a JSON file, for example:
 {
 	"launchMassiveFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
-	"fastaPath": "test/data/multimer/alphafold"
+	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
 ```
 
@@ -220,5 +220,20 @@ msas/
   protein2/
 ```
 
-Then, provide the option `--fromMsas msas`
+Then, provide the option `--fromMsas msas`, for example:
 
+
+```bash
+nextflow run main.nf -params-file test/params-file/frommsas/alphafold-multimer.json -profile singularity --useGpu
+```
+
+Define the options in a JSON file, for example:
+
+```json
+{
+	"launchAlphaFold": "true",
+	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
+	"fastaPath": "test/data/fasta/multimer/alphafold",
+	"fromMsas": "test/data/msas/multimer/alphafold"
+}
+```
