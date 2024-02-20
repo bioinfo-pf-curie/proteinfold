@@ -151,7 +151,7 @@ if(params.fromMsas != null){
                                     .replaceAll(".*/", "")
                   File proteinMsasDir = new File("${params.fromMsas}/${protein}")
                   msasFileList = [] 
-                  proteinMsasDir.eachFile {file -> msasFileList.add(file.getAbsolutePath()}
+                  proteinMsasDir.eachFile {file -> msasFileList.add(file.getAbsolutePath())}
                   tuple(protein, msasFileList)
                 }
  
