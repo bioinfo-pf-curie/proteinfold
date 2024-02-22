@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: registrygitlab.curie.fr/cubic-registry/proteinfold/massivefold:MFv1.0.0-hhsuite-compile-avx2
+From: registrygitlab.curie.fr/cubic-registry/proteinfold/afmassive:v1.1.0-hhsuite-compile-avx2
 
 %environment
   export LC_ALL=C
@@ -11,7 +11,7 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/massivefold:MFv1.0.0-hh
 
 %post
   # echo -e does not work with ubuntu shell builtin
-  /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_alphafold.py "$@"' > /app/launch_alphafold.sh \
+  /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_AFmassive.py "$@"' > /app/launch_alphafold.sh \
   && chmod +x /app/launch_alphafold.sh
   cd /app/alphafold \
   && patch -p1 < massiveFold.patch
@@ -19,5 +19,5 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/massivefold:MFv1.0.0-hh
 %runscript
   cd /app/alphafold
   ldconfig -C /mnt/output/ld.so.cache
-  exec python /app/alphafold/run_alphafold.py "$@"
+  exec python /app/alphafold/run_AFmassive.py "$@"
 

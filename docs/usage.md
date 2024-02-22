@@ -43,14 +43,17 @@ OTHER OPTIONS:
     --colabFoldDatabase   PATH      Path to the database required by ColabFold.
     --colabFoldHelp                 Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
     colabFoldOptions      JSON      Prediction model options passed to ColabFold.
+    --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction.
+                                    Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
     --launchAlphaFold               Launch AlphaFold.
     --launchColabFold               Launch ColabFold.
     --launchMassiveFold             Launch MassiveFold.
     --massiveFoldDatabase PATH      Path to the database required by MassiveFold.
-    --massiveFoldHelp               Display all the options available to run MassiveFold. Use this option in combination with -profile 
+    --massiveFoldHelp               Display all the options available to run MassiveFold. Use this option in combination with -profile
                                     singularity.
-    massiveFoldOptions    JSON      Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are 
+    massiveFoldOptions    JSON      Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are
                                     passed using the --alphaFoldOptions option.
+    --onlyMsas                      When true, the pipeline will only generate the multiple sequence alignments (msas).
     --outDir              PATH      The output directory where the results will be saved
     --useGpu                        Run the prediction model on GPU. While AlphaFold and MassiveFold can run on CPU, ColabFold requires GPU only.
 
@@ -59,7 +62,6 @@ Available Profiles
    -profile test                        Run the test dataset
    -profile singularity                 Use the Singularity images for each process. Use `--singularityPath` to define the insallation path
    -profile cluster                     Run the workflow on the cluster, instead of locally
-
 
 ```
 
@@ -87,7 +89,7 @@ Define the options in a JSON file, for example:
 {
 	"launchAlphaFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
-	"fastaPath": "test/data/monomer2"
+	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
 
@@ -106,7 +108,7 @@ Define the options in a JSON file, for example:
 {
 	"launchAlphaFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
-	"fastaPath": "test/data/multimer/alphafold"
+	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
 ```
 
@@ -134,7 +136,7 @@ Define the options in a JSON file, for example:
 {
 	"launchColabFold": "true",
 	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2",
-	"fastaPath": "test/data/monomer2"
+	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
 
@@ -153,7 +155,7 @@ Define the options in a JSON file, for example:
 {
 	"launchColabFold": "true",
 	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2_multimer_v3",
-	"fastaPath": "test/data/multimer/colabfold"
+	"fastaPath": "test/data/fasta/multimer/colabfold"
 }
 ```
 
@@ -183,7 +185,7 @@ Define the options in a JSON file, for example:
 {
 	"launchMassiveFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
-	"fastaPath": "test/data/monomer2"
+	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
 
@@ -202,8 +204,36 @@ Define the options in a JSON file, for example:
 {
 	"launchMassiveFold": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
-	"fastaPath": "test/data/multimer/alphafold"
+	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
 ```
 
+## Multiple sequence alignments (msas)
 
+If you want to perform only msas, launch the pipeline with the option `--onlyMsas`.
+
+If you want to use existing msas, launch the pipeline with the option `--fromMsas`. For example, if you have to predict the structure for two fasta files `protein1.fasta` and `protein2.fasta`, you must have a tree folder such as:
+
+```
+msas/
+  protein1/
+  protein2/
+```
+
+Then, provide the option `--fromMsas msas`, for example:
+
+
+```bash
+nextflow run main.nf -params-file test/params-file/frommsas/alphafold-multimer.json -profile singularity --useGpu
+```
+
+Define the options in a JSON file, for example:
+
+```json
+{
+	"launchAlphaFold": "true",
+	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
+	"fastaPath": "test/data/fasta/multimer/alphafold",
+	"fromMsas": "test/data/msas/multimer/alphafold"
+}
+```

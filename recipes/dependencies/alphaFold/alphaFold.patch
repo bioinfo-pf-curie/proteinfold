@@ -145,28 +145,30 @@ index a90eb57..36e0835 100644
 +                   templates_result.features['template_domain_names'].shape[0])
 +      return {**sequence_features, **msa_features, **templates_result.features}
 diff --git a/alphafold/data/pipeline_multimer.py b/alphafold/data/pipeline_multimer.py
-index 3314598..cc29096 100644
+index 3314598..532fb28 100644
 --- a/alphafold/data/pipeline_multimer.py
 +++ b/alphafold/data/pipeline_multimer.py
-@@ -175,7 +175,8 @@ class DataPipeline:
+@@ -175,7 +175,9 @@ class DataPipeline:
                 jackhmmer_binary_path: str,
                 uniprot_database_path: str,
                 max_uniprot_hits: int = 50000,
 -               use_precomputed_msas: bool = False):
 +               use_precomputed_msas: bool = False,
-+               only_msas: bool = False):
++               only_msas: bool = False,
++               chain_id_num: int = None):
      """Initializes the data pipeline.
  
      Args:
-@@ -193,6 +194,7 @@ class DataPipeline:
+@@ -193,6 +195,8 @@ class DataPipeline:
          database_path=uniprot_database_path)
      self._max_uniprot_hits = max_uniprot_hits
      self.use_precomputed_msas = use_precomputed_msas
 +    self.only_msas = only_msas
++    self.chain_id_num = chain_id_num
  
    def _process_single_chain(
        self,
-@@ -224,9 +226,13 @@ class DataPipeline:
+@@ -224,9 +228,13 @@ class DataPipeline:
    def _all_seq_msa_features(self, input_fasta_path, msa_output_dir):
      """Get MSA features for unclustered uniprot, for pairing."""
      out_path = os.path.join(msa_output_dir, 'uniprot_hits.sto')
@@ -180,7 +182,76 @@ index 3314598..cc29096 100644
      msa = parsers.parse_stockholm(result['sto'])
      msa = msa.truncate(max_seqs=self._max_uniprot_hits)
      all_seq_features = pipeline.make_msa_features([msa])
-@@ -273,6 +279,9 @@ class DataPipeline:
+@@ -237,10 +245,22 @@ class DataPipeline:
+              if k in valid_feats}
+     return feats
+ 
++  def _chain_id_num_msas_done(self,
++          chain_id_step: int,
++          chain_id_map_dict: dict):
++    """When --only_msas is True and --chain_id_num has some some,"""
++    """it prints a message and exit the program."""
++
++    if self.chain_id_num is not None and self.chain_id_num == chain_id_step:
++      logging.info(f"--only_msas is True and --chain_id_num is {self.chain_id_num}."
++                   f"The msas have been perform for chain_id {list(chain_id_map_dict.keys())[self.chain_id_num - 1]}.")
++      exit(0)
++
+   def process(self,
+               input_fasta_path: str,
+               msa_output_dir: str) -> pipeline.FeatureDict:
+     """Runs alignment tools on the input sequences and creates features."""
++
+     with open(input_fasta_path) as f:
+       input_fasta_str = f.read()
+     input_seqs, input_descs = parsers.parse_fasta(input_fasta_str)
+@@ -253,11 +273,36 @@ class DataPipeline:
+                            for chain_id, fasta_chain in chain_id_map.items()}
+       json.dump(chain_id_map_dict, f, indent=4, sort_keys=True)
+ 
++    if self.chain_id_num is not None:
++        if self.chain_id_num < 1 or self.chain_id_num > len(chain_id_map_dict):
++            logging.error(f"ERROR: --chain_id_num option is {str(self.chain_id_num)}. Its value must be in the range [1, {len(chain_id_map_dict)}].")
++            exit(1)
++
++
+     all_chain_features = {}
+     sequence_features = {}
+     is_homomer_or_monomer = len(set(input_seqs)) == 1
++    chain_id_step = 0
+     for chain_id, fasta_chain in chain_id_map.items():
++      chain_id_step = chain_id_step + 1
++      if self.chain_id_num is not None and self.only_msas:
++        if self.chain_id_num != chain_id_step:
++          sequence_features[fasta_chain.sequence] = fasta_chain.sequence
++          continue
+       if fasta_chain.sequence in sequence_features:
++        logging.info(f"Similar sequence already was present for chain_id {str(chain_id)}")
++        # Just create directory and log info to mention that
++        # the same chain was already processed
++        chain_msa_output_dir = os.path.join(msa_output_dir, chain_id)
++        if not os.path.exists(chain_msa_output_dir):
++          os.makedirs(chain_msa_output_dir)
++        with open(os.path.join(chain_msa_output_dir, 'log.txt'), 'w') as log:
++          log.write(f"Similar chain was already processed for msas.\n")
++
++        # If --only_msas is True and --chain_id_num has some value, we exit
++        self._chain_id_num_msas_done(chain_id_step=chain_id_step,
++                chain_id_map_dict=chain_id_map_dict)
++
+         all_chain_features[chain_id] = copy.deepcopy(
+             sequence_features[fasta_chain.sequence])
+         continue
+@@ -267,12 +312,17 @@ class DataPipeline:
+           description=fasta_chain.description,
+           msa_output_dir=msa_output_dir,
+           is_homomer_or_monomer=is_homomer_or_monomer)
+-
++      self._chain_id_num_msas_done(chain_id_step=chain_id_step,
++              chain_id_map_dict=chain_id_map_dict)
++      
+       chain_features = convert_monomer_features(chain_features,
+                                                 chain_id=chain_id)
        all_chain_features[chain_id] = chain_features
        sequence_features[fasta_chain.sequence] = chain_features
  
@@ -217,30 +288,34 @@ index 68997f8..1ae1af8 100644
                 e_value: float = 0.0001,
                 z_value: Optional[int] = None,
 diff --git a/run_alphafold.py b/run_alphafold.py
-index 0d89bfb..17b7e22 100644
+index 0d89bfb..b9005aa 100644
 --- a/run_alphafold.py
 +++ b/run_alphafold.py
-@@ -141,6 +141,9 @@ flags.DEFINE_boolean('use_gpu_relax', None, 'Whether to relax on GPU. '
+@@ -141,6 +141,12 @@ flags.DEFINE_boolean('use_gpu_relax', None, 'Whether to relax on GPU. '
                       'Relax on GPU can be much faster than CPU, so it is '
                       'recommended to enable if possible. GPUs must be available'
                       ' if this setting is enabled.')
 +flags.DEFINE_boolean('only_msas', False, 'Whether to generate only alignments. '
 +                     'Only alignments will be generated by the data pipeline, '
 +                     'the modelling will not be performed')
++flags.DEFINE_integer('chain_id_num', None, 'Compute msas only for the chain id'
++                     'with the chain_id_num.'
++                     'Note: this FLAG only applies if model_preset=multimer')
  
  FLAGS = flags.FLAGS
  
-@@ -180,7 +183,8 @@ def predict_structure(
+@@ -180,7 +186,9 @@ def predict_structure(
      amber_relaxer: relax.AmberRelaxation,
      benchmark: bool,
      random_seed: int,
 -    models_to_relax: ModelsToRelax):
 +    models_to_relax: ModelsToRelax,
-+    only_msas: bool):
++    only_msas: bool,
++    chain_id_num: int):
    """Predicts structure using AlphaFold for the given sequence."""
    logging.info('Predicting %s', fasta_name)
    timings = {}
-@@ -197,6 +201,10 @@ def predict_structure(
+@@ -197,6 +205,10 @@ def predict_structure(
        input_fasta_path=fasta_path,
        msa_output_dir=msa_output_dir)
    timings['features'] = time.time() - t_0
@@ -251,7 +326,7 @@ index 0d89bfb..17b7e22 100644
  
    # Write out features as a pickled dictionary.
    features_output_path = os.path.join(output_dir, 'features.pkl')
-@@ -394,7 +402,8 @@ def main(argv):
+@@ -394,7 +406,8 @@ def main(argv):
        template_searcher=template_searcher,
        template_featurizer=template_featurizer,
        use_small_bfd=use_small_bfd,
@@ -261,24 +336,26 @@ index 0d89bfb..17b7e22 100644
  
    if run_multimer_system:
      num_predictions_per_model = FLAGS.num_multimer_predictions_per_model
-@@ -402,7 +411,8 @@ def main(argv):
+@@ -402,7 +415,9 @@ def main(argv):
          monomer_data_pipeline=monomer_data_pipeline,
          jackhmmer_binary_path=FLAGS.jackhmmer_binary_path,
          uniprot_database_path=FLAGS.uniprot_database_path,
 -        use_precomputed_msas=FLAGS.use_precomputed_msas)
 +        use_precomputed_msas=FLAGS.use_precomputed_msas,
-+        only_msas=FLAGS.only_msas)
++        only_msas=FLAGS.only_msas,
++        chain_id_num=FLAGS.chain_id_num)
    else:
      num_predictions_per_model = 1
      data_pipeline = monomer_data_pipeline
-@@ -449,8 +459,8 @@ def main(argv):
+@@ -449,8 +464,9 @@ def main(argv):
          amber_relaxer=amber_relaxer,
          benchmark=FLAGS.benchmark,
          random_seed=random_seed,
 -        models_to_relax=FLAGS.models_to_relax)
 -
 +        models_to_relax=FLAGS.models_to_relax,
-+        only_msas=FLAGS.only_msas)
++        only_msas=FLAGS.only_msas,
++        chain_id_num=FLAGS.chain_id_num)
  
  if __name__ == '__main__':
    flags.mark_flags_as_required([

@@ -1,0 +1,286 @@
+Query         sp|A0A0U1RRN3|MISFA_HUMAN Mitochondrial sheath formation-associated protein OS=Homo sapiens OX=9606 GN=MISFA PE=3 SV=1
+Match_columns 59
+No_of_seqs    51 out of 82
+Neff          1.88502
+Searched_HMMs 80799
+Date          Mon Feb 19 09:55:00 2024
+Command       /usr/bin/hhsearch -i /tmp/tmp69oo_nel/query.a3m -o /tmp/tmp69oo_nel/output.hhr -maxseq 1000000 -d /mnt/beegfs/common/annotations/pipelines_CDR/proteinfold/alphafold/2023-12/pdb70/pdb70 
+
+ No Hit                             Prob E-value P-value  Score    SS Cols Query HMM  Template HMM
+  1 6RKO_X Cytochrome d ubiquinol   55.3     9.5 0.00012   22.0   0.0   20    1-20      1-20  (37)
+  2 6RX4_C Cytochrome bd-I ubiquin  55.3     9.5 0.00012   22.0   0.0   20    1-20      1-20  (37)
+  3 1DXZ_A ACETYLCHOLINE RECEPTOR   43.3      20 0.00024   16.3   0.0   24    3-26      9-32  (33)
+  4 4TQQ_H Reaction center protein  40.8      23 0.00028   26.5   0.0   15    3-17      8-22  (240)
+  5 4V8K_BH Photosynthetic reactio  39.7      24  0.0003   26.5   0.0   14    4-17     18-31  (259)
+  6 5Y5S_H Photosynthetic reaction  39.7      24  0.0003   26.5   0.0   14    4-17     18-31  (259)
+  7 2GNU_H Reaction center protein  39.7      24  0.0003   26.2   0.0   14    4-17      9-22  (235)
+  8 1RG5_H Reaction center protein  35.3      32 0.00039   26.2   0.0   14    4-17     19-32  (260)
+  9 1RZH_H Reaction center protein  35.3      32 0.00039   26.2   0.0   14    4-17     19-32  (260)
+ 10 4OE9_A COMM domain-containing   34.6      33 0.00041   23.5   0.0   33   15-47     86-118 (121)
+ 11 3J9Q_l sheath, tube; pyocin, b  34.1      34 0.00043   22.6   0.0   28    3-30      7-34  (168)
+ 12 5W5E_c FIIR2 protein; pyocin,   34.1      34 0.00043   22.6   0.0   28    3-30      7-34  (168)
+ 13 2OHW_A YueI protein; STRUCTURA  28.8      48  0.0006   22.8   0.0   18   14-31     28-45  (133)
+ 14 2VOY_H POTENTIAL COPPER-TRANSP  25.1      62 0.00077   16.4   0.0   24    7-30      7-30  (48)
+ 15 2A3M_A COG3005: Nitrate/TMAO r  25.0      63 0.00078   20.6   0.0   19    2-20      6-24  (130)
+ 16 2WJN_H PHOTOSYNTHETIC REACTION  24.8      63 0.00078   24.5   0.0   14    4-17     19-33  (258)
+ 17 3T6E_H Photosynthetic reaction  24.8      63 0.00079   24.5   0.0   14    4-17     19-33  (258)
+ 18 4RHO_B Uncharacterized protein  22.6      74 0.00092   23.5   0.0   20    3-22    185-204 (259)
+ 19 6ADQ_O Transmembrane cytochrom  20.2      90  0.0011   21.9   0.0   17    2-18    276-292 (294)
+
+No 1
+>6RKO_X Cytochrome d ubiquinol oxidase, subunit; Oxidoreductase Cytochrome bd oxidase bd; HET: UQ8, HEB, POV, HDD; 2.68A {Escherichia coli (strain K12)}
+Probab=55.29  E-value=9.5  Score=21.99  Aligned_cols=20  Identities=25%  Similarity=0.600  Sum_probs=16.5  Template_Neff=3.900
+
+Q sp|A0A0U1RRN3|    1 MIVLGWMFFVGLVCYMGTFP   20 (59)
+Q Consensus         1 MIVlGWMlFVGlacYmGTFP   20 (59)
+                      |--+.|+|=+++||..|..-
+T Consensus         1 MWYfaWilG~~lA~~~~i~n   20 (37)
+T 6RKO_X            1 MWYFAWILGTLLACSFGVIT   20 (37)
+T ss_pred             ChHHHHHHHHHHHHHHHHHH
+Confidence            55678999999999988763
+
+
+No 2
+>6RX4_C Cytochrome bd-I ubiquinol oxidase subunit; BD OXIDASE, TERMINAL OXIDASE, OXIDOREDUCTASE; HET: PEE, UQ8, HDD, HEB; 3.3A {Escherichia coli (strain K12)}
+Probab=55.29  E-value=9.5  Score=21.99  Aligned_cols=20  Identities=25%  Similarity=0.600  Sum_probs=16.5  Template_Neff=3.900
+
+Q sp|A0A0U1RRN3|    1 MIVLGWMFFVGLVCYMGTFP   20 (59)
+Q Consensus         1 MIVlGWMlFVGlacYmGTFP   20 (59)
+                      |--+.|+|=+++||..|..-
+T Consensus         1 MWYfaWilG~~lA~~~~i~n   20 (37)
+T 6RX4_C            1 MWYFAWILGTLLACSFGVIT   20 (37)
+T ss_dssp             CHHHHHHHHHHHHHHHHHHH
+T ss_pred             ChHHHHHHHHHHHHHHHHHH
+Confidence            55678999999999988763
+
+
+No 3
+>1DXZ_A ACETYLCHOLINE RECEPTOR PROTEIN, ALPHA CHAIN; TRANSMEMBRANE PROTEIN, NICOTINIC ACETYLCHOLINE RECEPTOR; HET: NH2; NMR {N/A} SCOP: j.35.1.1
+Probab=43.33  E-value=20  Score=16.32  Aligned_cols=24  Identities=25%  Similarity=0.457  Sum_probs=15.4  Template_Neff=9.700
+
+Q sp|A0A0U1RRN3|    3 VLGWMFFVGLVCYMGTFPELMPPT   26 (59)
+Q Consensus         3 VlGWMlFVGlacYmGTFPE~mpPt   26 (59)
+                      .+|-..++++..++..+-+.+|++
+T Consensus         9 ~l~~~~~l~~~~~l~~~~~~~P~~   32 (33)
+T 1DXZ_A            9 TLSISVLLSLTVFLLVIVELIPST   32 (33)
+T ss_dssp             HHHHHHHHHHHHHHHHHHHHTTTC
+T ss_pred             HHHHHHHHHHHHHHHHHHHhCCCC
+Confidence            455566677777777666666654
+
+
+No 4
+>4TQQ_H Reaction center protein H chain; photosynthetic, membrane protein, PHOTOSYNTHESIS; HET: UQ1, BPH, U10, BCL; 2.499A {Rhodobacter sphaeroides}
+Probab=40.75  E-value=23  Score=26.46  Aligned_cols=15  Identities=33%  Similarity=0.893  Sum_probs=12.3  Template_Neff=5.800
+
+Q sp|A0A0U1RRN3|    3 VLGWMFFVGLVCYMG   17 (59)
+Q Consensus         3 VlGWMlFVGlacYmG   17 (59)
+                      -+=|++|+||+.|+-
+T Consensus         8 ~~f~~ff~~li~yl~   22 (240)
+T 4TQQ_H            8 YSFWIFLAGLIYYLQ   22 (240)
+T ss_dssp             HHHHHHHHHHHHHHH
+T ss_pred             HHHHHHHHHHHHHHH
+Confidence            345999999999974
+
+
+No 5
+>4V8K_BH Photosynthetic reaction center cytochrome c; photosynthesis; HET: MQ8, CA, HEM, PEF, UQ8, PO4, BPH, CRT, BCL; 3.006A {Thermochromatium tepidum}
+Probab=39.73  E-value=24  Score=26.54  Aligned_cols=14  Identities=43%  Similarity=1.115  Sum_probs=11.8  Template_Neff=5.900
+
+Q sp|A0A0U1RRN3|    4 LGWMFFVGLVCYMG   17 (59)
+Q Consensus         4 lGWMlFVGlacYmG   17 (59)
+                      +=|++|+||+.|+-
+T Consensus        18 ~f~~ff~~li~yl~   31 (259)
+T 4V8K_BH          18 AFWLFFFGLIIYLR   31 (259)
+T ss_pred             HHHHHHHHHHHHHH
+Confidence            45999999999974
+
+
+No 6
+>5Y5S_H Photosynthetic reaction center cytochrome c; LH1-RC, photosynthesis, purple bacteria; HET: BCL, GOL, BPH, HEM, LDA, UQ8, LMT, CA, PEF, MQ8, CDL, UNL, SO4, CRT, PGV; 1.9A {Thermochromatium tepidum}
+Probab=39.73  E-value=24  Score=26.54  Aligned_cols=14  Identities=43%  Similarity=1.115  Sum_probs=11.8  Template_Neff=5.900
+
+Q sp|A0A0U1RRN3|    4 LGWMFFVGLVCYMG   17 (59)
+Q Consensus         4 lGWMlFVGlacYmG   17 (59)
+                      +=|++|+||+.|+-
+T Consensus        18 ~f~~ff~~li~yl~   31 (259)
+T 5Y5S_H           18 AFWLFFFGLIIYLR   31 (259)
+T ss_pred             HHHHHHHHHHHHHH
+Confidence            45999999999974
+
+
+No 7
+>2GNU_H Reaction center protein H chain; Reaction centre, Ubiquinone B, PHOTOSYNTHESIS; HET: BPH, LDA, U10, BCL, CDL; 2.2A {Rhodobacter sphaeroides}
+Probab=39.72  E-value=24  Score=26.25  Aligned_cols=14  Identities=36%  Similarity=0.982  Sum_probs=11.9  Template_Neff=5.800
+
+Q sp|A0A0U1RRN3|    4 LGWMFFVGLVCYMG   17 (59)
+Q Consensus         4 lGWMlFVGlacYmG   17 (59)
+                      +=|++|+||+.|+-
+T Consensus         9 ~f~~ff~~li~yl~   22 (235)
+T 2GNU_H            9 SFWIFLAGLIYYLQ   22 (235)
+T ss_pred             HHHHHHHHHHHHHH
+Confidence            45999999999974
+
+
+No 8
+>1RG5_H Reaction center protein L chain; PHOTOSYNTHESIS, PHOTOSYNTHETIC REACTION CENTER, CAROTENOIDLESS; HET: LDA, BCL, CDL, BPH, U10, HTO; 2.5A {Rhodobacter sphaeroides} SCOP: b.41.1.1, f.23.10.1
+Probab=35.34  E-value=32  Score=26.22  Aligned_cols=14  Identities=36%  Similarity=0.982  Sum_probs=11.9  Template_Neff=5.500
+
+Q sp|A0A0U1RRN3|    4 LGWMFFVGLVCYMG   17 (59)
+Q Consensus         4 lGWMlFVGlacYmG   17 (59)
+                      +=|++|+||+.|+-
+T Consensus        19 ~f~~ff~~li~yl~   32 (260)
+T 1RG5_H           19 SFWIFLAGLIYYLQ   32 (260)
+T ss_dssp             HHHHHHHHHHHHHH
+T ss_pred             HHHHHHHHHHHHHH
+Confidence            45999999999974
+
+
+No 9
+>1RZH_H Reaction center protein L chain; BACTERIAL PHOTOSYNTHESIS, RHODOBACTER SPHAEROIDES, PROTON; HET: U10, CDL, BCL, HTO, LDA, BPH, SPO; 1.8A {Rhodobacter sphaeroides} SCOP: b.41.1.1, f.23.10.1
+Probab=35.34  E-value=32  Score=26.22  Aligned_cols=14  Identities=36%  Similarity=0.982  Sum_probs=11.9  Template_Neff=5.500
+
+Q sp|A0A0U1RRN3|    4 LGWMFFVGLVCYMG   17 (59)
+Q Consensus         4 lGWMlFVGlacYmG   17 (59)
+                      +=|++|+||+.|+-
+T Consensus        19 ~f~~ff~~li~yl~   32 (260)
+T 1RZH_H           19 SFWIFLAGLIYYLQ   32 (260)
+T ss_dssp             HHHHHHHHHHHHHH
+T ss_pred             HHHHHHHHHHHHHH
+Confidence            45999999999974
+
+
+No 10
+>4OE9_A COMM domain-containing protein 9; ALL ALPHA HELICAL, PROTEIN BINDING; HET: CIT, MSE; 1.55A {Homo sapiens}
+Probab=34.63  E-value=33  Score=23.49  Aligned_cols=33  Identities=24%  Similarity=0.188  Sum_probs=21.9  Template_Neff=5.300
+
+Q sp|A0A0U1RRN3|   15 YMGTFPELMPPTLKWQERWPVQESKTQLRRRAL   47 (59)
+Q Consensus        15 YmGTFPE~mpPtLkWkerw~vqesk~~~rs~al   47 (59)
+                      ..--|||.+||.||=-=---.+|.-..+|..++
+T Consensus        86 I~~LFP~~fh~~Lq~LLtkil~~~~~~WR~ea~  118 (121)
+T 4OE9_A           86 ILALFPENFHQNLKNLLTKIMLEHVSTWRTEAQ  118 (121)
+T ss_dssp             HHTTSCTTSCHHHHHHHHHHHHHHHHHHHHHHH
+T ss_pred             HHHHCChhhCHHHHHHHHHHHHHhhHHHHHHHH
+Confidence            345699999999985444455566666665554
+
+
+No 11
+>3J9Q_l sheath, tube; pyocin, bacteriocin, sheath, tube, STRUCTURAL; 3.5A {Pseudomonas aeruginosa}
+Probab=34.09  E-value=34  Score=22.58  Aligned_cols=28  Identities=25%  Similarity=0.438  Sum_probs=23.0  Template_Neff=8.200
+
+Q sp|A0A0U1RRN3|    3 VLGWMFFVGLVCYMGTFPELMPPTLKWQ   30 (59)
+Q Consensus         3 VlGWMlFVGlacYmGTFPE~mpPtLkWk   30 (59)
+                      +-++-+|+.-.-|+|.-.|+.+|.++++
+T Consensus         7 l~~~~~~v~g~~~~g~~~ev~lP~i~~~   34 (168)
+T 3J9Q_l            7 LTNTNLFIDGVSFAGDVPSLTLPKLAVK   34 (168)
+T ss_pred             eeeeEEEECCeeeeeEeceecCCccEEE
+Confidence            4467778887888899999999999887
+
+
+No 12
+>5W5E_c FIIR2 protein; pyocin, bacteriocin, STRUCTURAL PROTEIN; 3.5A {Pseudomonas aeruginosa}
+Probab=34.09  E-value=34  Score=22.58  Aligned_cols=28  Identities=25%  Similarity=0.438  Sum_probs=23.0  Template_Neff=8.200
+
+Q sp|A0A0U1RRN3|    3 VLGWMFFVGLVCYMGTFPELMPPTLKWQ   30 (59)
+Q Consensus         3 VlGWMlFVGlacYmGTFPE~mpPtLkWk   30 (59)
+                      +-++-+|+.-.-|+|.-.|+.+|.++++
+T Consensus         7 l~~~~~~v~g~~~~g~~~ev~lP~i~~~   34 (168)
+T 5W5E_c            7 LTNTNLFIDGVSFAGDVPSLTLPKLAVK   34 (168)
+T ss_pred             eeeeEEEECCeeeeeEeceecCCccEEE
+Confidence            4467778887888899999999999887
+
+
+No 13
+>2OHW_A YueI protein; STRUCTURAL GENOMICS, PSI-2, Protein Structure; 1.4A {Bacillus subtilis} SCOP: d.79.8.1
+Probab=28.80  E-value=48  Score=22.77  Aligned_cols=18  Identities=17%  Similarity=0.305  Sum_probs=13.6  Template_Neff=5.800
+
+Q sp|A0A0U1RRN3|   14 CYMGTFPELMPPTLKWQE   31 (59)
+Q Consensus        14 cYmGTFPE~mpPtLkWke   31 (59)
+                      -|+|||.|-+--+|.-++
+T Consensus        28 ~yLGtfRERV~lalT~~q   45 (133)
+T 2OHW_A           28 LFLGSLRERVVLALTKGQ   45 (133)
+T ss_dssp             HTTTCCGGGEEEEEEHHH
+T ss_pred             HhccChhheEEEEEeHHH
+Confidence            389999998877766553
+
+
+No 14
+>2VOY_H POTENTIAL COPPER-TRANSPORTING ATPASE (E.C.3.6.3.4), SARCOPLASMIC/ENDOPLASMIC; HYDROLASEP-TYPE ATPASE, CRYO-EM, HELICAL RECONSTRUCTION; 18.0A {ORYCTOLAGUS CUNICULUS}
+Probab=25.11  E-value=62  Score=16.38  Aligned_cols=24  Identities=17%  Similarity=0.328  Sum_probs=17.2  Template_Neff=9.100
+
+Q sp|A0A0U1RRN3|    7 MFFVGLVCYMGTFPELMPPTLKWQ   30 (59)
+Q Consensus         7 MlFVGlacYmGTFPE~mpPtLkWk   30 (59)
+                      .+..+++...+..||.+|.++..-
+T Consensus         7 ~~~~~~~~~v~~iP~glp~~~~~~   30 (48)
+T 2VOY_H            7 YFKIAVALAVAAIPEGLPAVITTC   30 (48)
+T ss_pred             HHHHHHHHHHHhcCccHHHHHHHH
+Confidence            344566777889999999877443
+
+
+No 15
+>2A3M_A COG3005: Nitrate/TMAO reductases, membrane-bound tetraheme; Desulfovibrio, tetraheme cytochrome, cytochrome c3; HET: HEM; 1.5A {Desulfovibrio desulfuricans subsp. desulfuricans str.}
+Probab=24.98  E-value=63  Score=20.58  Aligned_cols=19  Identities=5%  Similarity=-0.097  Sum_probs=0.4  Template_Neff=8.100
+
+Q sp|A0A0U1RRN3|    2 IVLGWMFFVGLVCYMGTFP   20 (59)
+Q Consensus         2 IVlGWMlFVGlacYmGTFP   20 (59)
+                      ++++++++|+++..+..-.
+T Consensus         6 ~~~~~~~~~~~~~~~~~~~   24 (130)
+T 2A3M_A            6 FAVMVLALVAAFALPVIAA   24 (130)
+T ss_dssp             ------------------C
+T ss_pred             HHHHHHHHHHHHHHHHHhc
+Confidence            3456777777666665533
+
+
+No 16
+>2WJN_H PHOTOSYNTHETIC REACTION CENTER CYTOCHROME C; BACTERIOCHLOROPHYLL, LIPIDIC-SPONGE PHASE, PHOTOSYNTHESIS, REACTION; HET: BCB, NS5, HEM, MPG, MQ7, BPB; 1.86A {RHODOPSEUDOMONAS VIRIDIS}
+Probab=24.83  E-value=63  Score=24.49  Aligned_cols=14  Identities=14%  Similarity=0.570  Sum_probs=11.5  Template_Neff=5.800
+
+Q sp|A0A0U1RRN3|    4 LGWMFFVG-LVCYMG   17 (59)
+Q Consensus         4 lGWMlFVG-lacYmG   17 (59)
+                      +=|++|+| |+.|+-
+T Consensus        19 ~f~~ff~~~li~yl~   33 (258)
+T 2WJN_H           19 AQWLVIWTVVLLYLR   33 (258)
+T ss_dssp             HHHHHHHHCCCCCCH
+T ss_pred             HHHHHHHHHHHHHHH
+Confidence            45999999 999974
+
+
+No 17
+>3T6E_H Photosynthetic reaction center cytochrome c; Pigment-protein complex, Electron transfer, Photosynthesis; HET: MQ9, BPB, UQ9, NS5, LDA, HTO, SO4, HEC, GOL, BCB, DGA; 1.92A {Blastochloris viridis}
+Probab=24.82  E-value=63  Score=24.49  Aligned_cols=14  Identities=14%  Similarity=0.570  Sum_probs=11.5  Template_Neff=5.800
+
+Q sp|A0A0U1RRN3|    4 LGWMFFVG-LVCYMG   17 (59)
+Q Consensus         4 lGWMlFVG-lacYmG   17 (59)
+                      +=|++|+| |+.|+-
+T Consensus        19 ~f~~ff~~~li~yl~   33 (258)
+T 3T6E_H           19 AQWLVIWTVVLLYLR   33 (258)
+T ss_pred             HHHHHHHHHHHHHHH
+Confidence            45999999 999974
+
+
+No 18
+>4RHO_B Uncharacterized protein; New fold, six stranded anit-parallel; HET: PGE; 2.25A {Burkholderia pseudomallei K96243}
+Probab=22.63  E-value=74  Score=23.51  Aligned_cols=20  Identities=30%  Similarity=0.622  Sum_probs=11.5  Template_Neff=6.800
+
+Q sp|A0A0U1RRN3|    3 VLGWMFFVGLVCYMGTFPEL   22 (59)
+Q Consensus         3 VlGWMlFVGlacYmGTFPE~   22 (59)
+                      -+|||+|+--..-....||.
+T Consensus       185 ~vGWm~YLp~~i~~~~lP~a  204 (259)
+T 4RHO_B          185 GVGWMLYLPKVITQQQVPEA  204 (259)
+T ss_dssp             CCSSEEEESSCCCTTTCTTC
+T ss_pred             ceEEEEEecCCCCcccCCcc
+Confidence            36898887654433444443
+
+
+No 19
+>6ADQ_O Transmembrane cytochrome C oxidase subunit; Respiratory, Supercomplex, SOD, Mycobacterium, ETC; HET: CDL, HEA, 9Y0, 9XX, MQ9, PLM, HEM, HEC, 9YF; 3.5A {Mycobacterium smegmatis MC2 51}
+Probab=20.18  E-value=90  Score=21.93  Aligned_cols=17  Identities=18%  Similarity=0.630  Sum_probs=14.0  Template_Neff=9.000
+
+Q sp|A0A0U1RRN3|    2 IVLGWMFFVGLVCYMGT   18 (59)
+Q Consensus         2 IVlGWMlFVGlacYmGT   18 (59)
+                      -||+.|++.|++.|.|.
+T Consensus       276 ~~~~~~~~~~~~~~~~~  292 (294)
+T 6ADQ_O          276 WIIGMVAAIGVAMWIGS  292 (294)
+T ss_pred             HHHHHHHHHHHHHHHHh
+Confidence            47889999999998873
+
+

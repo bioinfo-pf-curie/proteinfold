@@ -1,10 +1,10 @@
 diff --git a/alphafold/data/pipeline.py b/alphafold/data/pipeline.py
-index bae5db0..d8925db 100644
+index 0ca44be..1804ded 100644
 --- a/alphafold/data/pipeline.py
 +++ b/alphafold/data/pipeline.py
 @@ -129,7 +129,8 @@ class DataPipeline:
                 uniref_max_hits: int = 10000,
-                no_templates: bool = False,
+                templates: bool = True,
                 bfd_max_hits: int = 10000,
 -               use_precomputed_msas: bool = False):
 +               use_precomputed_msas: bool = False,
@@ -13,7 +13,7 @@ index bae5db0..d8925db 100644
      self._use_small_bfd = use_small_bfd
      self.jackhmmer_uniref90_runner = jackhmmer.Jackhmmer(
 @@ -153,6 +154,7 @@ class DataPipeline:
-     self.no_templates=no_templates
+     self.templates = templates
      self.bfd_max_hits = bfd_max_hits
      self.use_precomputed_msas = use_precomputed_msas
 +    self.only_msas = only_msas
@@ -128,7 +128,7 @@ index bae5db0..d8925db 100644
      logging.info('MGnify MSA size: %d sequences.', len(mgnify_msa))
      logging.info('Final (deduplicated) MSA size: %d sequences.',
                   msa_features['num_alignments'][0])
--    if not self.no_templates:
+-    if self.templates:
 -        logging.info('Total number of templates (NB: this can include bad '
 -                     'templates and is later filtered to top 4): %d.',
 -                     templates_result.features['template_domain_names'].shape[0])
@@ -137,35 +137,37 @@ index bae5db0..d8925db 100644
 +    if self.only_msas:
 +      return {**sequence_features, **msa_features}
 +    else:
-+      if not self.no_templates:
++      if self.templates:
 +          logging.info('Total number of templates (NB: this can include bad '
 +                       'templates and is later filtered to top 4): %d.',
 +                       templates_result.features['template_domain_names'].shape[0])
 +
 +      return {**sequence_features, **msa_features, **templates_result.features}
 diff --git a/alphafold/data/pipeline_multimer.py b/alphafold/data/pipeline_multimer.py
-index ce3a2fe..745e9cc 100644
+index ce3a2fe..2fc9e35 100644
 --- a/alphafold/data/pipeline_multimer.py
 +++ b/alphafold/data/pipeline_multimer.py
-@@ -175,7 +175,8 @@ class DataPipeline:
+@@ -175,7 +175,9 @@ class DataPipeline:
                 jackhmmer_binary_path: str,
                 uniprot_database_path: str,
                 max_uniprot_hits: int = 50000,
 -               use_precomputed_msas: bool = False):
 +               use_precomputed_msas: bool = False,
-+               only_msas: bool = False):
++               only_msas: bool = False,
++               chain_id_num: int = None):
      """Initializes the data pipeline.
  
      Args:
-@@ -193,6 +194,7 @@ class DataPipeline:
+@@ -193,6 +195,8 @@ class DataPipeline:
          database_path=uniprot_database_path)
      self._max_uniprot_hits = max_uniprot_hits
      self.use_precomputed_msas = use_precomputed_msas
 +    self.only_msas = only_msas
++    self.chain_id_num = chain_id_num
  
    def _process_single_chain(
        self,
-@@ -224,9 +226,13 @@ class DataPipeline:
+@@ -224,9 +228,13 @@ class DataPipeline:
    def _all_seq_msa_features(self, input_fasta_path, msa_output_dir):
      """Get MSA features for unclustered uniprot, for pairing."""
      out_path = os.path.join(msa_output_dir, 'uniprot_hits.sto')
@@ -179,7 +181,76 @@ index ce3a2fe..745e9cc 100644
      msa = parsers.parse_stockholm(result['sto'])
      msa = msa.truncate(max_seqs=self._max_uniprot_hits)
  
-@@ -276,6 +282,9 @@ class DataPipeline:
+@@ -240,10 +248,22 @@ class DataPipeline:
+              if k in valid_feats}
+     return feats
+ 
++  def _chain_id_num_msas_done(self,
++          chain_id_step: int,
++          chain_id_map_dict: dict):
++    """When --only_msas is True and --chain_id_num has some some,"""
++    """it prints a message and exit the program."""
++
++    if self.chain_id_num is not None and self.chain_id_num == chain_id_step:
++      logging.info(f"--only_msas is True and --chain_id_num is {self.chain_id_num}."
++                   f"The msas have been perform for chain_id {list(chain_id_map_dict.keys())[self.chain_id_num - 1]}.")
++      exit(0)
++
+   def process(self,
+               input_fasta_path: str,
+               msa_output_dir: str) -> pipeline.FeatureDict:
+     """Runs alignment tools on the input sequences and creates features."""
++
+     with open(input_fasta_path) as f:
+       input_fasta_str = f.read()
+     input_seqs, input_descs = parsers.parse_fasta(input_fasta_str)
+@@ -256,11 +276,36 @@ class DataPipeline:
+                            for chain_id, fasta_chain in chain_id_map.items()}
+       json.dump(chain_id_map_dict, f, indent=4, sort_keys=True)
+ 
++    if self.chain_id_num is not None:
++        if self.chain_id_num < 1 or self.chain_id_num > len(chain_id_map_dict):
++            logging.error(f"ERROR: --chain_id_num option is {str(self.chain_id_num)}. Its value must be in the range [1, {len(chain_id_map_dict)}].")
++            exit(1)
++
++
+     all_chain_features = {}
+     sequence_features = {}
+     is_homomer_or_monomer = len(set(input_seqs)) == 1
++    chain_id_step = 0
+     for chain_id, fasta_chain in chain_id_map.items():
++      chain_id_step = chain_id_step + 1
++      if self.chain_id_num is not None and self.only_msas:
++        if self.chain_id_num != chain_id_step:
++          sequence_features[fasta_chain.sequence] = fasta_chain.sequence
++          continue
+       if fasta_chain.sequence in sequence_features:
++        logging.info(f"Similar sequence already was present for chain_id {str(chain_id)}")
++        # Just create directory and log info to mention that
++        # the same chain was already processed
++        chain_msa_output_dir = os.path.join(msa_output_dir, chain_id)
++        if not os.path.exists(chain_msa_output_dir):
++          os.makedirs(chain_msa_output_dir)
++        with open(os.path.join(chain_msa_output_dir, 'log.txt'), 'w') as log:
++          log.write(f"Similar chain was already processed for msas.\n")
++
++        # If --only_msas is True and --chain_id_num has some value, we exit
++        self._chain_id_num_msas_done(chain_id_step=chain_id_step,
++                chain_id_map_dict=chain_id_map_dict)
++
+         all_chain_features[chain_id] = copy.deepcopy(
+             sequence_features[fasta_chain.sequence])
+         continue
+@@ -270,12 +315,17 @@ class DataPipeline:
+           description=fasta_chain.description,
+           msa_output_dir=msa_output_dir,
+           is_homomer_or_monomer=is_homomer_or_monomer)
+-
++      self._chain_id_num_msas_done(chain_id_step=chain_id_step,
++              chain_id_map_dict=chain_id_map_dict)
++      
+       chain_features = convert_monomer_features(chain_features,
+                                                 chain_id=chain_id)
        all_chain_features[chain_id] = chain_features
        sequence_features[fasta_chain.sequence] = chain_features
  
@@ -215,29 +286,35 @@ index 68997f8..1ae1af8 100644
                 n_iter: int = 1,
                 e_value: float = 0.0001,
                 z_value: Optional[int] = None,
-diff --git a/run_alphafold.py b/run_alphafold.py
-index 92c231b..c2278d4 100644
---- a/run_alphafold.py
-+++ b/run_alphafold.py
-@@ -159,7 +159,7 @@ flags.DEFINE_list('models_to_use',None, 'specify which models in model_preset th
+diff --git a/run_AFmassive.py b/run_AFmassive.py
+index 1472060..f73d3c3 100755
+--- a/run_AFmassive.py
++++ b/run_AFmassive.py
+@@ -162,9 +162,12 @@ flags.DEFINE_list('models_to_use',None, 'specify which neural network models in
                    'for monomer_ptm as model_X_ptm, with X the number of the model, '
                    'for multimer as model_X_multimer_vY with X the number of the model and Y '
                    ' the version of the model.')
 -flags.DEFINE_boolean('alignments_only', False, 'Whether to generate only alignments. '
 +flags.DEFINE_boolean('only_msas', False, 'Whether to generate only alignments. '
                       'Only alignments will be generated by the data pipeline, '
-                      'the modelling will not be performed')
- flags.DEFINE_boolean('no_templates',False, 'will not use any template, will be faster than filter by date')
-@@ -205,7 +205,7 @@ def predict_structure(
+                      'the structure inference will not be performed')
++flags.DEFINE_integer('chain_id_num', None, 'Compute msas only for the chain id'
++                     'with the chain_id_num.'
++                     'Note: this FLAG only applies if model_preset=multimer')
+ flags.DEFINE_boolean('templates', True, 'Whether to use templates or not for inference, setting it to false is faster '
+                      'than filtering by date')
+ flags.DEFINE_boolean('dropout', False, 'Turn on dropout during inference to get more diversity')
+@@ -224,7 +227,8 @@ def predict_structure(
      benchmark: bool,
      random_seed: int,
      models_to_relax: ModelsToRelax,
 -    alignments_only: bool):
-+    only_msas: bool):
++    only_msas: bool,
++    chain_id_num: int):
    """Predicts structure using AlphaFold for the given sequence."""
    logging.info('Predicting %s', fasta_name)
    timings = {}
-@@ -223,8 +223,8 @@ def predict_structure(
+@@ -242,8 +246,8 @@ def predict_structure(
        msa_output_dir=msa_output_dir)
    timings['features'] = time.time() - t_0
  
@@ -248,7 +325,7 @@ index 92c231b..c2278d4 100644
      return
  
    # Write out features as a pickled dictionary.
-@@ -429,7 +429,8 @@ def main(argv):
+@@ -506,7 +510,8 @@ def main(argv):
        use_precomputed_msas=FLAGS.use_precomputed_msas,
        mgnify_max_hits=FLAGS.mgnify_max_hits,
        uniref_max_hits=FLAGS.uniref_max_hits,
@@ -256,25 +333,27 @@ index 92c231b..c2278d4 100644
 +      bfd_max_hits=FLAGS.bfd_max_hits,
 +      only_msas=FLAGS.only_msas)
  
-   num_predictions_per_model = FLAGS.num_predictions_per_model
-   if run_multimer_system:
-@@ -439,7 +440,8 @@ def main(argv):
+   end_prediction = FLAGS.end_prediction
+ 
+@@ -516,7 +521,9 @@ def main(argv):
          jackhmmer_binary_path=FLAGS.jackhmmer_binary_path,
          uniprot_database_path=FLAGS.uniprot_database_path,
          use_precomputed_msas=FLAGS.use_precomputed_msas,
 -        max_uniprot_hits=FLAGS.uniprot_max_hits)
 +        max_uniprot_hits=FLAGS.uniprot_max_hits,
-+        only_msas=FLAGS.only_msas)
++        only_msas=FLAGS.only_msas,
++        chain_id_num=FLAGS.chain_id_num)
    else:
      data_pipeline = monomer_data_pipeline
  
-@@ -509,8 +511,7 @@ def main(argv):
+@@ -593,8 +600,8 @@ def main(argv):
          benchmark=FLAGS.benchmark,
          random_seed=random_seed,
          models_to_relax=FLAGS.models_to_relax,
 -        alignments_only=FLAGS.alignments_only)
 -
-+        only_msas=FLAGS.only_msas)
++        only_msas=FLAGS.only_msas,
++        chain_id_num=FLAGS.chain_id_num)
  
  if __name__ == '__main__':
    flags.mark_flags_as_required([

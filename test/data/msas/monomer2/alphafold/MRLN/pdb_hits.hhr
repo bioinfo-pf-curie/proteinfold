@@ -1,0 +1,277 @@
+Query         sp|P0DMT0|MLN_HUMAN Myoregulin OS=Homo sapiens OX=9606 GN=MRLN PE=3 SV=1
+Match_columns 46
+No_of_seqs    22 out of 46
+Neff          1.58897
+Searched_HMMs 80799
+Date          Mon Feb 19 09:55:00 2024
+Command       /usr/bin/hhsearch -i /tmp/tmp2patuw3l/query.a3m -o /tmp/tmp2patuw3l/output.hhr -maxseq 1000000 -d /mnt/beegfs/common/annotations/pipelines_CDR/proteinfold/alphafold/2023-12/pdb70/pdb70 
+
+ No Hit                             Prob E-value P-value  Score    SS Cols Query HMM  Template HMM
+  1 1T6N_A Probable ATP-dependent   47.4      15 0.00019   21.2   0.0   28    5-33    192-219 (220)
+  2 6FM8_A RNA polymerase II-assoc  38.7      26 0.00032   17.9   0.0   19   15-33      9-27  (50)
+  3 5GJU_A ATP-dependent RNA helic  37.2      28 0.00035   18.7   0.0   20    4-23    176-195 (205)
+  4 2GXQ_A heat resistant RNA depe  36.5      30 0.00037   18.9   0.0   22    3-24    175-196 (207)
+  5 2PL3_A Probable ATP-dependent   35.1      32  0.0004   19.9   0.0   17    3-19    202-218 (236)
+  6 1WG8_A predicted S-adenosylmet  30.6      43 0.00053   21.9   0.0   16   14-29    234-249 (285)
+  7 1M6Y_A S-adenosyl-methyltransf  30.4      43 0.00054   22.1   0.0   17   13-29    245-261 (301)
+  8 1QVA_A INITIATION FACTOR 4A; R  27.9      51 0.00064   19.0   0.0   23    4-27    194-216 (223)
+  9 3IUY_A Probable ATP-dependent   27.7      52 0.00064   18.8   0.0   21    4-24    199-219 (228)
+ 10 1VEC_B ATP-dependent RNA helic  26.8      55 0.00068   18.7   0.0   23    5-27    179-201 (206)
+ 11 1Q0U_B BstDEAD; DEAD PROTEIN,   26.4      57  0.0007   17.8   0.0   20    4-23    182-201 (219)
+ 12 3DKP_A Probable ATP-dependent   26.0      58 0.00072   19.3   0.0   27    4-31    211-237 (245)
+ 13 1N2X_B S-adenosyl-methyltransf  25.5      60 0.00075   21.6   0.0   17   13-29    245-261 (301)
+ 14 2V54_A THYMIDYLATE KINASE (E.C  24.8      64 0.00079   18.7   0.0   23    4-26    166-188 (204)
+ 15 2V54_B THYMIDYLATE KINASE (E.C  24.8      64 0.00079   18.7   0.0   23    4-26    166-188 (204)
+ 16 1Q0U_A BstDEAD; DEAD PROTEIN,   23.5      70 0.00087   17.6   0.0   20    4-23    182-201 (219)
+ 17 3FE2_B Probable ATP-dependent   23.0      73  0.0009   18.1   0.0   19    4-22    208-226 (242)
+ 18 1QDE_A TRANSLATION INITIATION   22.1      78 0.00096   18.2   0.0   25    3-28    186-210 (224)
+
+No 1
+>1T6N_A Probable ATP-dependent RNA helicase p47; RecA-like fold, pre-mRNA processing protein; HET: FLC; 1.94A {Homo sapiens} SCOP: c.37.1.19
+Probab=47.43  E-value=15  Score=21.16  Aligned_cols=28  Identities=18%  Similarity=0.357  Sum_probs=17.5  Template_Neff=11.200
+
+Q sp|P0DMT0|MLN_    5 NWILISTTTPKSLEDEIVGRLLKILFVIF   33 (46)
+Q Consensus         5 nwiListt~p~slEdEi~grlLKiLfVif   33 (46)
+                      ..++.|+|.|... ++++.++++=-..+|
+T Consensus       192 ~~i~~sat~~~~~-~~~~~~~l~~~~~i~  219 (220)
+T 1T6N_A          192 QVMMFSATLSKEI-RPVCRKFMQDPMEIF  219 (220)
+T ss_dssp             EEEEEESCCCTTT-HHHHHTTCSSCEEEE
+T ss_pred             EEEEEeCCCCHHH-HHHHHHHcCCCcEee
+Confidence            4677888887776 456666665443333
+
+
+No 2
+>6FM8_A RNA polymerase II-associated protein 3; Co-chaperone, polymerase, PROTEIN BINDING; 1.78A {Homo sapiens}
+Probab=38.70  E-value=26  Score=17.93  Aligned_cols=19  Identities=26%  Similarity=0.646  Sum_probs=14.9  Template_Neff=7.900
+
+Q sp|P0DMT0|MLN_   15 KSLEDEIVGRLLKILFVIF   33 (46)
+Q Consensus        15 ~slEdEi~grlLKiLfVif   33 (46)
+                      .+||.|+++.++++|--.+
+T Consensus         9 ~~Le~~~L~~il~~L~~~~   27 (50)
+T 6FM8_A            9 KNLDPDVFNQIVKILHDFY   27 (50)
+T ss_pred             hcCCHHHHHHHHHHHHHHh
+Confidence            4789999999998875444
+
+
+No 3
+>5GJU_A ATP-dependent RNA helicase DeaD (E.C.3.6.4.13); RecA-like, RNA helicase, HYDROLASE; HET: AMP; 1.6A {Escherichia coli (strain K12)}
+Probab=37.22  E-value=28  Score=18.75  Aligned_cols=20  Identities=20%  Similarity=0.222  Sum_probs=15.0  Template_Neff=12.400
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVG   23 (46)
+Q Consensus         4 knwiListt~p~slEdEi~g   23 (46)
+                      ...|++|+|.|++.++..-.
+T Consensus       176 ~~~i~~sat~~~~~~~~~~~  195 (205)
+T 5GJU_A          176 HQTALFSATMPEAIRRITRR  195 (205)
+T ss_dssp             CEEEEECSSCCHHHHHHHHH
+T ss_pred             CEEEEEEcCCCHHHHHHHHH
+Confidence            45688999999887776544
+
+
+No 4
+>2GXQ_A heat resistant RNA dependent ATPase; RNA helicase, atomic resolution, AMP; HET: AMP; 1.2A {Thermus thermophilus HB27}
+Probab=36.49  E-value=30  Score=18.89  Aligned_cols=22  Identities=18%  Similarity=0.122  Sum_probs=14.7  Template_Neff=12.200
+
+Q sp|P0DMT0|MLN_    3 GKNWILISTTTPKSLEDEIVGR   24 (46)
+Q Consensus         3 ~knwiListt~p~slEdEi~gr   24 (46)
+                      ....|++|+|.+.+.++.+-..
+T Consensus       175 ~~~~i~~sat~~~~~~~~~~~~  196 (207)
+T 2GXQ_A          175 SRQTLLFSATLPSWAKRLAERY  196 (207)
+T ss_dssp             TSEEEEECSSCCHHHHHHHHHH
+T ss_pred             CCEEEEEEcCCCHHHHHHHHHh
+Confidence            3457888888887766654443
+
+
+No 5
+>2PL3_A Probable ATP-dependent RNA helicase DDX10; RNA, HELICASE, DEAD, STRUCTURAL GENOMICS; HET: EOH, ADP; 2.15A {Homo sapiens}
+Probab=35.07  E-value=32  Score=19.91  Aligned_cols=17  Identities=35%  Similarity=0.493  Sum_probs=12.3  Template_Neff=11.400
+
+Q sp|P0DMT0|MLN_    3 GKNWILISTTTPKSLED   19 (46)
+Q Consensus         3 ~knwiListt~p~slEd   19 (46)
+                      ...++++|+|.+.+.++
+T Consensus       202 ~~~~i~lsat~~~~~~~  218 (236)
+T 2PL3_A          202 KRQTLLFSATQTKSVKD  218 (236)
+T ss_dssp             TSEEEEEESSCCHHHHH
+T ss_pred             CCEEEEEEcCCCHHHHH
+Confidence            35678888888887643
+
+
+No 6
+>1WG8_A predicted S-adenosylmethionine-dependent methyltransferase (E.C.2.1.1.-); S-adenosyl-methyltransferase, mraW, Thermus thermophilus, RIKEN; HET: SAM; 2.0A {Thermus thermophilus} SCOP: c.66.1.23, a.60.13.1
+Probab=30.63  E-value=43  Score=21.85  Aligned_cols=16  Identities=44%  Similarity=0.536  Sum_probs=12.9  Template_Neff=9.300
+
+Q sp|P0DMT0|MLN_   14 PKSLEDEIVGRLLKIL   29 (46)
+Q Consensus        14 p~slEdEi~grlLKiL   29 (46)
+                      -.|+||.||.+.+|-.
+T Consensus       234 fhs~edr~vk~~~~~~  249 (285)
+T 1WG8_A          234 FHSLEDRVVKRFLRES  249 (285)
+T ss_dssp             CSHHHHHHHHHHHHHH
+T ss_pred             CCcchHHHHHHHHHHc
+Confidence            4699999999988743
+
+
+No 7
+>1M6Y_A S-adenosyl-methyltransferase mraW (E.C.2.1.1-); SAM-dependent Methyltransferase Fold, Protein-Cofactor Product; HET: MSE, SAH, SO4; 1.9A {Thermotoga maritima} SCOP: a.60.13.1, c.66.1.23
+Probab=30.44  E-value=43  Score=22.09  Aligned_cols=17  Identities=35%  Similarity=0.362  Sum_probs=13.7  Template_Neff=9.200
+
+Q sp|P0DMT0|MLN_   13 TPKSLEDEIVGRLLKIL   29 (46)
+Q Consensus        13 ~p~slEdEi~grlLKiL   29 (46)
+                      +-.|+||.||.+.++-.
+T Consensus       245 sfhs~ed~~vk~~~~~~  261 (301)
+T 1M6Y_A          245 SFHSLEDRIVKETFRNS  261 (301)
+T ss_dssp             ESSHHHHHHHHHHHHHC
+T ss_pred             ECCchHHHHHHHHHhhc
+Confidence            45799999999987753
+
+
+No 8
+>1QVA_A INITIATION FACTOR 4A; RNA HELICASE, DEAD BOX, EIF4A; 2.5A {Saccharomyces cerevisiae} SCOP: c.37.1.19
+Probab=27.87  E-value=51  Score=19.01  Aligned_cols=23  Identities=17%  Similarity=0.444  Sum_probs=15.7  Template_Neff=11.300
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVGRLLK   27 (46)
+Q Consensus         4 knwiListt~p~slEdEi~grlLK   27 (46)
+                      ..++++|+|.|...+|- ..+.++
+T Consensus       194 ~~~i~~sat~~~~~~~~-~~~~~~  216 (223)
+T 1QVA_A          194 TQVVLLSATMPNDVLEV-TTKFMR  216 (223)
+T ss_pred             CEEEEEECCCCHHHHHH-HHHhcC
+Confidence            56889999988876654 444443
+
+
+No 9
+>3IUY_A Probable ATP-dependent RNA helicase DDX53; REC-A-like, DEAD-box, Structural Genomics, Structural; HET: AMP; 2.4A {Homo sapiens}
+Probab=27.66  E-value=52  Score=18.79  Aligned_cols=21  Identities=14%  Similarity=0.264  Sum_probs=14.6  Template_Neff=11.600
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVGR   24 (46)
+Q Consensus         4 knwiListt~p~slEdEi~gr   24 (46)
+                      ...|++|+|.|...++.+..+
+T Consensus       199 ~~~i~~sat~~~~~~~~~~~~  219 (228)
+T 3IUY_A          199 RQTVMTSATWPDTVRQLALSY  219 (228)
+T ss_dssp             CEEEEEESCCCHHHHHHHHTT
+T ss_pred             CeEEEEECCCCHHHHHHHHHh
+Confidence            456888999888766655443
+
+
+No 10
+>1VEC_B ATP-dependent RNA helicase p54; RNA HELICASE, DEAD-BOX PROTEIN, RNA; HET: TLA; 2.01A {Homo sapiens} SCOP: c.37.1.19
+Probab=26.83  E-value=55  Score=18.72  Aligned_cols=23  Identities=30%  Similarity=0.314  Sum_probs=16.5  Template_Neff=11.200
+
+Q sp|P0DMT0|MLN_    5 NWILISTTTPKSLEDEIVGRLLK   27 (46)
+Q Consensus         5 nwiListt~p~slEdEi~grlLK   27 (46)
+                      .-+++|+|.|++..+.+-..|-+
+T Consensus       179 ~~i~~s~t~~~~~~~~~~~~l~~  201 (206)
+T 1VEC_B          179 QILLYSATFPLSVQKFMNSHLEK  201 (206)
+T ss_dssp             EEEEEESCCCHHHHHHHHHHCCS
+T ss_pred             EEEEEEcCCCHHHHHHHHhhcCC
+Confidence            45788999888877776655544
+
+
+No 11
+>1Q0U_B BstDEAD; DEAD PROTEIN, RNA BINDING PROTEIN; 1.85A {Geobacillus stearothermophilus} SCOP: c.37.1.19
+Probab=26.36  E-value=57  Score=17.81  Aligned_cols=20  Identities=20%  Similarity=0.292  Sum_probs=13.8  Template_Neff=12.400
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVG   23 (46)
+Q Consensus         4 knwiListt~p~slEdEi~g   23 (46)
+                      ...|++|+|.+...++++-.
+T Consensus       182 ~~~i~~sat~~~~~~~~~~~  201 (219)
+T 1Q0U_B          182 LQMLVFSATIPEKLKPFLKK  201 (219)
+T ss_dssp             CEEEEEESCCCGGGHHHHHH
+T ss_pred             ceEEEEECCCCHHHHHHHHH
+Confidence            45688899888876655443
+
+
+No 12
+>3DKP_A Probable ATP-dependent RNA helicase DDX52; RNA HELICASE, DEAD, ADP, Structural; HET: ADP; 2.1A {Homo sapiens}
+Probab=26.02  E-value=58  Score=19.26  Aligned_cols=27  Identities=15%  Similarity=0.046  Sum_probs=16.8  Template_Neff=11.100
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVGRLLKILFV   31 (46)
+Q Consensus         4 knwiListt~p~slEdEi~grlLKiLfV   31 (46)
+                      ..++++|+|.|.++++ +.++.+.-.+.
+T Consensus       211 ~~~i~~SaT~~~~~~~-~~~~~~~~~~~  237 (245)
+T 3DKP_A          211 VRRAMFSATFAYDVEQ-WCKLNLDNVIS  237 (245)
+T ss_dssp             CEEEEEESSCCHHHHH-HHHHHSSSCEE
+T ss_pred             cEEEEEECCCChHHHH-HHHhhcCCceE
+Confidence            3578889988887654 34444444433
+
+
+No 13
+>1N2X_B S-adenosyl-methyltransferase mraW (E.C.2.1.1.-); SAM-dependent Methyltransferase Fold, Protein-SAM Methyl; HET: SAM, SO4, MSE; 1.9A {Thermotoga maritima} SCOP: a.60.13.1, c.66.1.23
+Probab=25.53  E-value=60  Score=21.61  Aligned_cols=17  Identities=35%  Similarity=0.362  Sum_probs=13.6  Template_Neff=9.000
+
+Q sp|P0DMT0|MLN_   13 TPKSLEDEIVGRLLKIL   29 (46)
+Q Consensus        13 ~p~slEdEi~grlLKiL   29 (46)
+                      +-.|+||.||.+.++-.
+T Consensus       245 sfhs~ed~~vk~~~~~~  261 (301)
+T 1N2X_B          245 SFHSLEDRIVKETFRNS  261 (301)
+T ss_dssp             ESSHHHHHHHHHHHHTC
+T ss_pred             ECCchHHHHHHHHHhhc
+Confidence            45799999999987753
+
+
+No 14
+>2V54_A THYMIDYLATE KINASE (E.C.2.7.4.9); NUCLEOTIDE BIOSYNTHESIS, ATP-BINDING, NUCLEOTIDE-BINDING, KINASE; HET: TYD, POP; 2.4A {VACCINIA VIRUS COPENHAGEN}
+Probab=24.80  E-value=64  Score=18.70  Aligned_cols=23  Identities=17%  Similarity=0.546  Sum_probs=15.0  Template_Neff=10.900
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVGRLL   26 (46)
+Q Consensus         4 knwiListt~p~slEdEi~grlL   26 (46)
+                      .+|+.|.++.+....++++.+++
+T Consensus       166 ~~~~~id~~~~e~v~~~i~~~~~  188 (204)
+T 2V54_A          166 IHWQIISSEFEEDVKKELIKNIV  188 (204)
+T ss_dssp             SCEEEECTTSCHHHHHHHHHHHH
+T ss_pred             CCEEEEeCCChHHHHHHHHHHHH
+Confidence            46888888876555556555543
+
+
+No 15
+>2V54_B THYMIDYLATE KINASE (E.C.2.7.4.9); NUCLEOTIDE BIOSYNTHESIS, ATP-BINDING, NUCLEOTIDE-BINDING, KINASE; HET: POP, TYD; 2.4A {VACCINIA VIRUS COPENHAGEN}
+Probab=24.80  E-value=64  Score=18.70  Aligned_cols=23  Identities=17%  Similarity=0.546  Sum_probs=15.0  Template_Neff=10.900
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVGRLL   26 (46)
+Q Consensus         4 knwiListt~p~slEdEi~grlL   26 (46)
+                      .+|+.|.++.+....++++.+++
+T Consensus       166 ~~~~~id~~~~e~v~~~i~~~~~  188 (204)
+T 2V54_B          166 IHWQIISSEFEEDVKKELIKNIV  188 (204)
+T ss_dssp             SCEEEECTTSCHHHHHHHHHHHH
+T ss_pred             CCEEEEeCCChHHHHHHHHHHHH
+Confidence            46888888876555556555543
+
+
+No 16
+>1Q0U_A BstDEAD; DEAD PROTEIN, RNA BINDING PROTEIN; HET: MSE; 1.85A {Geobacillus stearothermophilus} SCOP: c.37.1.19
+Probab=23.48  E-value=70  Score=17.55  Aligned_cols=20  Identities=20%  Similarity=0.292  Sum_probs=13.7  Template_Neff=12.300
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIVG   23 (46)
+Q Consensus         4 knwiListt~p~slEdEi~g   23 (46)
+                      ...|++|+|.+...++++-.
+T Consensus       182 ~~~i~~sat~~~~~~~~~~~  201 (219)
+T 1Q0U_A          182 LQMLVFSATIPEKLKPFLKK  201 (219)
+T ss_dssp             CEEEEEESCCCGGGHHHHHH
+T ss_pred             ceEEEEECCCCHHHHHHHHH
+Confidence            34688888888776655544
+
+
+No 17
+>3FE2_B Probable ATP-dependent RNA helicase DDX5; RNA HELICASE, DEAD, ADP, ATP-binding; HET: SO4, ADP; 2.6A {Homo sapiens}
+Probab=22.96  E-value=73  Score=18.15  Aligned_cols=19  Identities=21%  Similarity=0.249  Sum_probs=13.2  Template_Neff=11.900
+
+Q sp|P0DMT0|MLN_    4 KNWILISTTTPKSLEDEIV   22 (46)
+Q Consensus         4 knwiListt~p~slEdEi~   22 (46)
+                      ..+|++|+|.|...++.+-
+T Consensus       208 ~~~i~~sat~~~~~~~~~~  226 (242)
+T 3FE2_B          208 RQTLMWSATWPKEVRQLAE  226 (242)
+T ss_dssp             CEEEEEESCCCHHHHHHHH
+T ss_pred             CEEEEEECCCCHHHHHHHH
+Confidence            3568888888887665443
+
+
+No 18
+>1QDE_A TRANSLATION INITIATION FACTOR 4A; TRANSLATION INITIATION, SACCHAROMYCES CEREVISIAE, DEAD; 2.0A {Saccharomyces cerevisiae} SCOP: c.37.1.19
+Probab=22.06  E-value=78  Score=18.21  Aligned_cols=25  Identities=20%  Similarity=0.420  Sum_probs=14.5  Template_Neff=11.400
+
+Q sp|P0DMT0|MLN_    3 GKNWILISTTTPKSLEDEIVGRLLKI   28 (46)
+Q Consensus         3 ~knwiListt~p~slEdEi~grlLKi   28 (46)
+                      +..+|++|+|.+... ++++.+.++-
+T Consensus       186 ~~~~i~~Sat~~~~~-~~~~~~~~~~  210 (224)
+T 1QDE_A          186 TTQVVLLSATMPNDV-LEVTTKFMRN  210 (224)
+T ss_pred             CCEEEEEECCCCHHH-HHHHHHhhCC
+Confidence            345778888866654 4444444443
+
+

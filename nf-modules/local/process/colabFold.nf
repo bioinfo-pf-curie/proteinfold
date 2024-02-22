@@ -21,16 +21,16 @@ of the license and that you accept its terms.
 // The process takes as input the directory (i.e. msas) where is located
 // the a3m file created by the process colabFoldSearch 
 process colabFold {
-  tag "${msas}"
+  tag "${protein}"
   label 'colabFold'
   label 'medMem'
   label 'medCpu'
-  publishDir "${params.outDir}/colabFold/", mode: 'copy', saveAs: { "${msas}" }
+  publishDir "${params.outDir}/colabFold/", mode: 'copy', saveAs: { "${protein}" }
   containerOptions { (params.useGpu) ? "--nv -B \$PWD:/cache -B ${params.colabFoldDatabase}:/cache/colabfold" : '' }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
   input:
-  path msas 
+  tuple val(protein), path(msas) 
   path colabFoldDatabase
 
   output:
@@ -38,7 +38,7 @@ process colabFold {
 
   script:
   """
-  colabfold_batch ${params.colabFoldOptions} ${msas} predictions
+  colabfold_batch --jobname-prefix ${protein} ${params.colabFoldOptions} ${msas} predictions
   """
 }
 

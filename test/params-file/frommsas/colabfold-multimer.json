@@ -1,0 +1,6 @@
+{
+	"launchColabFold": "true",
+	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2_multimer_v3",
+	"fastaPath": "test/data/fasta/multimer/colabfold",
+	"fromMsas": "test/data/msas/multimer/colabfold"
+}

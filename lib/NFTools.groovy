@@ -26,6 +26,19 @@ class NFTools {
     log.info "${greenColor}${text}${resetColor}"
     }
 
+    public static void printOrangeText(text) {
+
+    // ANSI escape code for orange color
+    def orangeColor = "\u001B[38;5;208m" 
+    def greenColor = "\u001B[32m"
+    
+    // ANSI escape code to reset color
+    def resetColor = "\u001B[0m"
+
+    // Print text in green color
+    log.info "${orangeColor}${text}${resetColor}"
+    }
+
     private static LinkedHashMap generateLogColors(Boolean monochromeLogs = false) {
          Map colors = monochromeLogs ? new MonoChrome().palette() : new PolyChrome().palette()
          return colors as LinkedHashMap
