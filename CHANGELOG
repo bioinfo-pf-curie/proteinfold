@@ -1,9 +1,12 @@
+v1.1.0
+02/22/2024
 
 NEW FEATURES
   - MassiveFold updated with AFmassive v1.1.0
   - MassiveFold & AlphaFold: msas performed in parallel for each chain with the multimer mode
   - option --onlyMsas to perform only multiple sequence alignments
   - option --fromMsas to perform 3D structure prediction from existing multiple sequence alignments
+  - msas test data have been added
 
 v1.0.0
 02/02/2024
