@@ -14,7 +14,7 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/dynamicbind:v1.0-base
   && /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/dynamicbind/movie_generation.py "$@"' > /app/movie_generation.sh \
   && chmod +x /app/movie_generation.sh \
   && mkdir -p /opt/etc \
-  && /bin/echo -e'#! /bin/bash\n\n# script to activate the conda environment dynamicbind' > ~/.bashrc \
+  && /bin/echo -e '#! /bin/bash\n\n# script to activate the conda environment dynamicbind' > ~/.bashrc \
   && conda init bash \
   && echo 'conda activate dynamicbind' >> ~/.bashrc \
   && cp ~/.bashrc /opt/etc/bashrc
