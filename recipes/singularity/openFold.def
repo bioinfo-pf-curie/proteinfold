@@ -1,2 +1,2 @@
 Bootstrap: docker
-From: registrygitlab.curie.fr/cubic-registry/openfold/openfold:v2.0.0-base
+From: registrygitlab.curie.fr/cubic-registry/proteinfold/openfold:v2.0.0-base
