@@ -20,13 +20,18 @@ process dynamicBind {
   label 'dynamicBind'
   label 'medMem'
   label 'medCpu'
-  publishDir path: "${params.outDir}/dynamicBind/${protein}", mode: 'copy'
-  containerOptions { (params.useGpu) ? "--nvi --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "-B \$PWD:/tmp" }
+  //publishDir path: "${params.outDir}/dynamicBind/${protein}", mode: 'copy'
+  containerOptions { (params.useGpu) ? "--nv --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp -B ${params.dynamicBindDatabase}/pdbbind/.p.npy:/app/dynamicbind/.p.npy -B ${params.dynamicBindDatabase}/pdbbind/.score.npy:/app/dynamicbind/.score.npy -B ${params.dynamicBindDatabase}/pdbbind/.so3_cdf_vals2.npy:/app/dynamicbind/.so3_cdf_vals2.npy -B ${params.dynamicBindDatabase}/pdbbind/.so3_exp_score_norms2.npy:/app/dynamicbind/.so3_exp_score_norms2.npy -B ${params.dynamicBindDatabase}/pdbbind/.so3_omegas_array2.npy:/app/dynamicbind/.so3_omegas_array2.npy -B ${params.dynamicBindDatabase}/pdbbind/.so3_score_norms2.npy:/app/dynamicbind/.so3_score_norms2.npy -B ${params.dynamicBindDatabase}/workdir:/app/dynamicbind/workdir -B ${params.dynamicBindDatabase}/esm_models:/app/dynamicbind/esm_models" : "" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
+
+  input:
+  path proteinFile
+  path ligandFile
+  path dynamicBindDatabase
 
   script:
   """
-  launch_dynamicbind.sh protein.pdb ligand.csv --savings_per_complex 40 --inference_steps 20 --header test --device $1 --python /gxr/luwei/anaconda3/envs/dynamicbind/bin/python --relax_python /gxr/luwei/anaconda3/envs/relax/bin/python
+  launch_dynamicbind.sh ${proteinFile} ${ligandFile} ${params.dynamicBindOptions} --results results --header ${proteinFile} --python /opt/conda/envs/dynamicbind/bin/python --relax_python /opt/conda/envs/relax/bin/python --num_workers ${task.cpus}
   """
 }
 

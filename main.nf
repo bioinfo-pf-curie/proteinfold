@@ -45,10 +45,19 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 ===================================
 */
 
-// Check that any option to print the help of any tool is set to true
+// Define a variable to track setting for which the fastaPath can be null
+Boolean allowFastaPathNull = false
+
+// Check that any option to print the help of a tool has been set to true
 Boolean printToolHelp = false
 if (params.collect().join(' ').find('Help=true')) {
   printToolHelp = true
+  allowFastaPathNull = true
+}
+
+// DynamicBind does not require fastaPath
+if(params.launchDynamicBind) {
+  allowFastaPathNull = true
 }
 
 // Check that the option --fastaPath has been provided and contains the path to the fasta files
@@ -61,7 +70,7 @@ if (params.fastaPath != null ) {
     exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
   }
 } else {
-  if (!printToolHelp) {
+  if (!allowFastaPathNull) {
     exit 1, "ERROR: the fastaPath options is 'null'. Provide a value using the --fastaPath options."
   }
 }
@@ -75,6 +84,11 @@ if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-
 if (params.launchAlphaFold){
   File alphaFoldDB = new File(params.genomes.alphafold.database)
   params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
+}
+
+if (params.launchDynamicBind){
+  File dynamicBindDB = new File(params.genomes.dynamicbind.database)
+  params.dynamicBindDatabase = dynamicBindDB.getCanonicalPath()
 }
 
 if (params.launchColabFold){
@@ -206,6 +220,8 @@ summary = [
   'AlphaFold Options' : params.launchAlphaFold || params.launchMassiveFold ? params.alphaFoldOptions : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
+  'DynamicBind Database' : params.launchDynamicBind ? params.dynamicBindDatabase : null,
+  'DynamicBind Options' : params.launchDynamicBind ? params.dynamicBindOptions : null,
   'MassiveFold Database' : params.launchMassiveFold ? params.massiveFoldDatabase : null,
   'MassiveFold Options' : params.launchMassiveFold ? params.massiveFoldOptions : null,
   'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
@@ -249,11 +265,9 @@ include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
 workflow {
   main:
 
-  // Check the format of the fasta files
-  fastaChecker(fastaPathCh)
-
   // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
+    fastaChecker(fastaPathCh)
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
     if (params.onlyMsas){
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
@@ -274,9 +288,14 @@ workflow {
     }
   }
 
+  // Launch the molecular docking with DynamicBind
+  if (params.launchDynamicBind){
+    dynamicBind(Channel.fromPath(params.proteinFile), Channel.fromPath(params.ligandFile), params.dynamicBindDatabase)
+  }
 
   // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
+    fastaChecker(fastaPathCh)
     if (params.onlyMsas){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
     } else {
@@ -291,6 +310,7 @@ workflow {
 
   // Launch the prediction of the protein 3D structure with MassiveFold
   if (params.launchMassiveFold){
+    fastaChecker(fastaPathCh)
     // massiveFold is alphaFold-like, it uses alphaFold's options too
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
     if (params.onlyMsas){
