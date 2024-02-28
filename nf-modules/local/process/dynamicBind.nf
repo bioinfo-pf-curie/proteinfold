@@ -31,7 +31,7 @@ process dynamicBind {
 
   script:
   """
-  launch_dynamicbind.sh ${proteinFile} ${ligandFile} ${params.dynamicBindOptions} --paper --results results --header ${proteinFile} --python /opt/conda/envs/dynamicbind/bin/python --relax_python /opt/conda/envs/relax/bin/python --num_workers ${task.cpus}
+  launch_dynamicbind.sh ${proteinFile} ${ligandFile} ${params.dynamicBindOptions} --ligand_is_sdf --paper --results results --header ${proteinFile} --python /opt/conda/envs/dynamicbind/bin/python --relax_python /opt/conda/envs/relax/bin/python --num_workers ${task.cpus}
   """
 }
 
