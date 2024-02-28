@@ -252,6 +252,7 @@ include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { dynamicBind } from './nf-modules/local/process/dynamicBind'
+include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 include { massiveFold } from './nf-modules/local/process/massiveFold'
 include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldSearch'
@@ -369,6 +370,11 @@ workflow.onComplete {
       NFTools.printGreenText("\n\n=====================================\nColabFold help, list of options:\n=====================================\n")
       printFileContent("${params.outDir}/colabFoldHelp.txt")
       NFTools.printGreenText("\n\n=====================================\nColabFold help, see options above.\n=====================================\n")
+    }
+    if (params.dynamicBindHelp) {
+      NFTools.printGreenText("\n\n=====================================\nDynamicBind help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/dynamicBindHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nDynamicBind help, see options above.\n=====================================\n")
     }
     if (params.massiveFoldHelp) {
       NFTools.printGreenText("\n\n=====================================\nMassiveFold help, list of options:\n=====================================\n")

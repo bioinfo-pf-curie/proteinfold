@@ -54,19 +54,6 @@
       "group": "References"
     },
     {
-      "name": "alphaFoldOptions",
-      "label": "alphaFold options",
-      "usage": "Prediction model options passed to AlphaFold or MassiveFold.",
-      "type": "JSON",
-      "nargs": 1,
-      "choices": [],
-      "default_value": "--max_template_date=2024-01-01 --random_seed=654321",
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
       "name": "alphaFoldDatabase",
       "label": "alphaFold database",
       "usage": "Path to the database required by AlphaFold.",
@@ -94,6 +81,19 @@
       "group": "Other options"
     },
     {
+      "name": "alphaFoldOptions",
+      "label": "alphaFold options",
+      "usage": "Prediction model options passed to AlphaFold or MassiveFold.",
+      "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "--max_template_date=2024-01-01 --random_seed=654321",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
       "name": "launchAlphaFold",
       "label": "launch alphaFold",
       "usage": "Launch AlphaFold.",
@@ -101,19 +101,6 @@
       "nargs": 1,
       "choices": [],
       "default_value": "",
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "colabFoldOptions",
-      "label": "colabFold options",
-      "usage": "Prediction model options passed to ColabFold.",
-      "type": "JSON",
-      "nargs": 1,
-      "choices": [],
-      "default_value": "--random-seed 654321 --model-type auto",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
@@ -146,6 +133,19 @@
       "group": "Other options"
     },
     {
+      "name": "colabFoldOptions",
+      "label": "colabFold options",
+      "usage": "Prediction model options passed to ColabFold.",
+      "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "--random-seed 654321 --model-type auto",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
       "name": "launchColabFold",
       "label": "launch colabFold",
       "usage": "Launch ColabFold.",
@@ -159,10 +159,49 @@
       "group": "Other options"
     },
     {
-      "name": "massiveFoldOptions",
-      "label": "massiveFold options",
-      "usage": "Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are passed using the --alphaFoldOptions option.",
+      "name": "dynamicBindDatabase",
+      "label": "dynamicBind database",
+      "usage": "Path to the database required by DynamicBind.",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+	{
+      "name": "dynamicBindHelp",
+      "label": "dynamicBind help",
+      "usage": "Display all the options available to run DynamicBind. Use this option in combination with -profile singularity.",
+      "type": "boolean",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "dynamicBindOptions",
+      "label": "dynamicBind options",
+      "usage": "Prediction model options passed to DynamicBind.",
       "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "--savings_per_complex 40 --inference_steps 20 --movie --seed 654321",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "launchDynamicBind",
+      "label": "launch DynamicBind",
+      "usage": "Launch DynamicBind.",
+      "type": "boolean",
       "nargs": 1,
       "choices": [],
       "default_value": "",
@@ -189,6 +228,19 @@
       "label": "massivebFold help",
       "usage": "Display all the options available to run MassiveFold. Use this option in combination with -profile singularity.",
       "type": "boolean",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "massiveFoldOptions",
+      "label": "massiveFold options",
+      "usage": "Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are passed using the --alphaFoldOptions option.",
+      "type": "JSON",
       "nargs": 1,
       "choices": [],
       "default_value": "",
