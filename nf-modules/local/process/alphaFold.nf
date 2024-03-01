@@ -20,7 +20,7 @@ of the license and that you accept its terms.
 process alphaFold {
   tag "${protein}" 
   label 'alphaFold'
-  label 'medMem'
+  label 'highMem'
   label 'medCpu'
   publishDir path: "${params.outDir}/alphaFold/${protein}", mode: 'copy'
   containerOptions { (params.useGpu) ? "--nv --env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp" }

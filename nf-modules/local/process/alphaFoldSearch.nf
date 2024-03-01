@@ -22,7 +22,7 @@ of the license and that you accept its terms.
 process alphaFoldSearch {
   tag "${protein}-chain${chainIdNum}" 
   label 'alphaFold'
-  label 'highMem'
+  label 'extraMem'
   label 'highCpu'
   publishDir path: "${params.outDir}/alphaFoldSearch",
              mode: 'copy',

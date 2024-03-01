@@ -22,7 +22,7 @@ of the license and that you accept its terms.
 process massiveFoldSearch {
   tag "${protein}-chain${chainIdNum}" 
   label 'massiveFold'
-  label 'highMem'
+  label 'extraMem'
   label 'highCpu'
   publishDir path: "${params.outDir}/massiveFoldSearch",
              mode: 'copy',

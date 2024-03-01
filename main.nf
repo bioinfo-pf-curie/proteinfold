@@ -100,9 +100,6 @@ if (params.proteinLigandFile != null) {
                         .map {
                           tuple(file(it.protein).getBaseName(), file(it.protein), file(it.ligand).getBaseName(), file(it.ligand))
                         }
-  
-proteinLigandCh.view()
-
   }
 }
 
