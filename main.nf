@@ -44,6 +44,8 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 
 // Custom functions/variables
 include { checkInput4Docking } from './lib/functions'
+include { printFileContent } from './lib/functions'
+include { elementsNotPresent } from './lib/functions'
 
 /*
 ===================================

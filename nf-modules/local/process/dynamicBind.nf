@@ -34,11 +34,7 @@ process dynamicBind {
 
   script:
   """
-  cat << EOF > ${protein}-${ligand}.csv
-  protein,ligand
-  ${proteinPdb},${ligandSdf}
-  EOF
-  launch_dynamicbind.sh ${proteinPdb} ${protein}-${ligand}.csv ${params.dynamicBindOptions} --ligand_is_sdf --paper --results ${protein} --header ${ligand} --python /opt/conda/envs/dynamicbind/bin/python --relax_python /opt/conda/envs/relax/bin/python --num_workers ${task.cpus}
+  launch_dynamicbind.sh ${proteinPdb} ${ligandSdf} ${params.dynamicBindOptions} --ligand_is_sdf --paper --results ${protein} --header ${ligand} --python /opt/conda/envs/dynamicbind/bin/python --relax_python /opt/conda/envs/relax/bin/python --num_workers ${task.cpus}
   """
 }
 
