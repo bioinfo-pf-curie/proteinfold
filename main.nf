@@ -29,6 +29,9 @@ of the license and that you accept its terms.
 
 nextflow.enable.dsl=2
 
+// Note that several functions used in the main.nf scripts
+// are defined in the 'lib' folder
+
 // Initialize lintedParams and paramsWithUsage
 NFTools.welcome(workflow, params)
 
@@ -39,13 +42,16 @@ params.putAll(NFTools.lint(params, paramsWithUsage))
 // Run name
 customRunName = NFTools.checkRunName(workflow.runName, params.name)
 
+// Custom functions/variables
+include { checkInput4Docking } from './lib/functions'
+
 /*
 ===================================
   SET UP CONFIGURATION VARIABLES
 ===================================
 */
 
-// Define a variable to track setting for which the fastaPath can be null
+// Define a variable to track settings for which the fastaPath can be null
 Boolean allowFastaPathNull = false
 
 // Check that any option to print the help of a tool has been set to true
@@ -56,28 +62,51 @@ if (params.collect().join(' ').find('Help=true')) {
 }
 
 // DynamicBind does not require fastaPath
+// but it requires a proteinLigandFile
 if(params.launchDynamicBind) {
   allowFastaPathNull = true
+  if(params.proteinLigandFile == null) {
+    exit 1, "To launch DynamicBind you must define the --proteinLigandFile option"
+  }
+  if (!params.useGpu){
+    exit 1, "DynamicBind works only using GPU. Launch the pipeline with the '--useGpu true' option."
+  }
 }
 
-// Check that the option --fastaPath has been provided and contains the path to the fasta files
+// If the option --fastaPath has been provided, check that it contains a valid path
 if (params.fastaPath != null ) {
   File fastaPath = new File(params.fastaPath)
   if (!fastaPath.exists()){
-    exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' does not exist."
+    exit 1, "The path to the fasta file(s) '" + params.fastaPath + "' does not exist."
   }
   if (!fastaPath.isDirectory()){
-    exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
+    exit 1, "The path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
   }
 } else {
   if (!allowFastaPathNull) {
-    exit 1, "ERROR: the fastaPath options is 'null'. Provide a value using the --fastaPath options."
+    exit 1, "The fastaPath options is 'null'. Provide a value using the --fastaPath option."
+  }
+}
+
+// If the option --proteinLigandFile has been provided, check that the file is correctly formatted
+if (params.proteinLigandFile != null) {
+  if (checkInput4Docking(params.proteinLigandFile)) {
+    proteinLigandCh = Channel
+                        .fromPath(params.proteinLigandFile)
+                        .splitCsv(header: true)
+                        .unique()
+                        .map {
+                          tuple(file(it.protein).getBaseName(), file(it.protein), file(it.ligand).getBaseName(), file(it.ligand))
+                        }
+  
+proteinLigandCh.view()
+
   }
 }
 
 // Check that alphaFoldOptions defines max_template_date=YYYY-MM-DD
 if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])")){
-  exit 1, "ERROR: 'params.alphaFoldOptions' must define '--max_template_date=YYYY-MM-DD', e.g.: '--max_template_date=2024-01-01'"
+  exit 1, "'params.alphaFoldOptions' must define '--max_template_date=YYYY-MM-DD', e.g.: '--max_template_date=2024-01-01'"
 }
 
 // Get realpath for the annotations to avoid symlink issues in bindings with apptainer
@@ -93,11 +122,11 @@ if (params.launchDynamicBind){
 
 if (params.launchColabFold){
   if (!params.useGpu){
-    exit 1, "ERROR: ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
+    exit 1, "ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
   }
 
-File colabFoldDB = new File(params.genomes.colabfold.database)
-params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
+  File colabFoldDB = new File(params.genomes.colabfold.database)
+  params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
 }
 
 if (params.launchOpenFold){
@@ -112,7 +141,7 @@ if (params.launchMassiveFold){
 
 
 if (params.onlyMsas && params.fromMsas != null){
-  exit 1, "ERROR: the --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
+  exit 1, "The --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
 }
 
 /*
@@ -121,15 +150,6 @@ if (params.onlyMsas && params.fromMsas != null){
 ==========================
 */
 
-// Function which returns elements which are present in list2
-// but not in list1
-def elementsNotPresent (ArrayList list1, ArrayList list2){
-
-  def elementsNotInList1 = list2.findAll { !list1.contains(it) }
-
-  return elementsNotInList1
-
-}
 
 fastaPathCh = Channel.fromPath("${params.fastaPath}/*.fasta")
 
@@ -158,10 +178,10 @@ if(params.fromMsas != null){
 
   File fromMsas = new File(params.fromMsas)
   if (!fromMsas.exists()){
-    exit 1, "ERROR: the path to the msas folder '" + params.fromMsas + "' does not exist."
+    exit 1, "The path to the msas folder '" + params.fromMsas + "' does not exist."
   }
   if (!fromMsas.isDirectory()){
-    exit 1, "ERROR: the path to the msas folder '" + params.fromMsas + "' is not a directory."
+    exit 1, "The path to the msas folder '" + params.fromMsas + "' is not a directory."
   }
 
   msasCh = Channel.fromPath("${params.fromMsas}/*", type: 'dir')
@@ -292,7 +312,7 @@ workflow {
 
   // Launch the molecular docking with DynamicBind
   if (params.launchDynamicBind){
-    dynamicBind(Channel.fromPath(params.proteinFile), Channel.fromPath(params.ligandFile), params.dynamicBindDatabase)
+    dynamicBind(proteinLigandCh, params.dynamicBindDatabase)
   }
 
   // Launch the prediction of the protein 3D structure with ColabFold
@@ -341,23 +361,14 @@ workflow {
   if(params.colabFoldHelp){
     colabFoldHelp()
   }
+  if(params.dynamicBindHelp){
+    dynamicBindHelp()
+  }
   if(params.massiveFoldHelp){
     massiveFoldHelp()
   }
 }
 
-// Function to print the help of the tools
-def printFileContent(file) {
-    def inputFile = new File(file)
-    
-    if (inputFile.exists()) {
-        inputFile.eachLine { line ->
-            println line
-        }
-    } else {
-        System.out.println("File not found: $file")
-    }
-}
 
 workflow.onComplete {
   if(printToolHelp){
