@@ -38,7 +38,7 @@
       "pattern": "",
       "render": "textfield",
       "arity": 0,
-      "group": "Mandatory arguments"
+      "group": "Other options"
     },
     {
       "name": "genomeAnnotationPath",
@@ -52,6 +52,20 @@
       "render": "textfield",
       "arity": 0,
       "group": "References"
+    },
+    {
+	  "origin": "pipeline",
+      "name": "proteinLigandFile",
+      "label": "Input file",
+      "usage": "Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.",
+      "type": "path",
+      "choices": [],
+      "nargs": "1",
+      "default_value": null,
+      "pattern": "",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Other options"
     },
     {
       "name": "alphaFoldDatabase",
