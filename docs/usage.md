@@ -1,5 +1,21 @@
 # Usage
 
+[Quick help](#quick-help)
+Prediction of 3D structures:
+- [AlphaFold](#alphafold)
+  * [monomer](#monomer)
+  * [multimer](#multimer)
+- [ColabFold](#colabfold)
+  * [monomer](#monomer-1)
+  * [multimer](#multimer-1)
+- [MassiveFold](#massivefold)
+  * [monomer](#monomer-2)
+  * [multimer](#multimer-2)
+- [Multiple sequence alignments (msas)](#multiple-sequence-alignments-msas)
+Molecular docking:
+- [DynamicBind](#dynamicbind)
+
+
 ## Quick help
 
 ```bash
@@ -237,3 +253,28 @@ Define the options in a JSON file, for example:
 	"fromMsas": "test/data/msas/multimer/alphafold"
 }
 ```
+
+
+## DynamicBind
+
+Visit the [DynamicBind](https://github.com/luwei0917/DynamicBind/) GitHub repository for more details about the prediction model.
+
+List of DynamicBind options:
+
+```bash
+nextflow run main.nf --dynamicBindHelp -profile singularity
+```
+
+
+Launch the nextflow pipeline using GPU:
+
+```bash
+nextflow run main.nf -profile singularity --useGpu --proteinLigandFile protein-ligand.csv
+```
+
+The `protein-ligand.csv` is a CSV file which must contain at least the two following columns:
+- `protein`: provides the path to the `pdb` 3D structure file
+- `ligand`: provided the path to the `sdf` file
+
+Therefore, each row in this file corresponds to a pair protein/ligand to assess their affinity. This file must not contain any space.
+

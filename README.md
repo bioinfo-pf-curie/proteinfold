@@ -121,11 +121,11 @@ nextflow run main.nf --fastaPath="test/data" -params-file params.json --outDir M
 
 For example, to launch the pipeline on a computing cluster with SLURM:
 
-```
+```bash
 echo "#! /bin/bash" > launcher.sh
 echo "set -oue pipefail" >> launcher.sh
 echo "nextflow run main.nf --fastaPath=\"test/data\" --alphaFoldOptions \"max_template_date=2024-01-01|random_seed=654321\" --outDir MY_OUTPUT_DIR -profile singularity,cluster" >> launcher.sh
-sbatch launcher
+sbatch launcher.sh
 ```
 
 
