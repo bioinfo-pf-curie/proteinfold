@@ -4,7 +4,7 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.8.18=hd12c33a_1_cpython
   - pip
   - pip:
       - absl-py==1.0.0
