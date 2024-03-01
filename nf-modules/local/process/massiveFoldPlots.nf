@@ -32,7 +32,7 @@ process massiveFoldPlots {
 
   script:
   """
-  python massivefold_plots.py --input_path predictions/${protein} --output_path ${protein}  --chosen_plots coverage,CF_PAEs,CF_plddts,score_distribution,DM_plddt_PAE --top_n_predictions 5
+  massivefold_plots.py --input_path predictions/${protein} --output_path ${protein}  --chosen_plots coverage,CF_PAEs,CF_plddts,score_distribution,DM_plddt_PAE --top_n_predictions 5
   """
 }
 
