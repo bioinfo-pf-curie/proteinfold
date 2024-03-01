@@ -32,7 +32,7 @@ process alphaFold {
   path alphaFoldDatabase
 
   output:
-  path("predictions/*", type: 'dir')
+  tuple val(protein), val("alphaFold"), path("predictions/*", type: 'dir'), emit: predictions
 
   script:
   """

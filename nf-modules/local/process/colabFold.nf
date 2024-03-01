@@ -34,7 +34,7 @@ process colabFold {
   path colabFoldDatabase
 
   output:
-  path("predictions", type: 'dir')
+  tuple val(protein), val("colabFold"), path("predictions", type: 'dir'), emit: predictions
 
   script:
   """

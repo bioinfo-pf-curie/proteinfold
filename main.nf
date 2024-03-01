@@ -276,6 +276,7 @@ include { fastaChecker } from './nf-modules/local/process/fastaChecker'
 include { massiveFold } from './nf-modules/local/process/massiveFold'
 include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldSearch'
 include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
+include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 
 /*
 =====================================
@@ -306,6 +307,7 @@ workflow {
         msasCh = fastaFilesCh.join(msasCh)
       }
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+      massiveFoldPlots(alphaFold.out.predictions)
     }
   }
 
@@ -350,6 +352,7 @@ workflow {
         msasCh = fastaFilesCh.join(msasCh)
       }
       massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+      massiveFoldPlots(massiveFold.out.predictions)
     }
   }
 

@@ -31,7 +31,7 @@ process massiveFold {
   path massiveFoldDatabase
 
   output:
-  path("predictions/*", type: 'dir')
+  tuple val(protein), val("massiveFold"), path("predictions/*", type: 'dir'), emit: predictions
 
   script:
   // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
