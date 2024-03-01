@@ -1,2 +1,2 @@
 protein,ligand
-AF-P00519-F1-model_v4.pdb,DB00619.sdf
+test/data/dynamicbind/AF-P00519-F1-model_v4.pdb,test/data/dynamicbind/DB00619.sdf

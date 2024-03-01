@@ -320,7 +320,7 @@
     {
       "name": "useGpu",
       "label": "useGpu",
-      "usage": "Run the prediction model on GPU. While AlphaFold and MassiveFold can run on CPU, ColabFold requires GPU only.",
+      "usage": "Run the prediction model on GPU. AlphaFold and MassiveFold can run either on CPU or GPU. ColabFold and DynamicBind require GPU only.",
       "type": "boolean",
       "nargs": 1,
       "choices": [],

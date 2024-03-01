@@ -35,22 +35,16 @@ Launching `main.nf` [curious_perlman] DSL2 - revision: 986ad6e9f0
 
     The typical command for running the pipeline is as follows:
 
-    nextflow run main.nf -params-file params.json -profile STRING --fastaPath PATH 
+    nextflow run main.nf -params-file params.json -profile STRING 
 
 MANDATORY ARGUMENTS, NEXTFLOW:
     -profile  STRING [test, singularity, cluster]  Configuration profile to use. Can use multiple (comma separated).
 
 OTHER OPTIONS, NEXTFLOW:
-    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration filei (i.e. 'params.json'). All parameters defined as JSON 
-                         type must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING: 
-                         passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which 
+    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration filei (i.e. 'params.json'). All parameters defined as JSON
+                         type must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING:
+                         passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which
                          are not appreciated by nextflow.
-
-MANDATORY ARGUMENTS:
-    --fastaPath PATH   Path to the input directory which contains the fasta files.
-
-REFERENCES:
-    --genomeAnnotationPath PATH   Path to genome/proteome annotations folder used to predict the protein 3D structure.
 
 OTHER OPTIONS:
     --alphaFoldDatabase   PATH      Path to the database required by AlphaFold.
@@ -59,10 +53,16 @@ OTHER OPTIONS:
     --colabFoldDatabase   PATH      Path to the database required by ColabFold.
     --colabFoldHelp                 Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
     colabFoldOptions      JSON      Prediction model options passed to ColabFold.
+    --dynamicBindDatabase PATH      Path to the database required by DynamicBind.
+    --dynamicBindHelp               Display all the options available to run DynamicBind. Use this option in combination with -profile
+                                    singularity.
+    dynamicBindOptions    JSON      Prediction model options passed to DynamicBind.
+    --fastaPath           PATH      Path to the input directory which contains the fasta files.
     --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction.
                                     Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
     --launchAlphaFold               Launch AlphaFold.
     --launchColabFold               Launch ColabFold.
+    --launchDynamicBind             Launch DynamicBind.
     --launchMassiveFold             Launch MassiveFold.
     --massiveFoldDatabase PATH      Path to the database required by MassiveFold.
     --massiveFoldHelp               Display all the options available to run MassiveFold. Use this option in combination with -profile
@@ -71,7 +71,14 @@ OTHER OPTIONS:
                                     passed using the --alphaFoldOptions option.
     --onlyMsas                      When true, the pipeline will only generate the multiple sequence alignments (msas).
     --outDir              PATH      The output directory where the results will be saved
-    --useGpu                        Run the prediction model on GPU. While AlphaFold and MassiveFold can run on CPU, ColabFold requires GPU only.
+    --proteinLigandFile   PATH      Path to the input file for molecular docking. The file must be in CSV format, without space. One column named
+                                    'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the
+                                    'sdf' file.
+    --useGpu                        Run the prediction model on GPU. AlphaFold and MassiveFold can run either on CPU or GPU. ColabFold and
+                                    DynamicBind require GPU only.
+
+REFERENCES:
+    --genomeAnnotationPath PATH   Path to genome/proteome annotations folder used to predict the protein 3D structure.
 
 =======================================================
 Available Profiles
@@ -269,7 +276,7 @@ nextflow run main.nf --dynamicBindHelp -profile singularity
 Launch the nextflow pipeline using GPU:
 
 ```bash
-nextflow run main.nf -profile singularity --useGpu --proteinLigandFile protein-ligand.csv
+nextflow run main.nf -profile singularity --useGpu --proteinLigandFile test/data/dynamicbind/protein-ligand.csv
 ```
 
 The `protein-ligand.csv` is a CSV file which must contain at least the two following columns:
