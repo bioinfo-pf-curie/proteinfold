@@ -22,7 +22,7 @@ process massiveFoldPlots {
   label 'massiveFoldPlots'
   label 'lowMem'
   label 'lowCpu'
-  publishDir path: "${params.outDir}/${toolFold}Plots/${protein}", mode: 'copy'
+  publishDir path: "${params.outDir}/${toolFold}Plots/", mode: 'copy'
 
   input:
   tuple val(protein), val(toolFold), path("predictions/*")
