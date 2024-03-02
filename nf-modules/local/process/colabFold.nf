@@ -38,7 +38,7 @@ process colabFold {
 
   script:
   """
-  colabfold_batch --jobname-prefix ${protein} ${params.colabFoldOptions} ${msas} predictions
+  colabfold_batch --jobname-prefix ${protein} --save-all  ${params.colabFoldOptions} ${msas} predictions
   """
 }
 
