@@ -8,14 +8,16 @@ process multiqc {
   label 'lowMem'
 
   input:
-  path multiqcConfig
+  //path multiqcConfig
+  tuple val(protein), path('plots/*'), path ('softwareVersions/*')
+            
 
   output:
   path "*report.html", emit: report
 
   script:
   """
-  #mqc_header.py --name "RNA-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} --nbreads \${medianReadNb} ${warn} > multiqc-config-header.yaml
-  #multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
+  for plot in \$(ls plots/*.png); do cp \$plot \${plot%%.png}_mqc.png ; done
+  multiqc -c "${projectDir}/assets/multiqcConfig.yaml" .
   """    
 }

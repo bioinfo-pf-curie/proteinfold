@@ -263,6 +263,7 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 */ 
 
 // Processes
+include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
 include { alphaFoldOptions } from './nf-modules/local/process/alphaFoldOptions'
@@ -277,6 +278,7 @@ include { massiveFold } from './nf-modules/local/process/massiveFold'
 include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldSearch'
 include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
+include { multiqc } from './nf-modules/local/process/multiqc'
 
 /*
 =====================================
@@ -285,6 +287,9 @@ include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 */
 
 workflow {
+
+  versionsCh = Channel.empty() 
+
   main:
 
   // Launch the prediction of the protein 3D structure with AlphaFold
@@ -293,11 +298,13 @@ workflow {
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
     if (params.onlyMsas){
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+      versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
         alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+        versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
         msasCh = alphaFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
@@ -308,6 +315,7 @@ workflow {
       }
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
       massiveFoldPlots(alphaFold.out.predictions)
+      plotsCh = massiveFoldPlots.out.plots
     }
   }
 
@@ -355,6 +363,10 @@ workflow {
       massiveFoldPlots(massiveFold.out.predictions)
     }
   }
+  
+  // MULTIQC
+  getSoftwareVersions(versionsCh.unique().collectFile())
+  multiqc(plotsCh.combine(getSoftwareVersions.out.versionsYaml.collect().ifEmpty([])))
 
   // Generate the help for each tool
   if(params.alphaFoldHelp){

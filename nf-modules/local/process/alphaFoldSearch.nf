@@ -41,6 +41,8 @@ process alphaFoldSearch {
   output:
   tuple val(protein), path("predictions/${protein}/msas/*"), emit: msas
 
+  path("versions.txt"), emit: versions
+  // TODO: version is hard-coded, this should be changed
   script:
   """
   alphafold_options=\$(cat ${alphaFoldOptions})
@@ -48,6 +50,7 @@ process alphaFoldSearch {
   if [[ -f "predictions/${protein}/msas/chain_id_map.json" ]]; then
     mv predictions/${protein}/msas/chain_id_map.json predictions/${protein}/msas/chain_id_map_${chainIdNum}.json
   fi
+  echo "AlphaFold v2.3.2" > versions.txt
   """
 
   stub:
@@ -55,6 +58,7 @@ process alphaFoldSearch {
   alphafold_options=\$(cat ${alphaFoldOptions})
   mkdir -p predictions/${protein}/msas
   touch predictions/${protein}/msas/${protein}.txt
+  echo "AlphaFold v2.3.2" > versions.txt
   """
 
 

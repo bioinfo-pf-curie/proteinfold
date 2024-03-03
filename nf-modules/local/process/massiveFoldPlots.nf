@@ -22,23 +22,23 @@ process massiveFoldPlots {
   label 'massiveFoldPlots'
   label 'lowMem'
   label 'lowCpu'
-  publishDir path: "${params.outDir}/${toolFold}Plots/", mode: 'copy'
+  publishDir path: "${params.outDir}/${toolFold}Plots/${protein}", mode: 'copy'
 
   input:
   tuple val(protein), val(toolFold), path("predictions/*")
 
   output:
-  path("${protein}", type: 'dir')
+  tuple val(protein), path("*.png"), emit: plots
 
   script:
   """
-  massivefold_plots.py --input_path predictions/${protein} --output_path ${protein}  --chosen_plots coverage,CF_PAEs,CF_plddts,score_distribution,DM_plddt_PAE --top_n_predictions 5
+  massivefold_plots.py --input_path predictions/${protein} --output_path .  --chosen_plots coverage,CF_PAEs,CF_plddts,score_distribution,DM_plddt_PAE --top_n_predictions 5
   """
 
   stub:
   """
-  echo "plots"  
-  mkdir ${protein}
+  echo "plots"
+  cp -r ${projectDir}/test/data/plots/alphafold/monomer2/${protein}/* .
   """
 }
 
