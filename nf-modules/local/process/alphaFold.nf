@@ -41,5 +41,12 @@ process alphaFold {
   alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')
   launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options}
   """
+
+  stub:
+  """
+  mkdir -p predictions/${protein}
+  ln -s \$(realpath msas/) predictions/${protein}/msas
+  touch predictions/${protein}/${protein}.txt
+  """
 }
 

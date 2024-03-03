@@ -49,5 +49,14 @@ process alphaFoldSearch {
     mv predictions/${protein}/msas/chain_id_map.json predictions/${protein}/msas/chain_id_map_${chainIdNum}.json
   fi
   """
+
+  stub:
+  """
+  alphafold_options=\$(cat ${alphaFoldOptions})
+  mkdir -p predictions/${protein}/msas
+  touch predictions/${protein}/msas/${protein}.txt
+  """
+
+
 }
 

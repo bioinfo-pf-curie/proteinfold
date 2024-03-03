@@ -34,5 +34,11 @@ process massiveFoldPlots {
   """
   massivefold_plots.py --input_path predictions/${protein} --output_path ${protein}  --chosen_plots coverage,CF_PAEs,CF_plddts,score_distribution,DM_plddt_PAE --top_n_predictions 5
   """
+
+  stub:
+  """
+  echo "plots"  
+  mkdir ${protein}
+  """
 }
 
