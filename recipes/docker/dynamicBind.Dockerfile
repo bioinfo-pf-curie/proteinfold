@@ -4,6 +4,8 @@ RUN /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/dynamicbind
   && chmod +x /app/launch_dynamicbind.sh \
   && /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/dynamicbind/movie_generation.py "$@"' > /app/movie_generation.sh \
   && chmod +x /app/movie_generation.sh \
+  && /bin/echo -e '#! /bin/bash\ncat /app/dynamicbind/version-info.txt' > /app/get_version.sh \
+  && chmod +x /app/get_version.sh \
   && mkdir -p /opt/etc \
   && /bin/echo -e '#! /bin/bash\n\n# script to activate the conda environment dynamicbind' > ~/.bashrc \
   && conda init bash \

@@ -12,7 +12,9 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/afmassive:v1.1.0-hhsuit
 %post
   # echo -e does not work with ubuntu shell builtin
   /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_AFmassive.py "$@"' > /app/launch_alphafold.sh \
-  && chmod +x /app/launch_alphafold.sh
+  && chmod +x /app/launch_alphafold.sh \
+  && /bin/echo -e '#! /bin/bash\ncat /app/alphafold/version-info.txt' > /app/get_version.sh \
+  && chmod +x /app/get_version.sh
   cd /app/alphafold \
   && patch -p1 < massiveFold.patch
 

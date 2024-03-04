@@ -1,2 +1,6 @@
-FROM ghcr.io/sokrypton/colabfold:1.5.5-cuda12.2.2
+FROM registrygitlab.curie.fr/cubic-registry/proteinfold/colabfold:v1.5.5-base
 
+RUN echo $'#! /bin/bash\ncat /app/colabfold/version-info.txt' > /app/get_version.sh \
+  && chmod +x /app/get_version.sh
+
+ENV PATH /app:$PATH
