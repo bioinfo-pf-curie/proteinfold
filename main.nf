@@ -366,7 +366,15 @@ workflow {
   
   // MULTIQC
   getSoftwareVersions(versionsCh.unique().collectFile())
-  multiqc(plotsCh.combine(getSoftwareVersions.out.versionsYaml.collect().ifEmpty([])))
+  multiqc(
+    plotsCh
+      .combine(getSoftwareVersions.out.versionsYaml.collect().ifEmpty([])),
+    plotsCh
+      .map {
+        it[0]
+      }
+      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"))
+  )
 
   // Generate the help for each tool
   if(params.alphaFoldHelp){

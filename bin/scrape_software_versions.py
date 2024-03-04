@@ -25,7 +25,7 @@ id: 'software_versions'
 section_name: 'Software Versions'
 section_href: 'https://gitlab.curie.fr/rnaseq'
 plot_type: 'html'
-description: 'are collected at run time from the software output.'
+description: 'This information is collected at runtime from the software output.'
 data: |
     <dl class="dl-horizontal">
 ''')

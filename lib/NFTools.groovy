@@ -304,7 +304,7 @@ Available Profiles
                 .reduce { a, b -> return [a, b].join("\n            ") }
                 .map { x -> """
     id: 'summary'
-    description: " - this information is collected when the pipeline is started."
+    description: " This information is collected when the pipeline is started."
     section_name: 'Workflow Summary'
     section_href: '$workflow.manifest.homePage'
     plot_type: 'html'
