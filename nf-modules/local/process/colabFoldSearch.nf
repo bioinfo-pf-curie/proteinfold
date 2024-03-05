@@ -44,9 +44,9 @@ process colabFoldSearch {
   """
 
   stub:
+  String colabfold_options = "--threads ${task.cpus} ${fastaFile} ${params.colabFoldDatabase} ${protein}"
   """
-  mkdir -p predictions/${protein}
-  touch predictions/${protein}/${protein}.txt
+  touch ${protein}.txt
   echo "ColabFold \$(get_version.sh)" > versions.txt
   echo "colabfold_search options=${colabfold_options}" > options.txt
   """
