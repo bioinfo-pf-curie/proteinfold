@@ -32,10 +32,24 @@ process colabFoldSearch {
 
   output:
   tuple val(protein), path("*", type: 'dir'), emit: msas
+  path("versions.txt"), emit: versions
+  path("options.txt"), emit: options
 
   script:
+  String colabfold_options = "--threads ${task.cpus} ${fastaFile} ${params.colabFoldDatabase} ${protein}"
   """
-  colabfold_search --threads "${task.cpus}" "${fastaFile}" "${params.colabFoldDatabase}" "${protein}"
+  colabfold_search ${colabfold_options}
+  echo "ColabFold \$(get_version.sh)" > versions.txt
+  echo "colabfold_search options=${colabfold_options}" > options.txt
   """
+
+  stub:
+  """
+  mkdir -p predictions/${protein}
+  touch predictions/${protein}/${protein}.txt
+  echo "ColabFold \$(get_version.sh)" > versions.txt
+  echo "colabfold_search options=${colabfold_options}" > options.txt
+  """
+
 }
 

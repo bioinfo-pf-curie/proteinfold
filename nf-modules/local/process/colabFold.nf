@@ -35,10 +35,25 @@ process colabFold {
 
   output:
   tuple val(protein), val("colabFold"), path("predictions", type: 'dir'), emit: predictions
+  path("versions.txt"), emit: versions
+  path("options.txt"), emit: options
+  path("*.png"), emit: plots
 
   script:
+  String colabfold_options = "--jobname-prefix ${protein} --save-all  ${params.colabFoldOptions} ${msas} predictions"
   """
-  colabfold_batch --jobname-prefix ${protein} --save-all  ${params.colabFoldOptions} ${msas} predictions
+  colabfold_batch ${colabfold_options}
+  echo "ColabFold \$(get_version.sh)" > versions.txt
+  echo "colabfold_batch options=${colabfold_options}" > options.txt
   """
+
+  stub:
+  """
+  touch ${protein}.txt
+  echo "ColabFold \$(get_version.sh)" > versions.txt
+  echo "colabfold_batch options=${colabfold_options}" > options.txt
+  """
+
+
 }
 
