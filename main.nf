@@ -373,6 +373,7 @@ workflow {
       versionsCh = versionsCh.mix(massiveFold.out.versions)
       optionsCh = optionsCh.mix(massiveFold.out.options)
       massiveFoldPlots(massiveFold.out.predictions)
+      plotsCh = massiveFoldPlots.out.plots
     }
   }
   
