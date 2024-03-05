@@ -263,6 +263,7 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 */ 
 
 // Processes
+include { getSoftwareOptions } from './nf-modules/common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
@@ -289,6 +290,7 @@ include { multiqc } from './nf-modules/local/process/multiqc'
 workflow {
 
   versionsCh = Channel.empty() 
+  optionsCh = Channel.empty() 
 
   main:
 
@@ -299,12 +301,14 @@ workflow {
     if (params.onlyMsas){
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
       versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
+      optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
         alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
         versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
+        optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
         msasCh = alphaFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
@@ -366,6 +370,7 @@ workflow {
   
   // MULTIQC
   getSoftwareVersions(versionsCh.unique().collectFile())
+  getSoftwareOptions(optionsCh.unique().collectFile())
   multiqc(
     plotsCh
       .combine(getSoftwareVersions.out.versionsYaml.collect().ifEmpty([])),
@@ -373,7 +378,12 @@ workflow {
       .map {
         it[0]
       }
-      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"))
+      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml")),
+    plotsCh
+      .map {
+        it[0]
+      }
+      .combine(getSoftwareOptions.out.optionsYaml.collect().ifEmpty([]))
   )
 
   // Generate the help for each tool

@@ -40,17 +40,18 @@ process alphaFoldSearch {
 
   output:
   tuple val(protein), path("predictions/${protein}/msas/*"), emit: msas
-
   path("versions.txt"), emit: versions
-  // TODO: version is hard-coded, this should be changed
+  path("options.txt"), emit: options
+
   script:
   """
-  alphafold_options=\$(cat ${alphaFoldOptions})
-  launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options} --only_msas --chain_id_num ${chainIdNum}
+  alphafold_options="\$(cat ${alphaFoldOptions}) --fasta_paths=${fastaFile} --only_msas"
+  launch_alphafold.sh \${alphafold_options} --chain_id_num ${chainIdNum}
   if [[ -f "predictions/${protein}/msas/chain_id_map.json" ]]; then
     mv predictions/${protein}/msas/chain_id_map.json predictions/${protein}/msas/chain_id_map_${chainIdNum}.json
   fi
-  echo "AlphaFold v2.3.2" > versions.txt
+  echo "AlphaFold \$(get_version.sh)" > versions.txt
+  echo "AlphaFold (MSAS) options=\${alphafold_options}" > options.txt
   """
 
   stub:
@@ -58,7 +59,8 @@ process alphaFoldSearch {
   alphafold_options=\$(cat ${alphaFoldOptions})
   mkdir -p predictions/${protein}/msas
   touch predictions/${protein}/msas/${protein}.txt
-  echo "AlphaFold v2.3.2" > versions.txt
+  echo "AlphaFold \$(get_version.sh)" > versions.txt
+  echo "AlphaFold (MSAS) options=\${alphafold_options}" > options.txt
   """
 
 

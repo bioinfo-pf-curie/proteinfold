@@ -11,6 +11,7 @@ process multiqc {
   input:
   //path multiqcConfig
   tuple val(protein), path('plots/*'), path ('softwareVersions/*')
+  tuple val(protein), path ('softwareOptions/*')
   tuple val(protein), path ('workflowSummary/*')
             
 
