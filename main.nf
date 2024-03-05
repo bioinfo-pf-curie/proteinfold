@@ -318,6 +318,8 @@ workflow {
         msasCh = fastaFilesCh.join(msasCh)
       }
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+      versionsCh = versionsCh.mix(alphaFold.out.versions)
+      optionsCh = optionsCh.mix(alphaFold.out.options)
       massiveFoldPlots(alphaFold.out.predictions)
       plotsCh = massiveFoldPlots.out.plots
     }
