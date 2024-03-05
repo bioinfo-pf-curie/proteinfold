@@ -335,13 +335,13 @@ workflow {
     fastaChecker(fastaPathCh)
     if (params.onlyMsas){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-      versionsCh = versionsCh.mix(colabFold.out.versions)
-      optionsCh = optionsCh.mix(colabFold.out.options)
+      versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
+      optionsCh = optionsCh.mix(colabFoldSearch.out.options)
     } else {
       if (params.fromMsas == null){
         colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-        versionsCh = versionsCh.mix(colabFold.out.versions)
-        optionsCh = optionsCh.mix(colabFold.out.options)
+        versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
+        optionsCh = optionsCh.mix(colabFoldSearch.out.options)
         msasCh = colabFoldSearch.out.msas
       }
       colabFold(msasCh, params.colabFoldDatabase)
