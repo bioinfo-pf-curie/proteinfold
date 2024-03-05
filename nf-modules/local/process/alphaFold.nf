@@ -50,6 +50,7 @@ process alphaFold {
   """
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g') --fasta_paths=${fastaFile}"
   touch predictions/${protein}/${protein}.txt
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt

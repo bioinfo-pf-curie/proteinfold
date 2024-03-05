@@ -352,11 +352,15 @@ workflow {
     alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
     if (params.onlyMsas){
       massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+      versionsCh = versionsCh.mix(massiveFoldSearch.out.versions)
+      optionsCh = optionsCh.mix(massiveFoldSearch.out.options)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
         massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+        versionsCh = versionsCh.mix(massiveFoldSearch.out.versions)
+        optionsCh = optionsCh.mix(massiveFoldSearch.out.options)
         msasCh = massiveFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
@@ -366,6 +370,8 @@ workflow {
         msasCh = fastaFilesCh.join(msasCh)
       }
       massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+      versionsCh = versionsCh.mix(massiveFold.out.versions)
+      optionsCh = optionsCh.mix(massiveFold.out.options)
       massiveFoldPlots(massiveFold.out.predictions)
     }
   }

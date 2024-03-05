@@ -63,6 +63,5 @@ process alphaFoldSearch {
   echo "AlphaFold (MSAS) options=\${alphafold_options}" > options.txt
   """
 
-
 }
 

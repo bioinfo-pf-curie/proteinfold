@@ -32,14 +32,29 @@ process massiveFold {
 
   output:
   tuple val(protein), val("massiveFold"), path("predictions/*", type: 'dir'), emit: predictions
+  path("versions.txt"), emit: versions
+  path("options.txt"), emit: options
 
   script:
   // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
-  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')
-  launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options}
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g') --fasta_paths=${fastaFile}"
+  launch_alphafold.sh \${alphafold_options}
+  echo "AFmassive \$(get_version.sh)" > versions.txt
+  echo "AFmassive (prediction) options=\${alphafold_options}" > options.txt
   """
+
+  stub:
+  """
+  mkdir -p predictions/${protein}
+  ln -s \$(realpath msas/) predictions/${protein}/msas
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g') --fasta_paths=${fastaFile}"
+  touch predictions/${protein}/${protein}.txt
+  echo "AFmassive \$(get_version.sh)" > versions.txt
+  echo "AFmassive (prediction) options=\${alphafold_options}" > options.txt
+  """
+
 }
 

@@ -40,15 +40,29 @@ process massiveFoldSearch {
 
   output:
   tuple val(protein), path("predictions/${protein}/msas/*"), emit: msas
+  path("versions.txt"), emit: versions
+  path("options.txt"), emit: options
 
   script:
   // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
-  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g')
-  launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options} --only_msas --chain_id_num ${chainIdNum}
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g') --fasta_paths=${fastaFile} --only_msas"
+  launch_alphafold.sh \${alphafold_options} --chain_id_num ${chainIdNum}
   if [[ -f "predictions/${protein}/msas/chain_id_map.json" ]]; then
     mv predictions/${protein}/msas/chain_id_map.json predictions/${protein}/msas/chain_id_map_${chainIdNum}.json
   fi
+  echo "AFmassive \$(get_version.sh)" > versions.txt
+  echo "AFmassive (MSAS) options=\${alphafold_options}" > options.txt
   """
+
+  stub:
+  """
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g') --fasta_paths=${fastaFile} --only_msas"
+  mkdir -p predictions/${protein}/msas
+  touch predictions/${protein}/msas/${protein}.txt
+  echo "AFmassive \$(get_version.sh)" > versions.txt
+  echo "AFmassive (MSAS) options=\${alphafold_options}" > options.txt
+  """
+
 }
 
