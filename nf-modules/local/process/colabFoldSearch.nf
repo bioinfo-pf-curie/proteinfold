@@ -36,20 +36,18 @@ process colabFoldSearch {
   path("options.txt"), emit: options
 
   script:
-  String colabfold_options = "--threads ${task.cpus} ${fastaFile} ${params.colabFoldDatabase} ${protein}"
   """
-  colabfold_search ${colabfold_options}
+  colabfold_search --threads ${task.cpus} ${fastaFile} ${params.colabFoldDatabase} ${protein}
   echo "ColabFold \$(get_version.sh)" > versions.txt
-  echo "colabfold_search options=${colabfold_options}" > options.txt
+  echo "colabfold_search options=--threads ${task.cpus} fastaFile ${params.colabFoldDatabase} protein" > options.txt
   """
 
   stub:
-  String colabfold_options = "--threads ${task.cpus} ${fastaFile} ${params.colabFoldDatabase} ${protein}"
   """
   mkdir ${protein}
   touch ${protein}/${protein}.txt
   echo "ColabFold \$(get_version.sh)" > versions.txt
-  echo "colabfold_search options=${colabfold_options}" > options.txt
+  echo "colabfold_search options=--threads ${task.cpus} fastaFile ${params.colabFoldDatabase} protein" > options.txt
   """
 
 }
