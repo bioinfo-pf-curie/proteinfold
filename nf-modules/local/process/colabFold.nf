@@ -48,8 +48,10 @@ process colabFold {
   """
 
   stub:
+  String colabfold_options = "--jobname-prefix ${protein} --save-all  ${params.colabFoldOptions} ${msas} predictions"
   """
-  touch ${protein}.txt
+  mkdir -p predictions/${protein}
+  touch predictions/${protein}/${protein}.txt
   echo "ColabFold \$(get_version.sh)" > versions.txt
   echo "colabfold_batch options=${colabfold_options}" > options.txt
   """
