@@ -289,8 +289,9 @@ include { multiqc } from './nf-modules/local/process/multiqc'
 
 workflow {
 
-  versionsCh = Channel.empty() 
-  optionsCh = Channel.empty() 
+  versionsCh = Channel.empty()
+  optionsCh = Channel.empty()
+  plotsCh = Channel.empty()
 
   main:
 
