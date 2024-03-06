@@ -158,7 +158,7 @@ fastaFilesCh = fastaPathCh
                  .map { fastaFile -> 
                    String protein = fastaFile.toString()
                                       .replaceAll(".*/", "")
-                                      .replaceAll(".fasta", "")
+                                      .replaceFirst('\\.fasta$', "")
                    tuple(protein, file(fastaFile))
                  }
 
