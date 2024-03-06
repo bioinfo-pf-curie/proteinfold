@@ -158,7 +158,7 @@ Define the options in a JSON file, for example:
 ```json
 {
 	"launchColabFold": "true",
-	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2",
+	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2 --amber --use-gpu-relax",
 	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
@@ -177,7 +177,7 @@ Define the options in a JSON file, for example:
 ```json
 {
 	"launchColabFold": "true",
-	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2_multimer_v3",
+	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2_multimer_v3 --amber --use-gpu-relax",
 	"fastaPath": "test/data/fasta/multimer/colabfold"
 }
 ```
