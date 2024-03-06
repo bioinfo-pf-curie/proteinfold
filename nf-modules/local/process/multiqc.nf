@@ -20,8 +20,8 @@ process multiqc {
 
   script:
   """
-  for plot in \$(ls plots/*.png); do cp \$plot \${plot%%.png}_mqc.png ; done
+  bash generate_yaml_4_plots.sh plots > multiqcConfig.yaml
   apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
-  multiqc -c "${projectDir}/assets/multiqcConfig.yaml" -c multiqc-config-header.yaml .
+  multiqc -c multiqcConfig.yaml -c multiqc-config-header.yaml . plots
   """    
 }
