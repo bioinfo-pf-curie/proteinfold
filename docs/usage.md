@@ -1,7 +1,9 @@
 # Usage
 
 [Quick help](#quick-help)
-Prediction of 3D structures:
+
+**Prediction of 3D structures:**
+
 - [AlphaFold](#alphafold)
   * [monomer](#monomer)
   * [multimer](#multimer)
@@ -12,7 +14,9 @@ Prediction of 3D structures:
   * [monomer](#monomer-2)
   * [multimer](#multimer-2)
 - [Multiple sequence alignments (msas)](#multiple-sequence-alignments-msas)
-Molecular docking:
+
+**Molecular docking:**
+
 - [DynamicBind](#dynamicbind)
 
 
@@ -183,14 +187,14 @@ Define the options in a JSON file, for example:
 
 Note that ColabFold expects a particular format for the input fasta file. See [](../test/data/multimer/colabfold/rac1-SOS-complex.fasta)
 
-## MassiveFold
+## AFMassive
 
-Visit the [MassiveFold](https://github.com/GBLille/MassiveFold) GitHub repository for more details about the prediction model.
+Visit the [AFMassive](https://github.com/GBLille/AFMassive) GitHub repository for more details about the prediction model.
 
-List of MassiveFold options:
+List of AFMassive options:
 
 ```bash
-nextflow run main.nf --colabFoldHelp -profile singularity
+nextflow run main.nf --afMassiveHelp -profile singularity
 ```
 
 ### Monomer
@@ -198,14 +202,14 @@ nextflow run main.nf --colabFoldHelp -profile singularity
 Launch the nextflow pipeline using GPU:
 
 ```bash
-nextflow run main.nf -params-file test/params-file/massivefold-monomer.json -profile singularity --useGpu
+nextflow run main.nf -params-file test/params-file/afmassive-monomer.json -profile singularity --useGpu
 ```
 
 Define the options in a JSON file, for example:
 
 ```json
 {
-	"launchMassiveFold": "true",
+	"launchAfMassive": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
 	"fastaPath": "test/data/fasta/monomer2"
 }
@@ -217,14 +221,14 @@ Define the options in a JSON file, for example:
 Launch the nextflow pipeline using GPU:
 
 ```bash
-nextflow run main.nf -params-file test/params-file/massivefold-multimer.json -profile singularity --useGpu
+nextflow run main.nf -params-file test/params-file/afmassive-multimer.json -profile singularity --useGpu
 ```
 
 Define the options in a JSON file, for example:
 
 ```json
 {
-	"launchMassiveFold": "true",
+	"launchAfMassive": "true",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
 	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
