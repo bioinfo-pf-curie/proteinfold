@@ -4,4 +4,4 @@ Protein annotations databases are required to run the pipeline. The installation
 
 * [AlphaFold](https://github.com/google-deepmind/alphafold/),
 * [ColabFold](https://github.com/sokrypton/ColabFold),
-* [MassiveFold](https://github.com/GBLille/MassiveFold).
+* [AFMassive](https://github.com/GBLille/AFMassive).

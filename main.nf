@@ -133,9 +133,9 @@ if (params.launchOpenFold){
   params.openFoldDatabase = openFoldDB.getCanonicalPath()
 }
 
-if (params.launchMassiveFold){
-  File massiveFoldDB = new File(params.genomes.massivefold.database)
-  params.massiveFoldDatabase = massiveFoldDB.getCanonicalPath()
+if (params.launchAfMassive){
+  File afMassiveDB = new File(params.genomes.afmassive.database)
+  params.afMassiveDatabase = afMassiveDB.getCanonicalPath()
 }
 
 
@@ -236,13 +236,13 @@ summary = [
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.fastaPath ?: null,
-  'AlphaFold Options' : params.launchAlphaFold || params.launchMassiveFold ? params.alphaFoldOptions : null,
+  'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'DynamicBind Database' : params.launchDynamicBind ? params.dynamicBindDatabase : null,
   'DynamicBind Options' : params.launchDynamicBind ? params.dynamicBindOptions : null,
-  'MassiveFold Database' : params.launchMassiveFold ? params.massiveFoldDatabase : null,
-  'MassiveFold Options' : params.launchMassiveFold ? params.massiveFoldOptions : null,
+  'AfMassive Database' : params.launchAfMassive ? params.afMassiveDatabase : null,
+  'AfMassive Options' : params.launchAfMassive ? params.afMassiveOptions : null,
   'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
   'Perform only msas' : params.onlyMsas,
   'Use GPU' : params.useGpu,
@@ -275,9 +275,9 @@ include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { dynamicBind } from './nf-modules/local/process/dynamicBind'
 include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
-include { massiveFold } from './nf-modules/local/process/massiveFold'
-include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldSearch'
-include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
+include { afMassive } from './nf-modules/local/process/afMassive'
+include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
+include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { multiqc } from './nf-modules/local/process/multiqc'
 
@@ -353,23 +353,23 @@ workflow {
   }
 
 
-  // Launch the prediction of the protein 3D structure with MassiveFold
-  if (params.launchMassiveFold){
+  // Launch the prediction of the protein 3D structure with AfMassive
+  if (params.launchAfMassive){
     fastaChecker(fastaPathCh)
-    // massiveFold is alphaFold-like, it uses alphaFold's options too
-    alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
+    // afMassive is alphaFold-like, it uses alphaFold's options too
+    alphaFoldOptions(params.alphaFoldOptions, params.afMassiveDatabase)
     if (params.onlyMsas){
-      massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-      versionsCh = versionsCh.mix(massiveFoldSearch.out.versions)
-      optionsCh = optionsCh.mix(massiveFoldSearch.out.options)
+      afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+      versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
+      optionsCh = optionsCh.mix(afMassiveSearch.out.options)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
-        massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-        versionsCh = versionsCh.mix(massiveFoldSearch.out.versions)
-        optionsCh = optionsCh.mix(massiveFoldSearch.out.options)
-        msasCh = massiveFoldSearch.out.msas
+        afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+        versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
+        optionsCh = optionsCh.mix(afMassiveSearch.out.options)
+        msasCh = afMassiveSearch.out.msas
                    .groupTuple()
                    .map { it ->
                      it[1] = it[1].flatten()
@@ -377,10 +377,10 @@ workflow {
                    }
         msasCh = fastaFilesCh.join(msasCh)
       }
-      massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-      versionsCh = versionsCh.mix(massiveFold.out.versions)
-      optionsCh = optionsCh.mix(massiveFold.out.options)
-      massiveFoldPlots(massiveFold.out.predictions)
+      afMassive(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+      versionsCh = versionsCh.mix(afMassive.out.versions)
+      optionsCh = optionsCh.mix(afMassive.out.options)
+      massiveFoldPlots(afMassive.out.predictions)
       plotsCh = massiveFoldPlots.out.plots
     }
   }
@@ -413,8 +413,8 @@ workflow {
   if(params.dynamicBindHelp){
     dynamicBindHelp()
   }
-  if(params.massiveFoldHelp){
-    massiveFoldHelp()
+  if(params.afMassiveHelp){
+    afMassiveHelp()
   }
 }
 
@@ -436,10 +436,10 @@ workflow.onComplete {
       printFileContent("${params.outDir}/dynamicBindHelp.txt")
       NFTools.printGreenText("\n\n=====================================\nDynamicBind help, see options above.\n=====================================\n")
     }
-    if (params.massiveFoldHelp) {
-      NFTools.printGreenText("\n\n=====================================\nMassiveFold help, list of options:\n=====================================\n")
-      printFileContent("${params.outDir}/massiveFoldHelp.txt")
-      NFTools.printGreenText("\n\n=====================================\nMassiveFold help, see options above.\n=====================================\n")
+    if (params.afMassiveHelp) {
+      NFTools.printGreenText("\n\n=====================================\nAfMassive help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/afMassiveHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nAfMassive help, see options above.\n=====================================\n")
     }
   } else {
     NFTools.makeReports(workflow, params, summary, customRunName, mqcReport)

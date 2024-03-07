@@ -41,40 +41,39 @@ MANDATORY ARGUMENTS, NEXTFLOW:
     -profile  STRING [test, singularity, cluster]  Configuration profile to use. Can use multiple (comma separated).
 
 OTHER OPTIONS, NEXTFLOW:
-    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration filei (i.e. 'params.json'). All parameters defined as JSON
-                         type must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING:
-                         passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which
+    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration filei (i.e. 'params.json'). All parameters defined as JSON 
+                         type must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING: 
+                         passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which 
                          are not appreciated by nextflow.
 
 OTHER OPTIONS:
+    --afMassiveDatabase   PATH      Path to the database required by AFMassive.
+    --afMassiveHelp                 Display all the options available to run AFMassive. Use this option in combination with -profile singularity.
+    afMassiveOptions      JSON      Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed 
+                                    using the --alphaFoldOptions option.
     --alphaFoldDatabase   PATH      Path to the database required by AlphaFold.
     --alphaFoldHelp                 Display all the options available to run AlphaFold. Use this option in combination with -profile singularity.
-    alphaFoldOptions      JSON      Prediction model options passed to AlphaFold or MassiveFold.
+    alphaFoldOptions      JSON      Prediction model options passed to AlphaFold or AFMassive.
     --colabFoldDatabase   PATH      Path to the database required by ColabFold.
     --colabFoldHelp                 Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
     colabFoldOptions      JSON      Prediction model options passed to ColabFold.
     --dynamicBindDatabase PATH      Path to the database required by DynamicBind.
-    --dynamicBindHelp               Display all the options available to run DynamicBind. Use this option in combination with -profile
+    --dynamicBindHelp               Display all the options available to run DynamicBind. Use this option in combination with -profile 
                                     singularity.
     dynamicBindOptions    JSON      Prediction model options passed to DynamicBind.
     --fastaPath           PATH      Path to the input directory which contains the fasta files.
-    --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction.
+    --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction. 
                                     Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
+    --launchAfMassive               Launch AFMassive
     --launchAlphaFold               Launch AlphaFold.
     --launchColabFold               Launch ColabFold.
     --launchDynamicBind             Launch DynamicBind.
-    --launchMassiveFold             Launch MassiveFold.
-    --massiveFoldDatabase PATH      Path to the database required by MassiveFold.
-    --massiveFoldHelp               Display all the options available to run MassiveFold. Use this option in combination with -profile
-                                    singularity.
-    massiveFoldOptions    JSON      Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are
-                                    passed using the --alphaFoldOptions option.
     --onlyMsas                      When true, the pipeline will only generate the multiple sequence alignments (msas).
     --outDir              PATH      The output directory where the results will be saved
-    --proteinLigandFile   PATH      Path to the input file for molecular docking. The file must be in CSV format, without space. One column named
-                                    'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the
+    --proteinLigandFile   PATH      Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 
+                                    'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 
                                     'sdf' file.
-    --useGpu                        Run the prediction model on GPU. AlphaFold and MassiveFold can run either on CPU or GPU. ColabFold and
+    --useGpu                        Run the prediction model on GPU. AlphaFold and AFMassive can run either on CPU or GPU. ColabFold and 
                                     DynamicBind require GPU only.
 
 REFERENCES:

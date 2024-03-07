@@ -14,20 +14,20 @@ of the license and that you accept its terms.
 
 */
 
-// This process print the help of MassiveFold.
-process massiveFoldHelp {
-  tag "massiveFoldHelp"
-  label 'massiveFold'
+// This process print the help of AfMassive.
+process afMassiveHelp {
+  tag "afMassiveHelp"
+  label 'afMassive'
   label 'minMem'
   label 'minCpu'
   errorStrategy 'ignore'
 
   when:
-  params.massiveFoldHelp 
+  params.afMassiveHelp 
 
   script:
   """
-  launch_alphafold.sh --helpfull > "${params.outDir}/massiveFoldHelp.txt"
+  launch_alphafold.sh --helpfull > "${params.outDir}/afMassiveHelp.txt"
   """
 }
 

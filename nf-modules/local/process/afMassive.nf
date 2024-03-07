@@ -14,29 +14,29 @@ of the license and that you accept its terms.
 
 */
 
-// This process launches massiveFold
-// - it uses the massiveFoldOptions
-process massiveFold {
+// This process launches afMassive
+// - it uses the afMassiveOptions
+process afMassive {
   tag "${protein}" 
-  label 'massiveFold'
+  label 'afMassive'
   label 'highMem'
   label 'medCpu'
-  publishDir path: "${params.outDir}/massiveFold/${protein}", mode: 'copy'
+  publishDir path: "${params.outDir}/afMassive/${protein}", mode: 'copy'
   containerOptions { (params.useGpu) ? "--nv --env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
   input:
   tuple val(protein), path(fastaFile), path("msas/*")
   path alphaFoldOptions
-  path massiveFoldDatabase
+  path afMassiveDatabase
 
   output:
-  tuple val(protein), val("massiveFold"), path("predictions/*", type: 'dir'), emit: predictions
+  tuple val(protein), val("afMassive"), path("predictions/*", type: 'dir'), emit: predictions
   path("versions.txt"), emit: versions
   path("options.txt"), emit: options
 
   script:
-  // massiveFold is alphaFold-like, therefore some variables contain alphaFold on purpose
+  // afMassive is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas

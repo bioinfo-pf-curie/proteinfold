@@ -15,7 +15,7 @@ of the license and that you accept its terms.
 */
 
 // This process generates the plots from AlphaFold or MassiveFols results:
-// It uses the code from https://github.com/GBLille/MassiveFold with a minor patch to
+// It uses the code from https://github.com/GBLille/AfMassive with a minor patch to
 // check whether PAEs are available within the picle data
 process massiveFoldPlots {
   tag "${protein}-${toolFold}" 
