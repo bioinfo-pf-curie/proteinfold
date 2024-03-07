@@ -246,7 +246,7 @@ msas/
   protein2/
 ```
 
-Then, provide the option `--fromMsas msas`, for example:
+Then, provide the option `--fromMsas`, for example:
 
 
 ```bash
