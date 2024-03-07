@@ -1,6 +1,25 @@
+v1.2.0
+03/08/2024
+
 NEW FEATURES
+  - AFMassive:
+    * massiveFold has been renamed by AFMassive
+  - AlphaFold:
+    * memory has been increased for both alphaFoldSearch and alphaFold processes
   - ColabFold:
     * use --save-all option to save pickle files
+    * --colabSearchHelp option
+    * add amber relaxation by default
+  - DynamicBind:
+    * tool for molecular docking
+  - multiqc reports
+    * plots
+    * print software version from containers (get_version.sh)
+  - Groovy functions moved from main.nf to lib/function.nf
+  - add stub section in process for dry-run with -stub-run
+
+BUG FIXES
+  - change regex to get protein name from fasta filename
 
 v1.1.0
 02/22/2024
