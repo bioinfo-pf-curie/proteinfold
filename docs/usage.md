@@ -4,13 +4,13 @@
 
 **Prediction of 3D structures:**
 
-- [AlphaFold](#alphafold)
+- [AFMassive](#admassive)
   * [monomer](#monomer)
   * [multimer](#multimer)
-- [ColabFold](#colabfold)
+- [AlphaFold](#alphafold)
   * [monomer](#monomer-1)
   * [multimer](#multimer-1)
-- [MassiveFold](#massivefold)
+- [ColabFold](#colabfold)
   * [monomer](#monomer-2)
   * [multimer](#multimer-2)
 - [Multiple sequence alignments (msas)](#multiple-sequence-alignments-msas)
@@ -91,6 +91,54 @@ Available Profiles
 
 ```
 
+## AFMassive
+
+Visit the [AFMassive](https://github.com/GBLille/AFMassive) GitHub repository for more details about the prediction model.
+
+List of AFMassive options:
+
+```bash
+nextflow run main.nf --afMassiveHelp -profile singularity
+```
+
+### Monomer
+
+Launch the nextflow pipeline using GPU:
+
+```bash
+nextflow run main.nf -params-file test/params-file/afmassive-monomer.json -profile singularity --useGpu
+```
+
+Define the options in a JSON file, for example:
+
+```json
+{
+	"launchAfMassive": "true",
+  "afMassiveOptions": "--dropout --dropout_structure_module",
+	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
+	"fastaPath": "test/data/fasta/monomer2"
+}
+```
+
+### Multimer
+
+Launch the nextflow pipeline using GPU:
+
+```bash
+nextflow run main.nf -params-file test/params-file/afmassive-multimer.json -profile singularity --useGpu
+```
+
+Define the options in a JSON file, for example:
+
+```json
+{
+	"launchAfMassive": "true",
+  "afMassiveOptions": "--dropout --dropout_structure_module",
+	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
+	"fastaPath": "test/data/fasta/multimer/alphafold"
+}
+```
+
 ## AlphaFold
 
 Visit the [AlphaFold](https://github.com/google-deepmind/alphafold/) GitHub repository for more details about the prediction model.
@@ -118,7 +166,6 @@ Define the options in a JSON file, for example:
 	"fastaPath": "test/data/fasta/monomer2"
 }
 ```
-
 
 ### Multimer
 
@@ -187,52 +234,6 @@ Define the options in a JSON file, for example:
 
 Note that ColabFold expects a particular format for the input fasta file. See [](../test/data/multimer/colabfold/rac1-SOS-complex.fasta)
 
-## AFMassive
-
-Visit the [AFMassive](https://github.com/GBLille/AFMassive) GitHub repository for more details about the prediction model.
-
-List of AFMassive options:
-
-```bash
-nextflow run main.nf --afMassiveHelp -profile singularity
-```
-
-### Monomer
-
-Launch the nextflow pipeline using GPU:
-
-```bash
-nextflow run main.nf -params-file test/params-file/afmassive-monomer.json -profile singularity --useGpu
-```
-
-Define the options in a JSON file, for example:
-
-```json
-{
-	"launchAfMassive": "true",
-	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
-	"fastaPath": "test/data/fasta/monomer2"
-}
-```
-
-
-### Multimer
-
-Launch the nextflow pipeline using GPU:
-
-```bash
-nextflow run main.nf -params-file test/params-file/afmassive-multimer.json -profile singularity --useGpu
-```
-
-Define the options in a JSON file, for example:
-
-```json
-{
-	"launchAfMassive": "true",
-	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
-	"fastaPath": "test/data/fasta/multimer/alphafold"
-}
-```
 
 ## Multiple sequence alignments (msas)
 
