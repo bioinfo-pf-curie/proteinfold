@@ -4,6 +4,7 @@ v1.2.0
 NEW FEATURES
   - AFMassive:
     * massiveFold has been renamed by AFMassive
+    * --dropout set as default in --afMassiveOptions
   - AlphaFold:
     * memory has been increased for both alphaFoldSearch and alphaFold processes
   - ColabFold:
