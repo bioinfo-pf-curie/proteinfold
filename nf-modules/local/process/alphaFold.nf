@@ -20,7 +20,7 @@ of the license and that you accept its terms.
 process alphaFold {
   tag "${protein}" 
   label 'alphaFold'
-  label 'medMem'
+  label 'highMem'
   label 'medCpu'
   publishDir path: "${params.outDir}/alphaFold/${protein}", mode: 'copy'
   containerOptions { (params.useGpu) ? "--nv --env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp" }
@@ -32,14 +32,28 @@ process alphaFold {
   path alphaFoldDatabase
 
   output:
-  path("predictions/*", type: 'dir')
+  tuple val(protein), val("alphaFold"), path("predictions/*", type: 'dir'), emit: predictions
+  path("versions.txt"), emit: versions
+  path("options.txt"), emit: options
 
   script:
   """
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
-  alphafold_options=\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')
-  launch_alphafold.sh --fasta_paths=${fastaFile} \${alphafold_options}
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g') --fasta_paths=${fastaFile}"
+  launch_alphafold.sh \${alphafold_options}
+  echo "AlphaFold \$(get_version.sh)" > versions.txt
+  echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
+  """
+
+  stub:
+  """
+  mkdir -p predictions/${protein}
+  ln -s \$(realpath msas/) predictions/${protein}/msas
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g') --fasta_paths=${fastaFile}"
+  touch predictions/${protein}/${protein}.txt
+  echo "AlphaFold \$(get_version.sh)" > versions.txt
+  echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """
 }
 

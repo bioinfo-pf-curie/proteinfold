@@ -6,21 +6,24 @@
 [![Singularity/Apptainer Container](https://img.shields.io/badge/singularity-available-7E4C74.svg)](https://apptainer.org/)
 
 
-### Introduction
+## Introduction
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. 
 It comes with singularity/apptainer containers making installation easier and results highly reproducible.
 
 
-### Pipeline summary
+## Pipeline summary
 
-This pipeline allows the prediction of protein 3D structure using various tools:
+This pipeline allows:
 
-* [AlphaFold](https://github.com/google-deepmind/alphafold/),
-* [ColabFold](https://github.com/sokrypton/ColabFold),
-* [MassiveFold](https://github.com/GBLille/MassiveFold).
+* the prediction of protein 3D structure using various tools:
+  - [AlphaFold](https://github.com/google-deepmind/alphafold/),
+  - [ColabFold](https://github.com/sokrypton/ColabFold),
+  - [MassiveFold](https://github.com/GBLille/MassiveFold).
+* molecular docking of proten/ligand using:
+  - [DynamicBind](https://github.com/luwei0917/DynamicBind/)
 
-### Quick help
+## Quick help
 
 ```
 nextflow run main.nf --help
@@ -43,7 +46,7 @@ Launching `main.nf` [curious_perlman] DSL2 - revision: 986ad6e9f0
 
     The typical command for running the pipeline is as follows:
 
-    nextflow run main.nf -params-file params.json -profile STRING --fastaPath PATH 
+    nextflow run main.nf -params-file params.json -profile STRING 
 
 MANDATORY ARGUMENTS, NEXTFLOW:
     -profile  STRING [test, singularity, cluster]  Configuration profile to use. Can use multiple (comma separated).
@@ -54,32 +57,38 @@ OTHER OPTIONS, NEXTFLOW:
                          passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which 
                          are not appreciated by nextflow.
 
-MANDATORY ARGUMENTS:
-    --fastaPath PATH   Path to the input directory which contains the fasta files.
-
-REFERENCES:
-    --genomeAnnotationPath PATH   Path to genome/proteome annotations folder used to predict the protein 3D structure.
-
 OTHER OPTIONS:
+    --afMassiveDatabase   PATH      Path to the database required by AFMassive.
+    --afMassiveHelp                 Display all the options available to run AFMassive. Use this option in combination with -profile singularity.
+    afMassiveOptions      JSON      Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed 
+                                    using the --alphaFoldOptions option.
     --alphaFoldDatabase   PATH      Path to the database required by AlphaFold.
     --alphaFoldHelp                 Display all the options available to run AlphaFold. Use this option in combination with -profile singularity.
-    alphaFoldOptions      JSON      Prediction model options passed to AlphaFold or MassiveFold.
+    alphaFoldOptions      JSON      Prediction model options passed to AlphaFold or AFMassive.
     --colabFoldDatabase   PATH      Path to the database required by ColabFold.
     --colabFoldHelp                 Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
     colabFoldOptions      JSON      Prediction model options passed to ColabFold.
-    --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction.
+    --dynamicBindDatabase PATH      Path to the database required by DynamicBind.
+    --dynamicBindHelp               Display all the options available to run DynamicBind. Use this option in combination with -profile 
+                                    singularity.
+    dynamicBindOptions    JSON      Prediction model options passed to DynamicBind.
+    --fastaPath           PATH      Path to the input directory which contains the fasta files.
+    --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction. 
                                     Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
+    --launchAfMassive               Launch AFMassive
     --launchAlphaFold               Launch AlphaFold.
     --launchColabFold               Launch ColabFold.
-    --launchMassiveFold             Launch MassiveFold.
-    --massiveFoldDatabase PATH      Path to the database required by MassiveFold.
-    --massiveFoldHelp               Display all the options available to run MassiveFold. Use this option in combination with -profile
-                                    singularity.
-    massiveFoldOptions    JSON      Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are
-                                    passed using the --alphaFoldOptions option.
+    --launchDynamicBind             Launch DynamicBind.
     --onlyMsas                      When true, the pipeline will only generate the multiple sequence alignments (msas).
     --outDir              PATH      The output directory where the results will be saved
-    --useGpu                        Run the prediction model on GPU. While AlphaFold and MassiveFold can run on CPU, ColabFold requires GPU only.
+    --proteinLigandFile   PATH      Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 
+                                    'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 
+                                    'sdf' file.
+    --useGpu                        Run the prediction model on GPU. AlphaFold and AFMassive can run either on CPU or GPU. ColabFold and 
+                                    DynamicBind require GPU only.
+
+REFERENCES:
+    --genomeAnnotationPath PATH   Path to genome/proteome annotations folder used to predict the protein 3D structure.
 
 =======================================================
 Available Profiles
@@ -89,11 +98,11 @@ Available Profiles
 
 ```
 
-### Quick run
+## Quick run
 
 The pipeline can be run on any infrastructure. The use of GPU is preferred to speed-up computation.
 
-#### Run the pipeline on a test dataset
+### Run the pipeline on a test dataset
 
 See the `conf/test.config` to set your test dataset.
 
@@ -101,7 +110,7 @@ See the `conf/test.config` to set your test dataset.
 nextflow run main.nf -profile test,singularity
 ```
 
-#### Run the pipeline with custom option
+### Run the pipeline with custom option
 
 Create a json file with your custom parameters, for example:
 
@@ -117,31 +126,31 @@ nextflow run main.nf --fastaPath="test/data" -params-file params.json --outDir M
 ```
 
 
-#### Run the pipeline on a computing cluster
+### Run the pipeline on a computing cluster
 
 For example, to launch the pipeline on a computing cluster with SLURM:
 
-```
+```bash
 echo "#! /bin/bash" > launcher.sh
 echo "set -oue pipefail" >> launcher.sh
 echo "nextflow run main.nf --fastaPath=\"test/data\" --alphaFoldOptions \"max_template_date=2024-01-01|random_seed=654321\" --outDir MY_OUTPUT_DIR -profile singularity,cluster" >> launcher.sh
-sbatch launcher
+sbatch launcher.sh
 ```
 
 
-### Full Documentation
+## Full Documentation
 
 1. [Installation](docs/installation.md)
 2. [Reference annotations](docs/referenceGenomes.md)
 3. [Running the pipeline](docs/usage.md)
 4. [Output of the pipelines](docs/output.md)
 
-#### Credits
+## Credits
 
 This pipeline has been written by the bioinformatics platform of the Institut Curie (P. Hupé)
 
-#### Citation
+## Citation
 
-#### Contacts
+## Contacts
 
 For any question, bug or suggestion, please use the issues system or contact the bioinformatics core facility.

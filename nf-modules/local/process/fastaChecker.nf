@@ -33,5 +33,11 @@ process fastaChecker {
   """
   fasta_checker.sh ${fastaFile}
   """
+
+  stub:
+  """
+  echo fasta_checker.sh ${fastaFile}
+  """
+
 }
 

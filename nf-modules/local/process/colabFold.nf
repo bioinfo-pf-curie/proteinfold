@@ -34,11 +34,27 @@ process colabFold {
   path colabFoldDatabase
 
   output:
-  path("predictions", type: 'dir')
+  tuple val(protein), val("colabFold"), path("predictions", type: 'dir'), emit: predictions
+  path("predictions/versions.txt"), emit: versions
+  path("predictions/options.txt"), emit: options
+  tuple val(protein), path("predictions/*.png"), emit: plots
 
   script:
   """
-  colabfold_batch --jobname-prefix ${protein} ${params.colabFoldOptions} ${msas} predictions
+  colabfold_batch --jobname-prefix ${protein} --save-all  ${params.colabFoldOptions} ${msas} predictions
+  echo "ColabFold \$(get_version.sh)" > predictions/versions.txt
+  echo "colabfold_batch options=${params.colabFoldOptions}" > predictions/options.txt
   """
+
+  stub:
+  """
+  mkdir -p predictions/
+  touch predictions/${protein}.txt
+  cp -r ${projectDir}/test/data/plots/colabfold/monomer2/${protein}/* predictions
+  echo "ColabFold \$(get_version.sh)" > predictions/versions.txt
+  echo "colabfold_batch options=${params.colabFoldOptions}" > predictions/options.txt
+  """
+
+
 }
 

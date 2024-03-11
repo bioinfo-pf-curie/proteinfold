@@ -38,7 +38,7 @@
       "pattern": "",
       "render": "textfield",
       "arity": 0,
-      "group": "Mandatory arguments"
+      "group": "Other options"
     },
     {
       "name": "genomeAnnotationPath",
@@ -54,15 +54,16 @@
       "group": "References"
     },
     {
-      "name": "alphaFoldOptions",
-      "label": "alphaFold options",
-      "usage": "Prediction model options passed to AlphaFold or MassiveFold.",
-      "type": "JSON",
-      "nargs": 1,
+	  "origin": "pipeline",
+      "name": "proteinLigandFile",
+      "label": "Input file",
+      "usage": "Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.",
+      "type": "path",
       "choices": [],
-      "default_value": "--max_template_date=2024-01-01 --random_seed=654321",
-      "pattern": ".*",
-      "render": "file",
+      "nargs": "1",
+      "default_value": null,
+      "pattern": "",
+      "render": "textfield",
       "arity": 0,
       "group": "Other options"
     },
@@ -94,6 +95,19 @@
       "group": "Other options"
     },
     {
+      "name": "alphaFoldOptions",
+      "label": "alphaFold options",
+      "usage": "Prediction model options passed to AlphaFold or AFMassive.",
+      "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "--max_template_date=2024-01-01 --random_seed=654321",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
       "name": "launchAlphaFold",
       "label": "launch alphaFold",
       "usage": "Launch AlphaFold.",
@@ -101,19 +115,6 @@
       "nargs": 1,
       "choices": [],
       "default_value": "",
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "colabFoldOptions",
-      "label": "colabFold options",
-      "usage": "Prediction model options passed to ColabFold.",
-      "type": "JSON",
-      "nargs": 1,
-      "choices": [],
-      "default_value": "--random-seed 654321 --model-type auto",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
@@ -146,6 +147,19 @@
       "group": "Other options"
     },
     {
+      "name": "colabFoldOptions",
+      "label": "colabFold options",
+      "usage": "Prediction model options passed to ColabFold.",
+      "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "--random-seed 654321 --model-type auto",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
       "name": "launchColabFold",
       "label": "launch colabFold",
       "usage": "Launch ColabFold.",
@@ -159,22 +173,9 @@
       "group": "Other options"
     },
     {
-      "name": "massiveFoldOptions",
-      "label": "massiveFold options",
-      "usage": "Specific options for MassiveFold. As MassiveFold is an AlphaFold-like tool, standard AlphaFold options are passed using the --alphaFoldOptions option.",
-      "type": "JSON",
-      "nargs": 1,
-      "choices": [],
-      "default_value": "",
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "massiveFoldDatabase",
-      "label": "massiveFold database",
-      "usage": "Path to the database required by MassiveFold.",
+      "name": "dynamicBindDatabase",
+      "label": "dynamicBind database",
+      "usage": "Path to the database required by DynamicBind.",
       "type": "path",
       "nargs": 1,
       "choices": [],
@@ -184,10 +185,10 @@
       "arity": 0,
       "group": "Other options"
     },
-    {
-      "name": "massiveFoldHelp",
-      "label": "massivebFold help",
-      "usage": "Display all the options available to run MassiveFold. Use this option in combination with -profile singularity.",
+	{
+      "name": "dynamicBindHelp",
+      "label": "dynamicBind help",
+      "usage": "Display all the options available to run DynamicBind. Use this option in combination with -profile singularity.",
       "type": "boolean",
       "nargs": 1,
       "choices": [],
@@ -198,9 +199,74 @@
       "group": "Other options"
     },
     {
-      "name": "launchMassiveFold",
-      "label": "launch massiveFold",
-      "usage": "Launch MassiveFold.",
+      "name": "dynamicBindOptions",
+      "label": "dynamicBind options",
+      "usage": "Prediction model options passed to DynamicBind.",
+      "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "--savings_per_complex 40 --inference_steps 20 --movie --seed 654321",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "launchDynamicBind",
+      "label": "launch DynamicBind",
+      "usage": "Launch DynamicBind.",
+      "type": "boolean",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "afMassiveDatabase",
+      "label": "afMassive database",
+      "usage": "Path to the database required by AFMassive.",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "afMassiveHelp",
+      "label": "massivebFold help",
+      "usage": "Display all the options available to run AFMassive. Use this option in combination with -profile singularity.",
+      "type": "boolean",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "afMassiveOptions",
+      "label": "afMassive options",
+      "usage": "Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed using the --alphaFoldOptions option.",
+      "type": "JSON",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "launchAfMassive",
+      "label": "launch AfMassive",
+      "usage": "Launch AFMassive",
       "type": "boolean",
       "nargs": 1,
       "choices": [],
@@ -254,7 +320,7 @@
     {
       "name": "useGpu",
       "label": "useGpu",
-      "usage": "Run the prediction model on GPU. While AlphaFold and MassiveFold can run on CPU, ColabFold requires GPU only.",
+      "usage": "Run the prediction model on GPU. AlphaFold and AFMassive can run either on CPU or GPU. ColabFold and DynamicBind require GPU only.",
       "type": "boolean",
       "nargs": 1,
       "choices": [],

@@ -1,5 +1,5 @@
 /*
-Copyright Institut Curie 2024
+Copyright Institut Curie 2023
 
 This software is a computer program whose purpose is to
 predict 3D structure of proteins.
@@ -14,20 +14,18 @@ of the license and that you accept its terms.
 
 */
 
-// This process print the help of MassiveFold.
-process massiveFoldHelp {
-  tag "massiveFoldHelp"
-  label 'massiveFold'
+// This process print the help of DynamicBind.
+process dynamicBindHelp {
+  label 'dynamicBind'
   label 'minMem'
   label 'minCpu'
-  errorStrategy 'ignore'
 
   when:
-  params.massiveFoldHelp 
+  params.dynamicBindHelp
 
   script:
   """
-  launch_alphafold.sh --helpfull > "${params.outDir}/massiveFoldHelp.txt"
+  launch_dynamicbind.sh -h > "${params.outDir}/dynamicBindHelp.txt"
   """
 }
 

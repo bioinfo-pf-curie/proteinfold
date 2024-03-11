@@ -29,6 +29,9 @@ of the license and that you accept its terms.
 
 nextflow.enable.dsl=2
 
+// Note that several functions used in the main.nf scripts
+// are defined in the 'lib' folder
+
 // Initialize lintedParams and paramsWithUsage
 NFTools.welcome(workflow, params)
 
@@ -39,36 +42,70 @@ params.putAll(NFTools.lint(params, paramsWithUsage))
 // Run name
 customRunName = NFTools.checkRunName(workflow.runName, params.name)
 
+// Custom functions/variables
+include { checkInput4Docking } from './lib/functions'
+include { printFileContent } from './lib/functions'
+include { elementsNotPresent } from './lib/functions'
+
 /*
 ===================================
   SET UP CONFIGURATION VARIABLES
 ===================================
 */
 
-// Check that any option to print the help of any tool is set to true
+// Define a variable to track settings for which the fastaPath can be null
+Boolean allowFastaPathNull = false
+
+// Check that any option to print the help of a tool has been set to true
 Boolean printToolHelp = false
 if (params.collect().join(' ').find('Help=true')) {
   printToolHelp = true
+  allowFastaPathNull = true
 }
 
-// Check that the option --fastaPath has been provided and contains the path to the fasta files
+// DynamicBind does not require fastaPath
+// but it requires a proteinLigandFile
+if(params.launchDynamicBind) {
+  allowFastaPathNull = true
+  if(params.proteinLigandFile == null) {
+    exit 1, "To launch DynamicBind you must define the --proteinLigandFile option"
+  }
+  if (!params.useGpu){
+    exit 1, "DynamicBind works only using GPU. Launch the pipeline with the '--useGpu true' option."
+  }
+}
+
+// If the option --fastaPath has been provided, check that it contains a valid path
 if (params.fastaPath != null ) {
   File fastaPath = new File(params.fastaPath)
   if (!fastaPath.exists()){
-    exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' does not exist."
+    exit 1, "The path to the fasta file(s) '" + params.fastaPath + "' does not exist."
   }
   if (!fastaPath.isDirectory()){
-    exit 1, "ERROR: the path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
+    exit 1, "The path to the fasta file(s) '" + params.fastaPath + "' is not a directory."
   }
 } else {
-  if (!printToolHelp) {
-    exit 1, "ERROR: the fastaPath options is 'null'. Provide a value using the --fastaPath options."
+  if (!allowFastaPathNull) {
+    exit 1, "The fastaPath options is 'null'. Provide a value using the --fastaPath option."
+  }
+}
+
+// If the option --proteinLigandFile has been provided, check that the file is correctly formatted
+if (params.proteinLigandFile != null) {
+  if (checkInput4Docking(params.proteinLigandFile)) {
+    proteinLigandCh = Channel
+                        .fromPath(params.proteinLigandFile)
+                        .splitCsv(header: true)
+                        .unique()
+                        .map {
+                          tuple(file(it.protein).getBaseName(), file(it.protein), file(it.ligand).getBaseName(), file(it.ligand))
+                        }
   }
 }
 
 // Check that alphaFoldOptions defines max_template_date=YYYY-MM-DD
 if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])")){
-  exit 1, "ERROR: 'params.alphaFoldOptions' must define '--max_template_date=YYYY-MM-DD', e.g.: '--max_template_date=2024-01-01'"
+  exit 1, "'params.alphaFoldOptions' must define '--max_template_date=YYYY-MM-DD', e.g.: '--max_template_date=2024-01-01'"
 }
 
 // Get realpath for the annotations to avoid symlink issues in bindings with apptainer
@@ -77,23 +114,33 @@ if (params.launchAlphaFold){
   params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
 }
 
-if (params.launchColabFold){
-  if (!params.useGpu){
-    exit 1, "ERROR: ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
-  }
-
-File colabFoldDB = new File(params.genomes.colabfold.database)
-params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
+if (params.launchDynamicBind){
+  File dynamicBindDB = new File(params.genomes.dynamicbind.database)
+  params.dynamicBindDatabase = dynamicBindDB.getCanonicalPath()
 }
 
-if (params.launchMassiveFold){
-  File massiveFoldDB = new File(params.genomes.massivefold.database)
-  params.massiveFoldDatabase = massiveFoldDB.getCanonicalPath()
+if (params.launchColabFold){
+  if (!params.useGpu){
+    exit 1, "ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
+  }
+
+  File colabFoldDB = new File(params.genomes.colabfold.database)
+  params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
+}
+
+if (params.launchOpenFold){
+  File openFoldDB = new File(params.genomes.openfold.database)
+  params.openFoldDatabase = openFoldDB.getCanonicalPath()
+}
+
+if (params.launchAfMassive){
+  File afMassiveDB = new File(params.genomes.afmassive.database)
+  params.afMassiveDatabase = afMassiveDB.getCanonicalPath()
 }
 
 
 if (params.onlyMsas && params.fromMsas != null){
-  exit 1, "ERROR: the --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
+  exit 1, "The --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
 }
 
 /*
@@ -102,15 +149,6 @@ if (params.onlyMsas && params.fromMsas != null){
 ==========================
 */
 
-// Function which returns elements which are present in list2
-// but not in list1
-def elementsNotPresent (ArrayList list1, ArrayList list2){
-
-  def elementsNotInList1 = list2.findAll { !list1.contains(it) }
-
-  return elementsNotInList1
-
-}
 
 fastaPathCh = Channel.fromPath("${params.fastaPath}/*.fasta")
 
@@ -120,7 +158,7 @@ fastaFilesCh = fastaPathCh
                  .map { fastaFile -> 
                    String protein = fastaFile.toString()
                                       .replaceAll(".*/", "")
-                                      .replaceAll(".fasta", "")
+                                      .replaceFirst('\\.fasta$', "")
                    tuple(protein, file(fastaFile))
                  }
 
@@ -139,10 +177,10 @@ if(params.fromMsas != null){
 
   File fromMsas = new File(params.fromMsas)
   if (!fromMsas.exists()){
-    exit 1, "ERROR: the path to the msas folder '" + params.fromMsas + "' does not exist."
+    exit 1, "The path to the msas folder '" + params.fromMsas + "' does not exist."
   }
   if (!fromMsas.isDirectory()){
-    exit 1, "ERROR: the path to the msas folder '" + params.fromMsas + "' is not a directory."
+    exit 1, "The path to the msas folder '" + params.fromMsas + "' is not a directory."
   }
 
   msasCh = Channel.fromPath("${params.fromMsas}/*", type: 'dir')
@@ -198,14 +236,16 @@ summary = [
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.fastaPath ?: null,
-  'AlphaFold Options' : params.launchAlphaFold || params.launchMassiveFold ? params.alphaFoldOptions : null,
+  'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
-  'MassiveFold Database' : params.launchMassiveFold ? params.massiveFoldDatabase : null,
-  'MassiveFold Options' : params.launchMassiveFold ? params.massiveFoldOptions : null,
+  'DynamicBind Database' : params.launchDynamicBind ? params.dynamicBindDatabase : null,
+  'DynamicBind Options' : params.launchDynamicBind ? params.dynamicBindOptions : null,
+  'AfMassive Database' : params.launchAfMassive ? params.afMassiveDatabase : null,
+  'AfMassive Options' : params.launchAfMassive ? params.afMassiveOptions : null,
   'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
-  'Perform only msas' : params.onlyMsas,
-  'Use GPU' : params.useGpu,
+  'Perform only msas' : params.onlyMsas ? "True" : "False",
+  'Use GPU' : params.useGpu ? "True" : "False",
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,
   'Profile' : workflow.profile,
@@ -223,6 +263,8 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 */ 
 
 // Processes
+include { getSoftwareOptions } from './nf-modules/common/process/utils/getSoftwareOptions'
+include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
 include { alphaFoldOptions } from './nf-modules/local/process/alphaFoldOptions'
@@ -230,10 +272,14 @@ include { alphaFoldSearch } from './nf-modules/local/process/alphaFoldSearch'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
+include { dynamicBind } from './nf-modules/local/process/dynamicBind'
+include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
-include { massiveFold } from './nf-modules/local/process/massiveFold'
-include { massiveFoldSearch } from './nf-modules/local/process/massiveFoldSearch'
-include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
+include { afMassive } from './nf-modules/local/process/afMassive'
+include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
+include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
+include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
+include { multiqc } from './nf-modules/local/process/multiqc'
 
 /*
 =====================================
@@ -242,21 +288,28 @@ include { massiveFoldHelp } from './nf-modules/local/process/massiveFoldHelp'
 */
 
 workflow {
-  main:
 
-  // Check the format of the fasta files
-  fastaChecker(fastaPathCh)
+  versionsCh = Channel.empty()
+  optionsCh = Channel.empty()
+  plotsCh = Channel.empty()
+
+  main:
 
   // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
+    fastaChecker(fastaPathCh)
     alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
     if (params.onlyMsas){
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+      versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
+      optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
         alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+        versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
+        optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
         msasCh = alphaFoldSearch.out.msas
                    .groupTuple()
                    .map { it ->
@@ -266,36 +319,57 @@ workflow {
         msasCh = fastaFilesCh.join(msasCh)
       }
       alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+      versionsCh = versionsCh.mix(alphaFold.out.versions)
+      optionsCh = optionsCh.mix(alphaFold.out.options)
+      massiveFoldPlots(alphaFold.out.predictions)
+      plotsCh = massiveFoldPlots.out.plots
     }
   }
 
+  // Launch the molecular docking with DynamicBind
+  if (params.launchDynamicBind){
+    dynamicBind(proteinLigandCh, params.dynamicBindDatabase)
+  }
 
   // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
+    fastaChecker(fastaPathCh)
     if (params.onlyMsas){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+      versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
+      optionsCh = optionsCh.mix(colabFoldSearch.out.options)
     } else {
       if (params.fromMsas == null){
         colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+        versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
+        optionsCh = optionsCh.mix(colabFoldSearch.out.options)
         msasCh = colabFoldSearch.out.msas
       }
       colabFold(msasCh, params.colabFoldDatabase)
+      versionsCh = versionsCh.mix(colabFold.out.versions)
+      optionsCh = optionsCh.mix(colabFold.out.options)
+      plotsCh = colabFold.out.plots
     }
   }
 
 
-  // Launch the prediction of the protein 3D structure with MassiveFold
-  if (params.launchMassiveFold){
-    // massiveFold is alphaFold-like, it uses alphaFold's options too
-    alphaFoldOptions(params.alphaFoldOptions, params.massiveFoldDatabase)
+  // Launch the prediction of the protein 3D structure with AfMassive
+  if (params.launchAfMassive){
+    fastaChecker(fastaPathCh)
+    // afMassive is alphaFold-like, it uses alphaFold's options too
+    alphaFoldOptions(params.alphaFoldOptions, params.afMassiveDatabase)
     if (params.onlyMsas){
-      massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+      afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+      versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
+      optionsCh = optionsCh.mix(afMassiveSearch.out.options)
     } else {
       if (params.fromMsas != null){
         msasCh = fastaFilesCh.join(msasCh)
       } else {
-        massiveFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
-        msasCh = massiveFoldSearch.out.msas
+        afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+        versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
+        optionsCh = optionsCh.mix(afMassiveSearch.out.options)
+        msasCh = afMassiveSearch.out.msas
                    .groupTuple()
                    .map { it ->
                      it[1] = it[1].flatten()
@@ -303,9 +377,31 @@ workflow {
                    }
         msasCh = fastaFilesCh.join(msasCh)
       }
-      massiveFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.massiveFoldDatabase)
+      afMassive(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+      versionsCh = versionsCh.mix(afMassive.out.versions)
+      optionsCh = optionsCh.mix(afMassive.out.options)
+      massiveFoldPlots(afMassive.out.predictions)
+      plotsCh = massiveFoldPlots.out.plots
     }
   }
+  
+  // MULTIQC
+  getSoftwareVersions(versionsCh.unique().collectFile())
+  getSoftwareOptions(optionsCh.unique().collectFile())
+  multiqc(
+    plotsCh
+      .combine(getSoftwareVersions.out.versionsYaml.collect().ifEmpty([])),
+    plotsCh
+      .map {
+        it[0]
+      }
+      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml")),
+    plotsCh
+      .map {
+        it[0]
+      }
+      .combine(getSoftwareOptions.out.optionsYaml.collect().ifEmpty([]))
+  )
 
   // Generate the help for each tool
   if(params.alphaFoldHelp){
@@ -314,23 +410,14 @@ workflow {
   if(params.colabFoldHelp){
     colabFoldHelp()
   }
-  if(params.massiveFoldHelp){
-    massiveFoldHelp()
+  if(params.dynamicBindHelp){
+    dynamicBindHelp()
+  }
+  if(params.afMassiveHelp){
+    afMassiveHelp()
   }
 }
 
-// Function to print the help of the tools
-def printFileContent(file) {
-    def inputFile = new File(file)
-    
-    if (inputFile.exists()) {
-        inputFile.eachLine { line ->
-            println line
-        }
-    } else {
-        System.out.println("File not found: $file")
-    }
-}
 
 workflow.onComplete {
   if(printToolHelp){
@@ -344,10 +431,15 @@ workflow.onComplete {
       printFileContent("${params.outDir}/colabFoldHelp.txt")
       NFTools.printGreenText("\n\n=====================================\nColabFold help, see options above.\n=====================================\n")
     }
-    if (params.massiveFoldHelp) {
-      NFTools.printGreenText("\n\n=====================================\nMassiveFold help, list of options:\n=====================================\n")
-      printFileContent("${params.outDir}/massiveFoldHelp.txt")
-      NFTools.printGreenText("\n\n=====================================\nMassiveFold help, see options above.\n=====================================\n")
+    if (params.dynamicBindHelp) {
+      NFTools.printGreenText("\n\n=====================================\nDynamicBind help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/dynamicBindHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nDynamicBind help, see options above.\n=====================================\n")
+    }
+    if (params.afMassiveHelp) {
+      NFTools.printGreenText("\n\n=====================================\nAfMassive help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/afMassiveHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nAfMassive help, see options above.\n=====================================\n")
     }
   } else {
     NFTools.makeReports(workflow, params, summary, customRunName, mqcReport)

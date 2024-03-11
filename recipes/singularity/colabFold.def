@@ -1,2 +1,9 @@
 Bootstrap: docker
 From: registrygitlab.curie.fr/cubic-registry/proteinfold/colabfold:v1.5.5-base
+
+%environment
+  export PATH="$PATH:/app"
+
+%post
+  /bin/echo -e '#! /bin/bash\ncat /app/colabfold/version-info.txt' > /app/get_version.sh \
+  && chmod +x /app/get_version.sh
