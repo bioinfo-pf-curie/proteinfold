@@ -1,0 +1,18 @@
+name: python_env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - mdtraj=1.9.9=py312hadb1fa1_1
+  - numpy=1.26.4=py312heda63a1_0
+  - pandas=2.2.1=py312hfb8ada1_0
+  - pip=24.0=pyhd8ed1ab_0
+  - python=3.12.2=hab00c5b_0_cpython
+  - scipy=1.12.0=py312heda63a1_2
+  - pip:
+      - absl-py==2.1.0
+      - matplotlib==3.8.3
+      - seaborn==0.13.2
+      - six==1.16.0
+      - spython==0.3.0

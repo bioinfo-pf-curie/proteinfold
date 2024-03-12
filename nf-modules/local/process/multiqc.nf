@@ -3,6 +3,7 @@
  */
 
 process multiqc {
+  tag "${protein}"
   label 'multiqc'
   label 'minCpu'
   label 'lowMem'

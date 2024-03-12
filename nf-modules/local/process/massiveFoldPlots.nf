@@ -19,7 +19,7 @@ of the license and that you accept its terms.
 // check whether PAEs are available within the picle data
 process massiveFoldPlots {
   tag "${protein}-${toolFold}" 
-  label 'massiveFoldPlots'
+  label 'python'
   label 'lowMem'
   label 'lowCpu'
   publishDir path: "${params.outDir}/${toolFold}Plots/${protein}", mode: 'copy'

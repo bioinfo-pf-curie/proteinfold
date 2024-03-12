@@ -19,7 +19,7 @@ of the license and that you accept its terms.
 //   - https://github.com/prehensilecode/alphafold_singularity
 process alphaFoldOptions {
   tag "AFOptions"
-  label 'alphaFoldOptions'
+  label 'python'
   label 'minMem'
   label 'minCpu'
   publishDir "${params.outDir}/alphaFoldOptions", mode: 'copy'
