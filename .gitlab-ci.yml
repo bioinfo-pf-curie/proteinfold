@@ -17,7 +17,7 @@ variables:
   DIR_DEPLOY_PACKAGE: "/opt/deploy"
   #DIR_DEPLOY_PACKAGE: "deploy-geniac"
   DIR_TMP_ON_CLUSTER: "dir_tmp_4_deploy" # This will be a folder created in the HOME of the user app on the cluster
-  DEPLOY_DOCKER_IMAGE: "${CI_REGISTRY}/bioinfo-containers/deploy-geniac:master"
+  DEPLOY_DOCKER_IMAGE: "${CI_REGISTRY}/bioinfo-containers/deploy-geniac:devel"
   PIPELINE_NAME: "cubicpipes"
   DIR_BIOINFO_PIPELINE: "/mnt/beegfs/RECHERCHE/u900pf-bioinfo/common/pipelines/"
   OPTEST: ""
