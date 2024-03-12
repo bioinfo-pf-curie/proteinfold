@@ -59,7 +59,7 @@ process afMassiveSearch {
   """
   alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g') --fasta_paths=${fastaFile} --only_msas"
   mkdir -p predictions/${protein}/msas
-  touch predictions/${protein}/msas/${protein}.txt
+  touch predictions/${protein}/msas/${protein}-${chainIdNum}.txt
   echo "AFmassive \$(get_version.sh)" > versions.txt
   echo "AFmassive (MSAS) options=\${alphafold_options}" > options.txt
   """
