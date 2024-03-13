@@ -38,7 +38,7 @@ process massiveFoldPlots {
   stub:
   """
   echo "plots"
-  cp -r ${projectDir}/test/data/plots/alphafold/monomer2/${protein}/* .
+  cp -r ${projectDir}/test/data/plots/alphafold/monomer2/MISFA/* .
   """
 }
 
