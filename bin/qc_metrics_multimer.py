@@ -206,9 +206,12 @@ def main(argv):
     columns = list(pi_score_df.columns.values)
     columns.pop(columns.index('jobs'))
     pi_score_df = pi_score_df[['jobs'] + columns]
-    pi_score_df = pi_score_df.sort_values(by='iptm',ascending=False)
+    pi_score_df = pi_score_df.sort_values(by='iptm', ascending=False)
+    if pi_score_df.size == 0:
+        logging.error("ERROR: No data available to compute the scores")
+        sys.exit(1)
     
-    pi_score_df.to_csv(os.path.join(FLAGS.output_dir,"predictions_with_good_interpae.csv"),index=False)
+    pi_score_df.to_csv(os.path.join(FLAGS.output_dir,"qc_metrics_multimer.csv"), index=False)
     
 
 if __name__ =='__main__':
