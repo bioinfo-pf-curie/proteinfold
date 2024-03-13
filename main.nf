@@ -279,6 +279,7 @@ include { afMassive } from './nf-modules/local/process/afMassive'
 include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
 include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
+include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 include { multiqc } from './nf-modules/local/process/multiqc'
 
 /*
@@ -384,7 +385,15 @@ workflow {
       plotsCh = massiveFoldPlots.out.plots
     }
   }
+
   
+  afMassive.out.predictions.view()
+  metricsMultimerCh = afMassive.out.predictions
+                        .map { it[2] }
+                        .collect()
+  
+  metricsMultimer(metricsMultimerCh)
+
   // MULTIQC
   getSoftwareVersions(versionsCh.unique().collectFile())
   getSoftwareOptions(optionsCh.unique().collectFile())
@@ -402,6 +411,8 @@ workflow {
       }
       .combine(getSoftwareOptions.out.optionsYaml.collect().ifEmpty([]))
   )
+ 
+  
 
   // Generate the help for each tool
   if(params.alphaFoldHelp){
