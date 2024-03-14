@@ -364,17 +364,6 @@ workflow {
     }
   }
 
-  
-  //afMassive.out.predictions.view()
-  //metricsMultimerCh = afMassive.out.predictions
-  //                      .map { it[2] }
-  //                      .collect()
-  //
-  //metricsMultimer(metricsMultimerCh)
-
- 
-  
-
   // Generate the help for each tool
   if(params.alphaFoldHelp){
     alphaFoldHelp()

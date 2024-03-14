@@ -15,9 +15,6 @@ process metricsMultimer {
   output:
   path "qc_metrics_multimer.csv", emit: metrics
 
-  when:
-  params.metricsMultimer == true
-
   script:
   """
   qc_metrics_multimer.py --output_dir=.

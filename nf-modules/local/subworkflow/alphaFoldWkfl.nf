@@ -26,6 +26,7 @@ include { alphaFoldOptions } from '../process/alphaFoldOptions'
 include { alphaFoldSearch } from '../process/alphaFoldSearch'
 include { fastaChecker } from '../process/fastaChecker'
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
+include { metricsMultimer } from '../process/metricsMultimer'
 
 // Subworkflows
 include { multiqcProteinStructWkfl } from '../subworkflow/multiqcProteinStructWkfl'
@@ -104,5 +105,21 @@ workflow alphaFoldWkfl {
     plotsCh,
     workflowSummaryCh
   )
+
+  /////////////////////////////////////////
+  // metrics for the multimer prediction //
+  /////////////////////////////////////////
+  alphaFold.out.predictions
+        .map { it[2] }
+        .collect()
+        .view()
+  if(params.alphaFoldOptions.contains('multimer')){
+    System.out.println("Multimer!!!!")
+    metricsMultimer(
+      alphaFold.out.predictions
+        .map { it[2] }
+        .collect()
+    )
+  }
 
 }
