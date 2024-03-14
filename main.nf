@@ -280,7 +280,10 @@ include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
 include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
-include { multiqc } from './nf-modules/local/process/multiqc'
+include { multiqcProteinStruct } from './nf-modules/local/process/multiqcProteinStruct'
+
+
+include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 
 /*
 =====================================
@@ -298,33 +301,11 @@ workflow {
 
   // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
-    fastaChecker(fastaPathCh)
-    alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
-    if (params.onlyMsas){
-      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-      versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
-      optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
-    } else {
-      if (params.fromMsas != null){
-        msasCh = fastaFilesCh.join(msasCh)
-      } else {
-        alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-        versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
-        optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
-        msasCh = alphaFoldSearch.out.msas
-                   .groupTuple()
-                   .map { it ->
-                     it[1] = it[1].flatten()
-                     it
-                   }
-        msasCh = fastaFilesCh.join(msasCh)
-      }
-      alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-      versionsCh = versionsCh.mix(alphaFold.out.versions)
-      optionsCh = optionsCh.mix(alphaFold.out.options)
-      massiveFoldPlots(alphaFold.out.predictions)
-      plotsCh = massiveFoldPlots.out.plots
-    }
+    alphaFoldWkfl(
+      fastaChainsCh,
+      fastaPathCh,
+      workflowSummaryCh
+    )
   }
 
   // Launch the molecular docking with DynamicBind
@@ -394,23 +375,6 @@ workflow {
   
   metricsMultimer(metricsMultimerCh)
 
-  // MULTIQC
-  getSoftwareVersions(versionsCh.unique().collectFile())
-  getSoftwareOptions(optionsCh.unique().collectFile())
-  multiqc(
-    plotsCh
-      .combine(getSoftwareVersions.out.versionsYaml.collect().ifEmpty([])),
-    plotsCh
-      .map {
-        it[0]
-      }
-      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml")),
-    plotsCh
-      .map {
-        it[0]
-      }
-      .combine(getSoftwareOptions.out.optionsYaml.collect().ifEmpty([]))
-  )
  
   
 

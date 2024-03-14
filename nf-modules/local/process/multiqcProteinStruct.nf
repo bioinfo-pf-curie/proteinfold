@@ -2,7 +2,7 @@
  * MultiQC for ProteinFold report
  */
 
-process multiqc {
+process multiqcProteinStruct {
   tag "${protein}"
   label 'multiqc'
   label 'minCpu'
