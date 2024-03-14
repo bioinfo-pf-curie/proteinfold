@@ -58,7 +58,7 @@ process alphaFoldSearch {
   """
   alphafold_options=\$(cat ${alphaFoldOptions})
   mkdir -p predictions/${protein}/msas
-  touch predictions/${protein}/msas/${protein}.txt
+  touch predictions/${protein}/msas/${protein}-${chainIdNum}.txt
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (MSAS) options=\${alphafold_options}" > options.txt
   """

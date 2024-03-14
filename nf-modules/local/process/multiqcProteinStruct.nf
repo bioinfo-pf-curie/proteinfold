@@ -7,7 +7,7 @@ process multiqcProteinStruct {
   label 'multiqc'
   label 'minCpu'
   label 'lowMem'
-  publishDir "${params.outDir}/multiqc/", mode: 'copy', saveAs: { "${protein}.html" }
+  publishDir "${params.outDir}/multiqcProteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
   //path multiqcConfig

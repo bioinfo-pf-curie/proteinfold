@@ -21,8 +21,10 @@ of the license and that you accept its terms.
 */ 
 
 // Processes
+include { alphaFold } from '../process/alphaFold'
 include { alphaFoldOptions } from '../process/alphaFoldOptions'
 include { alphaFoldSearch } from '../process/alphaFoldSearch'
+include { fastaChecker } from '../process/fastaChecker'
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 
 // Subworkflows
@@ -39,6 +41,7 @@ workflow alphaFoldWkfl {
   take:
 
   fastaChainsCh
+  fastaFilesCh
   fastaPathCh
   workflowSummaryCh
 

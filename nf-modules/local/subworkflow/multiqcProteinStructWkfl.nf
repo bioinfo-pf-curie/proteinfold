@@ -15,8 +15,8 @@ of the license and that you accept its terms.
 */
 
 // Processes
-include { getSoftwareOptions } from './nf-modules/common/process/utils/getSoftwareOptions'
-include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
+include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
+include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { multiqcProteinStruct } from '../process/multiqcProteinStruct'
 
 workflow multiqcProteinStructWkfl {

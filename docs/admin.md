@@ -1,0 +1,14 @@
+# Admin document for the developement of the pipeline
+
+## stub-run
+
+The following stub-run works:
+
+```bash
+nextflow run main.nf -stub-run -params-file test/params-file/alphafold-monomer.json -profile singularity
+```
+
+
+```bash
+nextflow run main.nf -stub-run -params-file test/params-file/alphafold-multimer.json -profile singularity
+```

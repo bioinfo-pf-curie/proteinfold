@@ -265,10 +265,7 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 // Processes
 include { getSoftwareOptions } from './nf-modules/common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
-include { alphaFold } from './nf-modules/local/process/alphaFold'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
-include { alphaFoldOptions } from './nf-modules/local/process/alphaFoldOptions'
-include { alphaFoldSearch } from './nf-modules/local/process/alphaFoldSearch'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
@@ -280,7 +277,6 @@ include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
 include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
-include { multiqcProteinStruct } from './nf-modules/local/process/multiqcProteinStruct'
 
 
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
@@ -303,6 +299,7 @@ workflow {
   if (params.launchAlphaFold){
     alphaFoldWkfl(
       fastaChainsCh,
+      fastaFilesCh,
       fastaPathCh,
       workflowSummaryCh
     )
@@ -368,12 +365,12 @@ workflow {
   }
 
   
-  afMassive.out.predictions.view()
-  metricsMultimerCh = afMassive.out.predictions
-                        .map { it[2] }
-                        .collect()
-  
-  metricsMultimer(metricsMultimerCh)
+  //afMassive.out.predictions.view()
+  //metricsMultimerCh = afMassive.out.predictions
+  //                      .map { it[2] }
+  //                      .collect()
+  //
+  //metricsMultimer(metricsMultimerCh)
 
  
   
