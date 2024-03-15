@@ -70,13 +70,16 @@ workflow afMassiveWkfl {
   // afMassive is alphaFold-like, it uses alphaFold's options too
   alphaFoldOptions(params.alphaFoldOptions, params.afMassiveDatabase)
   if (params.onlyMsas){
+    // step - MSAS when onlyMsas
     afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
     versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
     optionsCh = optionsCh.mix(afMassiveSearch.out.options)
   } else {
     if (params.fromMsas != null){
+      // step MSAS when fromMsas
       msasCh = fastaFilesCh.join(msasCh)
     } else {
+      // step - MSAS
       afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
       versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
       optionsCh = optionsCh.mix(afMassiveSearch.out.options)
@@ -88,9 +91,11 @@ workflow afMassiveWkfl {
                  }
       msasCh = fastaFilesCh.join(msasCh)
     }
+    // step - structure prediction
     afMassive(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
     versionsCh = versionsCh.mix(afMassive.out.versions)
     optionsCh = optionsCh.mix(afMassive.out.options)
+    // step generate plots
     massiveFoldPlots(afMassive.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
   }
