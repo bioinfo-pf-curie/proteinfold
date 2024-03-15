@@ -281,6 +281,7 @@ include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 // Subworkflows
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
+include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 
 /*
 =====================================
@@ -323,23 +324,12 @@ workflow {
 
   // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
-    fastaChecker(fastaPathCh)
-    if (params.onlyMsas){
-      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-      versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
-      optionsCh = optionsCh.mix(colabFoldSearch.out.options)
-    } else {
-      if (params.fromMsas == null){
-        colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-        versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
-        optionsCh = optionsCh.mix(colabFoldSearch.out.options)
-        msasCh = colabFoldSearch.out.msas
-      }
-      colabFold(msasCh, params.colabFoldDatabase)
-      versionsCh = versionsCh.mix(colabFold.out.versions)
-      optionsCh = optionsCh.mix(colabFold.out.options)
-      plotsCh = colabFold.out.plots
-    }
+    colabFoldWkfl(
+      fastaChainsCh,
+      fastaFilesCh,
+      fastaPathCh,
+      workflowSummaryCh
+    )
   }
 
 
