@@ -25,8 +25,11 @@ include { alphaFold } from '../process/alphaFold'
 include { alphaFoldOptions } from '../process/alphaFoldOptions'
 include { alphaFoldSearch } from '../process/alphaFoldSearch'
 include { fastaChecker } from '../process/fastaChecker'
+include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
+include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 include { metricsMultimer } from '../process/metricsMultimer'
+include { multiqcMetricsMultimer } from '../process/multiqcMetricsMultimer'
 
 // Subworkflows
 include { multiqcProteinStructWkfl } from '../subworkflow/multiqcProteinStructWkfl'
@@ -66,7 +69,7 @@ workflow alphaFoldWkfl {
   //////////////////////////
   alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
   if (params.onlyMsas){
-    // step MSAS when onlyMsas
+    // step - MSAS when onlyMsas
     alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
     optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
@@ -75,7 +78,7 @@ workflow alphaFoldWkfl {
       // step MSAS when fromMsas
       msasCh = fastaFilesCh.join(msasCh)
     } else {
-      // step MSAS
+      // step - MSAS
       alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
       versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
       optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
@@ -87,7 +90,7 @@ workflow alphaFoldWkfl {
                  }
       msasCh = fastaFilesCh.join(msasCh)
     }
-    // step structure prediction
+    // step - structure prediction
     alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
     versionsCh = versionsCh.mix(alphaFold.out.versions)
     optionsCh = optionsCh.mix(alphaFold.out.options)
@@ -109,16 +112,22 @@ workflow alphaFoldWkfl {
   /////////////////////////////////////////
   // metrics for the multimer prediction //
   /////////////////////////////////////////
-  alphaFold.out.predictions
-        .map { it[2] }
-        .collect()
-        .view()
   if(params.alphaFoldOptions.contains('multimer')){
-    System.out.println("Multimer!!!!")
+    // step - compute the metrics 
     metricsMultimer(
       alphaFold.out.predictions
         .map { it[2] }
         .collect()
+    )
+    
+    // step - multiqc report with the metric table
+    getSoftwareOptions(optionsCh.unique().collectFile())
+    getSoftwareVersions(versionsCh.unique().collectFile())
+    multiqcMetricsMultimer(
+      metricsMultimer.out.metrics,
+      getSoftwareOptions.out.optionsYaml.collect().ifEmpty([]),
+      getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
+      Channel.fromPath("${projectDir}/assets/multiqcConfigMetricsMultimer.yaml") 
     )
   }
 

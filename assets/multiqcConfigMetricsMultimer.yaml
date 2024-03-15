@@ -1,0 +1,19 @@
+
+custom_data:
+
+  qc_metrics_multimer_table:
+    id: 'qc_metrics_multimer_table'
+    parent_id: qc_metrics_multimer
+    parent_name: 'Multimer metrics'
+    section_name: 'Multimer metrics'
+    description: 'Various scores to assess the quality of docking between the mutlimers.'
+    plot_type: 'table'
+    pconfig:
+      id: 'qc_metrics_multimer_table'
+      format: '{:,.3f}'
+
+sp:
+
+  qc_metrics_multimer_table:
+    fn: 'qc_metrics_multimer.csv'
+
