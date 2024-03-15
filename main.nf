@@ -278,8 +278,9 @@ include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 
-
+// Subworkflows
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
+include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 
 /*
 =====================================
@@ -294,6 +295,16 @@ workflow {
   plotsCh = Channel.empty()
 
   main:
+
+  // Launch the prediction of the protein 3D structure with AfMassive
+  if (params.launchAfMassive){
+    afMassiveWkfl(
+      fastaChainsCh,
+      fastaFilesCh,
+      fastaPathCh,
+      workflowSummaryCh
+    )
+  }
 
   // Launch the prediction of the protein 3D structure with AlphaFold
   if (params.launchAlphaFold){
@@ -332,37 +343,6 @@ workflow {
   }
 
 
-  // Launch the prediction of the protein 3D structure with AfMassive
-  if (params.launchAfMassive){
-    fastaChecker(fastaPathCh)
-    // afMassive is alphaFold-like, it uses alphaFold's options too
-    alphaFoldOptions(params.alphaFoldOptions, params.afMassiveDatabase)
-    if (params.onlyMsas){
-      afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
-      versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
-      optionsCh = optionsCh.mix(afMassiveSearch.out.options)
-    } else {
-      if (params.fromMsas != null){
-        msasCh = fastaFilesCh.join(msasCh)
-      } else {
-        afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
-        versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
-        optionsCh = optionsCh.mix(afMassiveSearch.out.options)
-        msasCh = afMassiveSearch.out.msas
-                   .groupTuple()
-                   .map { it ->
-                     it[1] = it[1].flatten()
-                     it
-                   }
-        msasCh = fastaFilesCh.join(msasCh)
-      }
-      afMassive(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
-      versionsCh = versionsCh.mix(afMassive.out.versions)
-      optionsCh = optionsCh.mix(afMassive.out.options)
-      massiveFoldPlots(afMassive.out.predictions)
-      plotsCh = massiveFoldPlots.out.plots
-    }
-  }
 
   // Generate the help for each tool
   if(params.alphaFoldHelp){
