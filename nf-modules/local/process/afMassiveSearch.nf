@@ -46,8 +46,8 @@ process afMassiveSearch {
   script:
   // afMassive is alphaFold-like, therefore some variables contain alphaFold on purpose
   """
-  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g') --fasta_paths=${fastaFile} --only_msas"
-  launch_alphafold.sh \${alphafold_options} --chain_id_num ${chainIdNum}
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g') --only_msas"
+  launch_alphafold.sh \${alphafold_options}  --fasta_paths=${fastaFile} --chain_id_num ${chainIdNum}
   if [[ -f "predictions/${protein}/msas/chain_id_map.json" ]]; then
     mv predictions/${protein}/msas/chain_id_map.json predictions/${protein}/msas/chain_id_map_${chainIdNum}.json
   fi
@@ -57,7 +57,7 @@ process afMassiveSearch {
 
   stub:
   """
-  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g') --fasta_paths=${fastaFile} --only_msas"
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g') --only_msas"
   mkdir -p predictions/${protein}/msas
   touch predictions/${protein}/msas/${protein}-${chainIdNum}.txt
   echo "AFmassive \$(get_version.sh)" > versions.txt
