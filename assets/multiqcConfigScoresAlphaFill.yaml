@@ -1,0 +1,33 @@
+table_cond_formatting_rules:
+  #scores_alphafill_table-l_RMSd:
+  l_RMSd:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+
+table_cond_formatting_colours:
+  - correct: "#5cb85c"
+  - suspect: "#f0ad4e"
+  - unreliable: "#d9534f"
+
+custom_data:
+
+  scores_alphafill_table:
+    id: 'scores_alphafill_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'AlphaFill scores'
+    description: 'AlphaFill scores'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_table'
+      format: '{:,.3f}'
+
+sp:
+
+  scores_alphafill_table:
+    fn: 'scores_alphafill.csv'
+
