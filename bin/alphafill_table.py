@@ -48,7 +48,7 @@ def extract_hits(ligand_description):
     transplant['l-RMSd'] = local_rmsd
     transplants.append(transplant)
 
-  transplants = sorted(transplants, key=lambda x: (x['Compound'], x['g-RMSd']))
+  #transplants = sorted(transplants, key=lambda x: (x['Compound'], x['g-RMSd']))
   with open(f'{FLAGS.output_file}', 'w', newline='') as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=list(transplant.keys()), delimiter='\t')
     writer.writeheader()
