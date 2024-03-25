@@ -1,3 +1,6 @@
+
+
+
 table_cond_formatting_rules:
   #scores_alphafill_table-l_RMSd:
   l_RMSd:
@@ -26,8 +29,47 @@ custom_data:
       id: 'scores_alphafill_table'
       format: '{:,.3f}'
 
+  alphafill_legend:
+    id: 'alphafill_legend'
+    parent_id: alphafill_legend
+    parent_name: 'AlphaFill legend'
+    section_name: 'AlphaFill legend'
+    description: 'Colour legend for the confidence of the l-RMSd score'
+    plot_type: 'html'
+    data: |
+            <style type="text/css">
+            table td#correct {padding:0 15px; background-color:#5cb85c;}
+            table td#suspect {padding:0 15px; background-color:#f0ad4e;}
+            table td#unreliable {padding:0 15px; background-color:#d9534f;}
+            table td#range {padding:0 15px;}
+            table th#range {padding:0 15px;}
+            </style>
+            <table>
+              <tr>
+                <th>Status</th>
+                <th id="range">Range</th>
+              </tr>
+              <tr>
+                <td id="correct">Correct</td>
+                <td id="range"> l-RMSd < 0.92 </td>
+              </tr>
+              <tr>
+                <td id="suspect">Suspect</td>
+                <td id="range"> 0.92 < l-RMSd < 3.10 </td>
+              </tr>
+              <tr>
+                <td id="unreliable" >Unreliable</td>
+                <td id="range"> l-RMSd > 3.10 </td>
+              </tr>
+            </table>
+
 sp:
 
   scores_alphafill_table:
-    fn: 'scores_alphafill.csv'
+    fn: 'scores_alphafill.tsv'
 
+report_section_order:
+  scores_alphafill_table:
+    order: -10
+  alphafill_legend:
+    order: -11

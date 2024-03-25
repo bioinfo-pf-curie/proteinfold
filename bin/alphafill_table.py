@@ -11,11 +11,13 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string('input_file', None, 
                     'Path to the json file created by alphafill.')
+flags.DEFINE_string('ligand_file', None, 
+                    'Path to the json file created by alphafill.')
 flags.DEFINE_string('output_file', None, 
                     'Path to csv file with the score values for each transplant.')
 #flags.DEFINE_list('runs_to_compare', [], 'Runs that you want to compare on a same distribution plot')
 
-def extract_hits():
+def extract_hits(ligand_description):
 
   if not os.path.exists(f'{FLAGS.input_file}'):
     print(f'{FLAGS.input_file} does not exist.')
@@ -39,6 +41,7 @@ def extract_hits():
     local_rmsd = scores['hits'][hit]['transplants'][0]['local_rmsd']
     transplant['Hit'] =  'hit' + f'{hit}'
     transplant['Compound'] = analogue_id
+    transplant['Description'] = ligand_description[analogue_id]['Description']
     transplant['PDBID'] = pdb_id + "." + pdb_asym_id
     transplant['g-RMSd'] = global_rmsd
     transplant['asym_id'] = asym_id
@@ -47,15 +50,50 @@ def extract_hits():
 
   transplants = sorted(transplants, key=lambda x: (x['Compound'], x['g-RMSd']))
   with open(f'{FLAGS.output_file}', 'w', newline='') as csv_file:
-    writer = csv.DictWriter(csv_file, fieldnames=list(transplant.keys()))
-       
+    writer = csv.DictWriter(csv_file, fieldnames=list(transplant.keys()), delimiter='\t')
     writer.writeheader()
 
     for row in transplants:
         writer.writerow(row)
   
+def parse_ligand_file(ligand_file):
+    
+    data = {}
+    ligands = {}
+
+    with open(ligand_file, 'r') as cif_file:
+        current_section = None
+        for line in cif_file:
+            line = line.strip()
+            if line.startswith("data_"):
+                current_section = line
+                data[current_section] = {"Compound": None, "Description": None, "Name": None}
+            elif line.startswith("_ligand.id"):
+                _, ligand_id = line.split(None, 1)
+                data[current_section]["Compound"] = ligand_id.strip("'\"")
+            elif line.startswith("_ligand.description"):
+                _, description = line.split(None, 1)
+                data[current_section]["Description"] = description.strip("'\"")
+            elif line.startswith("_ligand.name"):
+                _, name = line.split(None, 1)
+                data[current_section]["Name"] = name.strip("'\"")
+            if data[current_section]["Name"] is not None:
+                data[current_section]["Description"] = data[current_section]["Name"]
+
+    for k in data.keys():
+        ligands[data[k]["Compound"]] = {"Description": data[k]["Description"]}
+
+    return ligands
+
+
 def main(argv):
-    extract_hits()
+
+  if not os.path.exists(f'{FLAGS.ligand_file}'):
+    print(f'{FLAGS.ligand_file} does not exist.')
+    sys.exit(1)
+
+  ligand_description = parse_ligand_file(FLAGS.ligand_file)
+  extract_hits(ligand_description)
 
 if __name__ == "__main__":
   """ 
