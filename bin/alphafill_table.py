@@ -15,7 +15,6 @@ flags.DEFINE_string('ligand_file', None,
                     'Path to the json file created by alphafill.')
 flags.DEFINE_string('output_file', None, 
                     'Path to csv file with the score values for each transplant.')
-#flags.DEFINE_list('runs_to_compare', [], 'Runs that you want to compare on a same distribution plot')
 
 def extract_hits(ligand_description):
 
@@ -97,6 +96,6 @@ def main(argv):
 
 if __name__ == "__main__":
   """ 
-  Create a csv file with transplat scores
+  Create a csv file with transplant scores
   """
   app.run(main)
