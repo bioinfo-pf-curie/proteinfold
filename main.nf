@@ -109,6 +109,11 @@ if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-
 }
 
 // Get realpath for the annotations to avoid symlink issues in bindings with apptainer
+if (params.launchAlphaFill){
+  File alphaFillDB = new File(params.genomes.alphafill.database)
+  params.alphaFillDatabase = alphaFillDB.getCanonicalPath()
+}
+
 if (params.launchAlphaFold){
   File alphaFoldDB = new File(params.genomes.alphafold.database)
   params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
