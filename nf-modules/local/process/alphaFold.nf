@@ -51,7 +51,8 @@ process alphaFold {
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
   alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
-  touch predictions/${protein}/${protein}.txt
+  # We copy here prediction for the multimer setting with BTB-domain whatever the settings
+  cp $projectDir/test/data/afmassive/multimer/BTB-domain/* predictions/${protein}
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """

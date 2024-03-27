@@ -10,9 +10,9 @@ from absl import app
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('input_file', None, 
-                    'Path to the json file created by alphafill.')
+                    'Path to the json file created by AlphaFill.')
 flags.DEFINE_string('ligand_file', None, 
-                    'Path to the json file created by alphafill.')
+                    'Path to the ligand file used by AlphaFill.')
 flags.DEFINE_string('output_file', None, 
                     'Path to csv file with the score values for each transplant.')
 

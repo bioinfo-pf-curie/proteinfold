@@ -15,8 +15,8 @@ import sys
 import gzip
 import mdtraj as md 
 
-flags.DEFINE_string('output_dir',None,'directory where predicted models are stored')
-flags.DEFINE_float('cutoff',5.0,'cutoff value of PAE. i.e. only pae<cutoff is counted good')
+flags.DEFINE_string('output_dir', None, 'directory where predicted models are stored')
+flags.DEFINE_float('cutoff', 5.0, 'cutoff value of PAE. i.e. only pae<cutoff is counted good')
 flags.DEFINE_integer('surface_thres',2,'surface threshold. must be integer')
 FLAGS=flags.FLAGS
 
@@ -160,7 +160,7 @@ def main(argv):
     for job in jobs:
         logging.info(f"now processing {job}")
         if os.path.isfile(os.path.join(FLAGS.output_dir,job,'ranking_debug.json')):
-            count=count +1
+            count = count + 1
             result_subdir = os.path.join(FLAGS.output_dir,job)
             best_model = json.load(open(os.path.join(result_subdir,"ranking_debug.json"),'rb'))['order'][0]
             data = json.load(open(os.path.join(result_subdir,"ranking_debug.json"),'rb'))

@@ -1,4 +1,4 @@
-#! /usr/bin/ev python
+#! /usr/bin/env python
 
 from absl import flags
 from absl import app
@@ -8,10 +8,12 @@ import os
 import pickle
 import sys
 
+
+
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string('pickle_file', None, 
-                    'Path to the pickle file created by AlphaFold.')
+flags.DEFINE_string('prediction_dir', None,
+                    'directory where predicted models are stored.')
 flags.DEFINE_string('output_file', None, 
                     'Path to json file to write the PAE.')
 
@@ -45,8 +47,18 @@ def pae_json(pae: np.ndarray, max_pae: float) -> str:
 
 def main(argv):
 
-  if not os.path.exists(f'{FLAGS.pickle_file}'):
-    print(f'ERROR: in option --pickle_file, the file \'{FLAGS.pickle_file}\' does not exist.')
+  if not os.path.exists(f'{FLAGS.prediction_dir}'):
+    print(f'ERROR: in option --prediction_dir, the directory \'{FLAGS.prediction_dir}\' does not exist.')
+    sys.exit(1)
+
+  if not os.path.exists(f'{FLAGS.prediction_dir}/ranking_debug.json'):
+    print(f'ERROR: there is no \'ranking_debug.json\' file in the folder \'{FLAGS.prediction_dir}\'.')
+    sys.exit(1)
+
+  best_model = json.load(open(os.path.join(f'{FLAGS.prediction_dir}/ranking_debug.json'),'rb'))['order'][0]
+
+  if not os.path.exists(f'{FLAGS.prediction_dir}/result_{best_model}.pkl'):
+    print(f'ERROR: there is no \'result_{best_model}.pkl\' file in the folder \'{FLAGS.prediction_dir}\'.')
     sys.exit(1)
 
   if not os.path.exists(os.path.dirname(os.path.realpath(f'{FLAGS.output_file}'))):
@@ -54,12 +66,12 @@ def main(argv):
     sys.exit(1)
 
   _, extension = os.path.splitext(f'{FLAGS.output_file}')
-  print(extension)
+
   if extension != '.json':
-    print(f'ERROR: in option --output_file, the extension of the file {FLAGS.output_file} must be \'json\'.')
+    print(f'ERROR: in option --output_file, the extension of the file \'{FLAGS.output_file}\' must be \'json\'.')
     sys.exit(1)
-  print(f'{FLAGS.pickle_file}')
-  with open(f'{FLAGS.pickle_file}', 'rb') as pkl_file:
+
+  with open(f'{FLAGS.prediction_dir}/result_{best_model}.pkl', 'rb') as pkl_file:
      data = pickle.load(pkl_file)
   
   pae = data['predicted_aligned_error']
@@ -72,6 +84,6 @@ def main(argv):
 
 if __name__ == "__main__":
   """ 
-  Create a json file with the PAE
+  Create a json file with the PAE for the best model
   """
   app.run(main)

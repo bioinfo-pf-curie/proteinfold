@@ -22,19 +22,25 @@ process alphaFill {
   label 'medMem'
   label 'minCpu'
   publishDir path: "${params.outDir}/alphaFill/", mode: 'copy'
-  containerOptions { "-B ${params.colabFoldDatabase}/mmcif_files:/app/alphafill/database/pdb-redo/mmcif_files" -B ${params.colabFoldDatabase}/fasta/pdb-redos.fasta }
 
   input:
-  tuple val(protein), path(proteinPdb), path(proteinPae)
+  tuple val(protein), val(toolFold), path("predictions/*"), path(jsonPae)
   path alphaFillDatabase
 
   output:
-  tuple path("${protein}.cif"), path("${protein}.json")
+  tuple val(protein), path("${protein}.cif"), path("${protein}.json"), emit: predictions
 
 
   script:
   """
-  alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pae-file ${proteinPae} ${proteinPdb} ${protein}.cif
+  alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pae-file ${jsonPae} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
+  """
+
+  stub:
+  """
+  echo alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pae-file ${jsonPae} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
+  touch ${protein}.cif
+  cp $projectDir/test/data/alphafill/json/alphafill-res.json ${protein}.json
   """
 }
 

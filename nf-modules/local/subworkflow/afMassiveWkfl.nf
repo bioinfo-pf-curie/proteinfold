@@ -32,6 +32,7 @@ include { metricsMultimer } from '../process/metricsMultimer'
 include { multiqcMetricsMultimer } from '../process/multiqcMetricsMultimer'
 
 // Subworkflows
+include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
 include { multiqcProteinStructWkfl } from '../subworkflow/multiqcProteinStructWkfl'
 
 /*
@@ -130,6 +131,13 @@ workflow afMassiveWkfl {
       getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
       Channel.fromPath("${projectDir}/assets/multiqcConfigMetricsMultimer.yaml") 
     )
+  }
+
+  ///////////////
+  // AlphaFill //
+  ///////////////
+  if(params.alphaFoldOptions.contains('multimer') && params.launchAlphaFill){
+    alphaFillWkfl(afMassive.out.predictions)
   }
 
 }

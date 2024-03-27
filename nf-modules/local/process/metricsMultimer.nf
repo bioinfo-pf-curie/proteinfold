@@ -22,12 +22,7 @@ process metricsMultimer {
 
   stub:
   """
-  echo metrics
-  mkdir afmassive
-  cp -r $projectDir/test/data/afmassive/multimer/BTB-domain/ afmassive
-  cd afmassive
   qc_metrics_multimer.py --output_dir=.
-  mv qc_metrics_multimer.csv ..
   """
 
 }
