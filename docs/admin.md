@@ -1,4 +1,4 @@
-# Admin document for the developement of the pipeline
+# Admin document for the developxement of the pipeline
 
 ## stub-run
 
@@ -22,4 +22,12 @@ nextflow run main.nf -stub-run -params-file test/params-file/colabfold-monomer.j
 
 ```bash
 nextflow run main.nf -stub-run -params-file test/params-file/colabfold-multimer.json -profile singularity --useGpu 
+```
+
+```bash
+nextflow run main.nf -stub-run -params-file test/params-file/alphafold-multimer-alphafill.json -profile singularity
+```
+
+```bash
+nextflow run main.nf -stub-run -params-file test/params-file/afmassive-multimer-alphafill.json -profile singularity
 ```
