@@ -1,6 +1,3 @@
-
-
-
 table_cond_formatting_rules:
   #scores_alphafill_table-l_RMSd:
   l_RMSd:
@@ -31,9 +28,9 @@ custom_data:
 
   alphafill_legend:
     id: 'alphafill_legend'
-    parent_id: alphafill_legend
-    parent_name: 'AlphaFill legend'
-    section_name: 'AlphaFill legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'AlphaFill scores'
     description: 'Colour legend for the confidence of the l-RMSd score'
     plot_type: 'html'
     data: |
@@ -63,6 +60,18 @@ custom_data:
               </tr>
             </table>
 
+  reference_legend:
+    id: 'reference_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'References'
+    description: 'List of publications'
+    plot_type: 'html'
+    data: |
+            <ul>
+              <li>Hekkelman, M.L., de Vries, I., Joosten, R.P. et al. AlphaFill: enriching AlphaFold models with ligands and cofactors. Nat Methods 20, 205–213 (2023). <a href="https://www.nature.com/articles/s41592-022-01685-y">https://doi.org/10.1038/s41592-022-01685-yi</a></li>
+            </ul>
+
 sp:
 
   scores_alphafill_table:
@@ -70,6 +79,8 @@ sp:
 
 report_section_order:
   scores_alphafill_table:
-    order: -10
+    order: -1000
   alphafill_legend:
-    order: -11
+    order: -500
+  reference_legend:
+    order: -400

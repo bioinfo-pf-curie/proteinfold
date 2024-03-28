@@ -1,3 +1,36 @@
+table_cond_formatting_rules:
+  iptm_ptm:
+    tm_wrong:
+      - lt: 0.60
+    tm_intermediate:
+      - gt: 0.60
+    tm_high:
+      - gt: 0.80
+  iptm:
+    tm_wrong:
+      - lt: 0.60
+    tm_intermediate:
+      - gt: 0.60
+    tm_high:
+      - gt: 0.80
+  mpDockQ_pDockQ:
+    dockq_incorrect:
+      - lt: 0.23
+    dockq_acceptable:
+      - gt: 0.23
+    dockq_medium:
+      - gt: 0.49
+    dockq_high:
+      - gt: 0.8
+
+table_cond_formatting_colours:
+  - tm_wrong: "#d9534f"
+  - tm_intermediate: "#f0ad4e"
+  - tm_high: "#5cb85c"
+  - dockq_incorrect: "#d9534f"
+  - dockq_acceptable: "#f0ad4e"
+  - dockq_medium: "#a1e3a1"
+  - dockq_high: "#5cb85c"
 
 custom_data:
 
@@ -12,8 +45,165 @@ custom_data:
       id: 'qc_metrics_multimer_table'
       format: '{:,.3f}'
 
+  iptm_ptm_legend:
+    id: 'iptm_ptm_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'ipTM & pTM'
+    description: 'This score is a linear combination of the predicted interface TMscore (ipTM) and the predicted TMscore (pTM): 0.8*ipTM + 0.2*pTM. It is used by AlphaFold multimer as a self-assessment ranking score.'
+    plot_type: 'html'
+    data: |
+            <style type="text/css">
+            table td#dockq_high {padding:0 15px; background-color:#5cb85c;}
+            table td#dockq_medium {padding:0 15px; background-color:#a1e3a1;}
+            table td#dockq_acceptable {padding:0 15px; background-color:#f0ad4e;}
+            table td#dockq_incorrect {padding:0 15px; background-color:#d9534f;}
+            table td#tm_high {padding:0 15px; background-color:#5cb85c;}
+            table td#tm_intermediate {padding:0 15px; background-color:#f0ad4e;}
+            table td#tm_wrong {padding:0 15px; background-color:#d9534f;}
+            table td#range {padding:0 15px;}
+            table th#range {padding:0 15px;}
+            </style>
+            <table>
+              <tr>
+                <th>Status</th>
+                <th id="range">Range</th>
+              </tr>
+              <tr>
+                <td id="tm_high">High</td>
+                <td id="range"> 0.8*ipTM + 0.2*pTM  > 0.80 </td>
+              </tr>
+              <tr>
+                <td id="tm_intermediate">Intermediate</td>
+                <td id="range"> 0.6 < 0.8*ipTM + 0.2*pTM < 0.8 </td>
+              </tr>
+              <tr>
+                <td id="tm_wrong">Wrong</td>
+                <td id="range"> 0.8*ipTM + 0.2*pTM < 0.6  </td>
+              </tr>
+            </table>
+
+  iptm_legend:
+    id: 'iptm_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'ipTM'
+    description: 'This is the predicted interface TMscore'
+    plot_type: 'html'
+    data: |
+            <table>
+              <tr>
+                <th>Status</th>
+                <th id="range">Range</th>
+              </tr>
+              <tr>
+                <td id="tm_high">High</td>
+                <td id="range"> ipTM  > 0.80 </td>
+              </tr>
+              <tr>
+                <td id="tm_intermediate">Intermediate</td>
+                <td id="range"> 0.6 < ipTM < 0.8 </td>
+              </tr>
+              <tr>
+                <td id="tm_wrong">Wrong</td>
+                <td id="range"> ipTM < 0.6  </td>
+              </tr>
+            </table>
+
+  pdockq_legend:
+    id: 'pdockq_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'pDockQ'
+    description: 'This is the prediction of the DockQ value '
+    plot_type: 'html'
+    data: |
+            <table>
+              <tr>
+                <th>Status</th>
+                <th id="range">Range</th>
+              </tr>
+              <tr>
+                <td id="dockq_high">High</td>
+                <td id="range">  pDockQ  > 0.80 </td>
+              </tr>
+              <tr>
+                <td id="dockq_medium">Medium</td>
+                <td id="range"> 0.49 < pDockQ < 0.8 </td>
+              </tr>
+              <tr>
+                <td id="dockq_acceptable">Acceptable</td>
+                <td id="range"> 0.23 < pDockQ < 0.49  </td>
+              </tr>
+              <tr>
+                <td id="dockq_incorrect">Incorrect</td>
+                <td id="range"> pDockQ < 0.23  </td>
+              </tr>
+            </table>
+
+  ipae_legend:
+    id: 'ipae_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'iPAE'
+    description: 'This is the median predicted aligned error at the interface.'
+    plot_type: 'html'
+    data: |
+            The distance threshold to define contact is set at 0.35nm (3.5A) between CA atoms. Lower score means better. 
+
+  definition_legend:
+    id: 'definition_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Definitions'
+    plot_type: 'html'
+    data: |
+        <dl class="dl-horizontal">
+            <dt>DockQ</dt><dd><samp>This is a quality measure for protein-protein docking models (Basu et al. 2016).</samp></dd>
+            <dt>pDockQ</dt><dd><samp>This is the prediction of the DockQ value (Bryant et al. 2022).</samp></dd>
+            <dt>iPAE</dt><dd><samp>This is the median predicted aligned error at the interface. The distance threshold to define contact is set at 0.35nm (3.5A) between CA atoms. Lower score means better.</samp></dd>
+            <dt>ipTM</dt><dd><samp>This is interface predicted template modelling (ipTM) score. It measures the accuracy of the predicted relative positions of the subunits forming the protein-protein complex. Values higher than 0.8 represent confident high-quality predictions, while values below 0.6 suggest likely a failed prediction. ipTM values between 0.6 and 0.8 are a grey zone where predictions could be correct or wrong.</samp></dd>
+            <dt>pTM</dt><dd><samp>This is the predicted template modelling (pTM) score. pTM is an integrated measure of how well AlphaFold-Multimer has predicted the overall structure of the complex. It is the predicted TM score for a superposition between the predicted structure and the hypothetical true structure.</samp></dd>
+        </dl>
+
+  reference_legend:
+    id: 'reference_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'References'
+    description: 'List of publications'
+    plot_type: 'html'
+    data: |
+            <ul>
+              <li>Basu S, Wallner B. DockQ: A Quality Measure for Protein-Protein Docking Models. PLoS ONE 11(8): e0161879. (2016) <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0161879">https://doi.org/10.1371/journal.pone.0161879</a></li>
+              <li>Bryant, P., Pozzati, G. & Elofsson, A. Improved prediction of protein-protein interactions using AlphaFold2. Nat Commun 13, 1265 (2022). <a href="https://www.nature.com/articles/s41467-022-28865-w">https://doi.org/10.1038/</a></li>
+              <li>Jumper, J., Evans, R., Pritzel, A. et al. Highly accurate protein structure prediction with AlphaFold. Nature 596, 583–589 (2021). <a href="https://www.nature.com/articles/s41586-021-03819-2">https://doi.org/10.1038/s41586-021-03819-2</a></li>
+              <li>EMBL-EBI Training:<a href="https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/confidence-scores-in-alphafold-multimer/">Confidence scores in AlphaFold-Multimer</a></li>
+              <li>Teufel F, Refsgaard J.C., Kasimova M.A., Deibler K., Madsen C.T., Stahlhut C., Grønborg M., Winther O., and Madsen D.. Deorphanizing Peptides Using Structure Prediction. Journal of Chemical Information and Modeling. 2023.<a href="https://pubs.acs.org/doi/10.1021/acs.jcim.3c00378">DOI:10.1021/acs.jcim.3c00378</a></li>
+            </ul>
+
 sp:
 
   qc_metrics_multimer_table:
     fn: 'qc_metrics_multimer.csv'
+
+report_section_order:
+  qc_metrics_multimer_table:
+    order: -1000
+  iptm_ptm_legend:
+    order: -1500
+  iptm_legend:
+    order: -1490
+  pdockq_legend:
+    order: -1480
+  ipae_legend:
+    order: -1470
+  definition_legend:
+    order: -1460
+  reference_legend:
+    order: -1450
+  software_versions:
+    order: -2000
+  software_options:
+    order: -2100
 

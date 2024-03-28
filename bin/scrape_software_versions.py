@@ -26,8 +26,8 @@ with open(args.input) as f:
 # Dump to YAML
 print (f"""
 id: '{args.id}'
-section_name: '{args.name}'
-section_href: 'https://gitlab.curie.fr/data-analysis/proteinfold'
+parent_id: software
+parent_name: 'Software'
 plot_type: 'html'
 description: '{args.description}'
 data: |

@@ -51,6 +51,7 @@ for file in "${png_files[@]}"; do
     echo "    fn: \"${file}.png\""
 done
 
+echo ""
 echo "ignore_images: false"
 echo ""
 echo "report_section_order:"
