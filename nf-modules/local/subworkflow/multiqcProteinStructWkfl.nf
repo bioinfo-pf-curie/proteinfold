@@ -41,12 +41,12 @@ workflow multiqcProteinStructWkfl {
       .map {
         it[0]
       }
-      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml")),
+      .combine(getSoftwareOptions.out.optionsYaml.collect().ifEmpty([])),
     plotsCh
       .map {
         it[0]
       }
-      .combine(getSoftwareOptions.out.optionsYaml.collect().ifEmpty([]))
+      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"))
   )
 
 }

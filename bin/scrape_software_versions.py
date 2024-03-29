@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", help="version file", type=str, default='')
 parser.add_argument("-s", "--split", help="string to split the line", type=str, default=' ')
 parser.add_argument("-t", "--id", help="section id", type=str, default='software_versions')
-parser.add_argument("-n", "--name", help="section name", type=str, default='Software Versions')
+parser.add_argument("-n", "--name", help="section name", type=str, default=' Versions')
 parser.add_argument("-d", "--description", help="section ", type=str, default='This information is collected at runtime from the software output.')
 args = parser.parse_args()
 
@@ -28,6 +28,7 @@ print (f"""
 id: '{args.id}'
 parent_id: software
 parent_name: 'Software'
+section_name: '{args.name}'
 plot_type: 'html'
 description: '{args.description}'
 data: |

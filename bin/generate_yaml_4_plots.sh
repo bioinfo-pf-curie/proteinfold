@@ -56,20 +56,22 @@ echo "ignore_images: false"
 echo ""
 echo "report_section_order:"
 echo "  prediction_structure_plots:"
-echo "    order: -10"
+echo "    order: -1000"
 
 
-counter=10
+counter=-1000
 for file in "${png_files[@]}"; do
-    ((counter++))
+    counter=$((counter + 10))
     echo "  ${file}:"
-    echo "    order: -${counter}"
+    echo "    order: ${counter}"
 done
 
-echo "  software_versions:"
-echo "    order: -1000"
-echo "  software_options:"
-echo "    order: -1100"
-echo "  summary:"
+echo "  software:"
 echo "    order: -2000"
+echo "  software_versions:"
+echo "    order: -1990"
+echo "  software_options:"
+echo "    order: -1980"
+echo "  summary:"
+echo "    order: -2300"
 
