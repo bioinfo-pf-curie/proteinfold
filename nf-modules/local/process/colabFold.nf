@@ -47,14 +47,19 @@ process colabFold {
   """
 
   stub:
+  String toolFoldOptions = params["colabFoldOptions"]
   """
+  echo ${toolFoldOptions}
+  if [[ "${toolFoldOptions}" =~ "multimer" ]]; then
+    folder="multimer"
+  else
+    folder="monomer2"
+  fi
   mkdir -p predictions/
   touch predictions/${protein}.txt
-  cp -r ${projectDir}/test/data/plots/colabfold/monomer2/MISFA/* predictions
+  cp -r ${projectDir}/test/data/plots/colabfold/\${folder}/${protein}/* predictions
   echo "ColabFold \$(get_version.sh)" > predictions/versions.txt
   echo "colabfold_batch options=${params.colabFoldOptions}" > predictions/options.txt
   """
-
-
 }
 

@@ -6,7 +6,7 @@ process multiqcMetricsMultimer {
   label 'multiqc'
   label 'minCpu'
   label 'lowMem'
-  publishDir "${params.outDir}/multiqcMetricsMultimer/", mode: 'copy', saveAs: { "metrics_multimer.html" }
+  publishDir "${params.outDir}/multiqc/MetricsMultimer/", mode: 'copy', saveAs: { "metrics_multimer.html" }
 
   input:
   path(metrics) 

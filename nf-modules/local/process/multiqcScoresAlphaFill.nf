@@ -7,7 +7,7 @@ process multiqcScoresAlphaFill {
   label 'multiqc'
   label 'minCpu'
   label 'lowMem'
-  publishDir "${params.outDir}/multiqcScoresAlphaFill/", mode: 'copy', saveAs: { "${protein}.html" }
+  publishDir "${params.outDir}/multiqc/ScoresAlphaFill/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
   tuple val(protein), path("scores_alphafill.tsv")

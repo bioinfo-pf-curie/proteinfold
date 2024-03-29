@@ -7,7 +7,7 @@ process multiqcProteinStruct {
   label 'multiqc'
   label 'minCpu'
   label 'lowMem'
-  publishDir "${params.outDir}/multiqcProteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
+  publishDir "${params.outDir}/multiqc/ProteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
   //path multiqcConfig
@@ -21,7 +21,7 @@ process multiqcProteinStruct {
 
   script:
   """
-  bash generate_yaml_4_plots.sh plots > multiqcConfig.yaml
+  bash generate_yaml_4_plots.sh plots softwareVersions/software_versions_mqc.yaml > multiqcConfig.yaml
   apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
   multiqc -c multiqcConfig.yaml -c multiqc-config-header.yaml . plots
   """    

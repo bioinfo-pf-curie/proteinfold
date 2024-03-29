@@ -34,31 +34,44 @@ custom_data:
     description: 'Colour legend for the confidence of the l-RMSd score'
     plot_type: 'html'
     data: |
-            <style type="text/css">
-            table td#correct {padding:0 15px; background-color:#5cb85c;}
-            table td#suspect {padding:0 15px; background-color:#f0ad4e;}
-            table td#unreliable {padding:0 15px; background-color:#d9534f;}
-            table td#range {padding:0 15px;}
-            table th#range {padding:0 15px;}
-            </style>
-            <table>
-              <tr>
-                <th>Status</th>
-                <th id="range">Range</th>
-              </tr>
-              <tr>
-                <td id="correct">Correct</td>
-                <td id="range"> l-RMSd < 0.92 </td>
-              </tr>
-              <tr>
-                <td id="suspect">Suspect</td>
-                <td id="range"> 0.92 < l-RMSd < 3.10 </td>
-              </tr>
-              <tr>
-                <td id="unreliable" >Unreliable</td>
-                <td id="range"> l-RMSd > 3.10 </td>
-              </tr>
-            </table>
+      <style type="text/css">
+      table td#correct {padding:0 15px; background-color:#5cb85c;}
+      table td#suspect {padding:0 15px; background-color:#f0ad4e;}
+      table td#unreliable {padding:0 15px; background-color:#d9534f;}
+      table td#range {padding:0 15px;}
+      table th#range {padding:0 15px;}
+      </style>
+      <table>
+        <tr>
+          <th>Status</th>
+          <th id="range">Range</th>
+        </tr>
+        <tr>
+          <td id="correct">Correct</td>
+          <td id="range"> l-RMSd < 0.92 </td>
+        </tr>
+        <tr>
+          <td id="suspect">Suspect</td>
+          <td id="range"> 0.92 < l-RMSd < 3.10 </td>
+        </tr>
+        <tr>
+          <td id="unreliable" >Unreliable</td>
+          <td id="range"> l-RMSd > 3.10 </td>
+        </tr>
+      </table>
+
+  definition_legend:
+    id: 'definition_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Definitions'
+    plot_type: 'html'
+    data: |
+      <dl class="dl-horizontal">
+          <dt>g-RMSD</dt><dd><samp>This is the global Root Mean Square Deviation. The compounds of interest are structurally aligned on Cα-atoms of the AlphaFold model; the g-RMSD is the RMSD calculated from this alignment (Hekkelman et al. 2023).</samp></dd>
+          <dt>l-RMSD</dt><dd><samp>This is the local Root Mean Square Deviation. Starting from the closest homolog, all backbone atoms within 6 Å from the atoms of each compound that will be considered for ‘transplantation’ are selected and used for a local structural alignment to the AlphaFold model; the l-RMSD is the RMSD calculated from this alignment (Hekkelman et al. 2023). The l-RMSD is a proxy to assess the local environment validation (LEV) score. The LEV is defined as the all-atom RMSD of any ligand atom and all proteins’ atoms within 6.0 Å from the ligand, between the AlphaFill and experimental complexes.</samp></dd>
+      </dl>
+
 
   reference_legend:
     id: 'reference_legend'
@@ -68,9 +81,9 @@ custom_data:
     description: 'List of publications'
     plot_type: 'html'
     data: |
-            <ul>
-              <li>Hekkelman, M.L., de Vries, I., Joosten, R.P. et al. AlphaFill: enriching AlphaFold models with ligands and cofactors. Nat Methods 20, 205–213 (2023). <a href="https://www.nature.com/articles/s41592-022-01685-y">https://doi.org/10.1038/s41592-022-01685-yi</a></li>
-            </ul>
+      <ul>
+        <li>Hekkelman, M.L., de Vries, I., Joosten, R.P. et al. AlphaFill: enriching AlphaFold models with ligands and cofactors. Nat Methods 20, 205–213 (2023). <a href="https://www.nature.com/articles/s41592-022-01685-y">https://doi.org/10.1038/s41592-022-01685-yi</a></li>
+      </ul>
 
 sp:
 
@@ -80,7 +93,11 @@ sp:
 report_section_order:
   scores_alphafill_table:
     order: -1000
+  legend:
+    order: -1500
   alphafill_legend:
-    order: -500
+    order: -1490
+  definition_legend:
+    order: -1480
   reference_legend:
-    order: -400
+    order: -1470

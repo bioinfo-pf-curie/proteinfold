@@ -94,7 +94,7 @@ def MF_DM_dual_plddt_PAE(prediction, rank):
   plt.ylabel('pLDDT')
 
   plt.subplot(1, 2, 2)
-  plt.imshow(pae, vmin=0., vmax=max_pae, cmap='Greens_r')
+  plt.imshow(pae, vmin=0., vmax=30, cmap='bwr')
   plt.colorbar(fraction=0.046, pad=0.04)
   plt.title('Predicted Aligned Error (Ångströms)')
   plt.suptitle(f'rank_{rank}_{prediction}')
@@ -143,8 +143,10 @@ def MF_coverage():
 def MF_score_histogram(scores:dict):
   try:
     scores = scores['iptm+ptm']
+    s_type = 'iptm+ptm'
   except KeyError:
     scores = scores['plddts']
+    s_type = 'plddts'
 
   # Global score distribution 
   all_scores = [scores[model] for model in scores]
@@ -153,8 +155,8 @@ def MF_score_histogram(scores:dict):
   histogram.suptitle('Global score distribution')
   ax1.set(xlabel='Ranking confidence', ylabel='Number of predictions')
   if FLAGS.action == "save":
-    histogram.savefig(f"{FLAGS.output_path}/score_distribution.png", dpi=200)
-    print("Saved as score_distribution.png")
+    histogram.savefig(f"{FLAGS.output_path}/score_distribution_{s_type}.png", dpi=200)
+    print(f"Saved as score_distribution_{s_type}.png")
     plt.close(histogram)
 
 def MF_versions_density(scores:dict):
@@ -231,8 +233,8 @@ def MF_models_scores(scores:dict):
   plt.tight_layout()
  
   if FLAGS.action == "save":
-    plt.savefig(f"{FLAGS.output_path}/models_scores.png", dpi=200)
-    print("Saved as models_scores.png")
+    plt.savefig(f"{FLAGS.output_path}/models_scores_{s_type}.png", dpi=200)
+    print(f"Saved as models_scores_{s_type}.png")
 
   if FLAGS.action == "show":
     plt.show()
