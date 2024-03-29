@@ -23,7 +23,6 @@ of the license and that you accept its terms.
 // Processes
 include { alphaFill } from '../process/alphaFill'
 include { generateAlphaFillTsv } from '../process/generateAlphaFillTsv'
-include { generateJsonPae } from '../process/generateJsonPae'
 include { multiqcScoresAlphaFill } from '../process/multiqcScoresAlphaFill'
 
 /*
@@ -40,13 +39,9 @@ workflow alphaFillWkfl {
 
   main:
 
-  // step - generate the PAE data in json format
-  generateJsonPae(predictionsCh)
-
   // step - launch AlphaFill
   alphaFill(
-    predictionsCh
-      .join(generateJsonPae.out.jsonPae),
+    predictionsCh,
     params.alphaFillDatabase
   )
 

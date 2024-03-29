@@ -24,7 +24,7 @@ process alphaFill {
   publishDir path: "${params.outDir}/alphaFill/", mode: 'copy'
 
   input:
-  tuple val(protein), val(toolFold), path("predictions/*"), path(jsonPae)
+  tuple val(protein), val(toolFold), path("predictions/*")
   path alphaFillDatabase
 
   output:
@@ -33,12 +33,12 @@ process alphaFill {
 
   script:
   """
-  alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pae-file ${jsonPae} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
+  alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
   """
 
   stub:
   """
-  echo alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pae-file ${jsonPae} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
+  echo alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
   touch ${protein}.cif
   cp $projectDir/test/data/alphafill/json/alphafill-res.json ${protein}.json
   """
