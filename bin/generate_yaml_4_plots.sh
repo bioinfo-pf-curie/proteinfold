@@ -88,7 +88,7 @@ function section_info {
 	  exit 0
   fi
   if [[ "$1" =~ "versions_density" ]]; then
-	  echo "    section_name: \"Score density by AlphaFold model.\""
+	  echo "    section_name: \"Score density by AlphaFold model\""
 	  echo "    description: \"Different versions of AlphaFold multimer have been released (v1, v2, v3). This plots de density of the scores for each version. The scores of the models are based on the 0.80*ipTM + 0.2*pTM criteria.\""
       has_iptm=1
 	  exit 0
