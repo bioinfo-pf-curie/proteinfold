@@ -53,8 +53,8 @@ workflow alphaFillWkfl {
 
   // step - generate multiqc for AlphaFill
   multiqcScoresAlphaFill(
-    generateAlphaFillTsv.out.tsv,
-    Channel.fromPath("${projectDir}/assets/multiqcConfigScoresAlphaFill.yaml") 
+    generateAlphaFillTsv.out.tsv
+      .combine(Channel.fromPath("${projectDir}/assets/multiqcConfigScoresAlphaFill.yaml"))
   )
 
 }
