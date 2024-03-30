@@ -213,8 +213,12 @@ def plot_plddts(plddts, Ls=None, dpi=100, fig=True):
       plt.plot([L,L],[0,100],color="black")
   plt.legend()
   plt.ylim(0,100)
+  plt.axhline(y=100, color='grey', linestyle='-')
+  plt.axhline(y=90, color='green', linestyle='--')
+  plt.axhline(y=70, color='orange', linestyle='--')
+  plt.axhline(y=50, color='red', linestyle='--')
   plt.ylabel("Predicted lDDT")
-  plt.xlabel("Positions")
+  plt.xlabel("Residue")
   return plt
 
 def plot_paes(paes, Ls=None, dpi=100, fig=True):

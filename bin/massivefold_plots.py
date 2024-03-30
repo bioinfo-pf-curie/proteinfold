@@ -90,6 +90,11 @@ def MF_DM_dual_plddt_PAE(prediction, rank):
   plt.plot(results['plddt'])
   plt.title(f'Predicted LDDT')
   plt.suptitle(f'rank_{rank}_{prediction}')
+  plt.ylim(0,100)
+  plt.axhline(y=100, color='grey', linestyle='-')
+  plt.axhline(y=90, color='green', linestyle='--')
+  plt.axhline(y=70, color='orange', linestyle='--')
+  plt.axhline(y=50, color='red', linestyle='--')
   plt.xlabel('Residue')
   plt.ylabel('pLDDT')
 
@@ -154,6 +159,16 @@ def MF_score_histogram(scores:dict):
   ax1.hist(all_scores, bins=50)
   histogram.suptitle('Global score distribution')
   ax1.set(xlabel='Ranking confidence', ylabel='Number of predictions')
+
+  if s_type == 'iptm+ptm':
+      plt.xlim(0,1)
+      plt.axvline(x=0.8, color='green', linestyle='--')
+      plt.axvline(x=0.6, color='orange', linestyle='--')
+  elif s_type == 'plddts':
+      plt.xlim(0,100)
+      plt.axvline(x=90, color='green', linestyle='--')
+      plt.axvline(x=70, color='orange', linestyle='--')
+      plt.axvline(x=50, color='red', linestyle='--')
   if FLAGS.action == "save":
     histogram.savefig(f"{FLAGS.output_path}/score_distribution_{s_type}.png", dpi=200)
     print(f"Saved as score_distribution_{s_type}.png")
@@ -182,6 +197,10 @@ def MF_versions_density(scores:dict):
     xlabel='Ranking confidence',
     ylabel="Density"
   )
+
+  plt.xlim(0,1)
+  plt.axvline(x=0.8, color='green', linestyle='--')
+  plt.axvline(x=0.6, color='orange', linestyle='--')
 
   if FLAGS.action == "save":
     kde_versions.savefig(f"{FLAGS.output_path}/versions_density.png",dpi=200)
@@ -216,10 +235,10 @@ def MF_models_scores(scores:dict):
     box.set_facecolor(color)
 
   plt.grid(False)
-  fig.suptitle("Score per NN model")
+  fig.suptitle("Score per AlpfaFold model")
   
   ax.set(
-    xlabel="NN model",
+    xlabel="AlphaFold model version",
     ylabel="Ranking confidence"
   )
   ax.set_xticklabels(scores_per_model.columns, rotation=45)
@@ -227,7 +246,14 @@ def MF_models_scores(scores:dict):
   ax.spines['right'].set_visible(False)
   if s_type == 'iptm+ptm':
     ax.set_ylim(bottom=0, top=1.1)
+    plt.axhline(y=1, color='grey', linestyle='-')
+    plt.axhline(y=0.8, color='green', linestyle='--')
+    plt.axhline(y=0.6, color='orange', linestyle='--')
   elif s_type == 'plddts':
+    plt.axhline(y=100, color='grey', linestyle='-')
+    plt.axhline(y=90, color='green', linestyle='--')
+    plt.axhline(y=70, color='orange', linestyle='--')
+    plt.axhline(y=50, color='red', linestyle='--')
     ax.set_ylim(bottom=0, top=110)
   
   plt.tight_layout()
