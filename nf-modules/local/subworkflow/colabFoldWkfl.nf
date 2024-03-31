@@ -44,6 +44,7 @@ workflow colabFoldWkfl {
   fastaChainsCh
   fastaFilesCh
   fastaPathCh
+  msasCh
   workflowSummaryCh
 
   main:

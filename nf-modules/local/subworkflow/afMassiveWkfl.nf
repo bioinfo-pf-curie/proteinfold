@@ -48,6 +48,7 @@ workflow afMassiveWkfl {
   fastaChainsCh
   fastaFilesCh
   fastaPathCh
+  msasCh
   workflowSummaryCh
 
   main:

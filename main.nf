@@ -178,6 +178,7 @@ fastaChainsCh = fastaFilesCh
                    .collate(3)
 
 // set the msasCh when the pipeline is launched using existing msas
+msasCh = Channel.empty()
 if(params.fromMsas != null){
 
   File fromMsas = new File(params.fromMsas)
@@ -308,6 +309,7 @@ workflow {
       fastaChainsCh,
       fastaFilesCh,
       fastaPathCh,
+      msasCh,
       workflowSummaryCh
     )
   }
@@ -318,6 +320,7 @@ workflow {
       fastaChainsCh,
       fastaFilesCh,
       fastaPathCh,
+      msasCh,
       workflowSummaryCh
     )
   }
@@ -333,6 +336,7 @@ workflow {
       fastaChainsCh,
       fastaFilesCh,
       fastaPathCh,
+      msasCh,
       workflowSummaryCh
     )
   }

@@ -48,6 +48,7 @@ workflow alphaFoldWkfl {
   fastaChainsCh
   fastaFilesCh
   fastaPathCh
+  msasCh
   workflowSummaryCh
 
   main:
