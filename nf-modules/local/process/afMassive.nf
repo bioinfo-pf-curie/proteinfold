@@ -51,8 +51,13 @@ process afMassive {
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
   alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
-  # We copy here prediction for the multimer setting with BTB-domain whatever the settings
-  cp $projectDir/test/data/afmassive/multimer/BTB-domain/* predictions/${protein}
+  # We copy here the predictions
+  if [[ "\$alphafold_options" =~ "preset=multimer" ]]; then
+    folder="multimer"
+  else
+    folder="monomer2"
+  fi
+  cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
   echo "AFmassive \$(get_version.sh)" > versions.txt
   echo "AFmassive (prediction) options=\${alphafold_options} ${params.afMassiveOptions}" > options.txt
   """

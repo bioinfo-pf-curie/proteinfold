@@ -10,7 +10,7 @@ from absl import flags
 from absl import app
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-from colabfold_plots import plot_msa_v2, plot_plddts, plot_confidence, plot_paes, plot_plddt_legend
+from colabfold_plots import plot_msa_v2, plot_plddts, plot_confidence, plot_paes, plot_plddt_legend, plot_ticks, plot_pae
 from scipy.stats import gaussian_kde
 import shutil
 from matplotlib.lines import Line2D
@@ -103,13 +103,8 @@ def MF_DM_dual_plddt_PAE(prediction, rank):
   plt.xlabel('Residue')
   plt.ylabel('pLDDT')
 
-  plt.subplot(1, 2, 2)
-  plt.imshow(pae, vmin=0., vmax=30, cmap='bwr')
-  plt.colorbar(fraction=0.046, pad=0.04)
-  add_line_sequence(Ls, max_value=np.sum(Ls))
-  add_line_sequence(Ls, max_value=np.sum(Ls), orientation='horizontal')
-  plt.title('Predicted Aligned Error (Ångströms)')
-  plt.suptitle(f'rank_{rank}_{prediction}')
+  axes = plt.subplot(1, 2, 2)
+  plot_pae(pae, axes, Ls=Ls, caption='Predicted Aligned Error (Ångströms)')
   plt.xlabel('Scored residue')
   plt.ylabel('Aligned residue')
   
@@ -260,7 +255,6 @@ def MF_models_scores(scores:dict):
     plt.axhline(y=100, color='grey', linestyle='-', linewidth=1)
     plt.axhline(y=90, color='green', linestyle='--', linewidth=1)
     plt.axhline(y=70, color='orange', linestyle='--', linewidth=1)
-    add_line_sequence(Ls, max_value=np.sum(Ls))
     plt.axhline(y=50, color='red', linestyle='--', linewidth=1)
     ax.set_ylim(bottom=0, top=110)
   

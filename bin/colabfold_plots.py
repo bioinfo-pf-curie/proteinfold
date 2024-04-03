@@ -255,8 +255,8 @@ def plot_ticks(Ls, axes=None):
   for L_i in Ls[:-1]:
     L = L_prev + L_i
     L_prev += L_i
-    plt.plot([0,Ln],[L,L],color="black")
-    plt.plot([L,L],[0,Ln],color="black")
+    plt.plot([0,Ln],[L,L], color="black", linestyle='--', linewidth=1)
+    plt.plot([L,L],[0,Ln], color="black", linestyle='--', linewidth=1)
   ticks = np.cumsum([0]+Ls)
   ticks = (ticks[1:] + ticks[:-1])/2
   axes.set_yticks(ticks)

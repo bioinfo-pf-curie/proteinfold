@@ -36,23 +36,8 @@ process massiveFoldPlots {
   """
 
   stub:
-  String toolFoldOptions
-  if (toolFold == "afMassive") {
-    toolFoldOptions = params["alphaFoldOptions"]
-  } else {
-    toolFoldOptions = params[toolFold + "Options"]
-  }
   """
-  echo ${toolFoldOptions}
-  if [[ "${toolFoldOptions}" =~ "multimer" ]]; then
-    folder="multimer"
-  else
-    folder="monomer2"
-  fi
-  tool_fold=${toolFold}
-  echo \$tool_fold
-  echo "plots"
-  cp -r ${projectDir}/test/data/plots/\${tool_fold,,}/\$folder/${protein}/* .
+  massivefold_plots.py --input_path predictions/${protein} --output_path .  --chosen_plots coverage,CF_PAEs,CF_plddts,score_distribution,DM_plddt_PAE --top_n_predictions 1
   """
 }
 
