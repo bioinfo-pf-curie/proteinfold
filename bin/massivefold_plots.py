@@ -43,13 +43,14 @@ def CF_PAEs():
   all_models_pae = []
   jobname = FLAGS.input_path
   preds_to_plot = extract_top_predictions()
+  Ls = sequence_length(f'{jobname}/features.pkl')
   for pred in preds_to_plot:
     with open(f'{jobname}/result_{pred}.pkl', "rb") as pkl_file:
       data = pickle.load(pkl_file)
     if 'predicted_aligned_error' not in data:
       return False
     all_models_pae.append(np.asarray(data['predicted_aligned_error']))
-  plot_paes(all_models_pae)
+  plot_paes(all_models_pae, Ls=Ls)
   if FLAGS.action == "save":
     plt.savefig(f"{FLAGS.output_path}/top_{FLAGS.top_n_predictions}_PAE.png", dpi=200)
     print(f"Saved as top_{FLAGS.top_n_predictions}_PAE.png")
@@ -61,11 +62,12 @@ def CF_plddts():
   all_models_plddt = []
   jobname = FLAGS.input_path
   preds_to_plot = extract_top_predictions()
+  Ls = sequence_length(f'{jobname}/features.pkl')
   for pred in preds_to_plot:
     with open(f'{jobname}/result_{pred}.pkl', "rb") as pkl_file:
       data = pickle.load(pkl_file)
     all_models_plddt.append(np.asarray(data['plddt']))
-  plot_plddts(all_models_plddt)
+  plot_plddts(all_models_plddt, Ls=Ls)
   if FLAGS.action == "save":
     plt.savefig(f"{FLAGS.output_path}/top_{FLAGS.top_n_predictions}_plddt.png", dpi=200)
     print(f"Saved as top_{FLAGS.top_n_predictions}_plddt.png")
@@ -78,6 +80,8 @@ def MF_DM_dual_plddt_PAE(prediction, rank):
   with open(f'{jobname}/result_{prediction}.pkl', "rb") as results_file:
     results = pickle.load(results_file)
   
+  Ls = sequence_length(f'{jobname}/features.pkl')
+
   if 'predicted_aligned_error' not in results:
     return False
 
@@ -91,16 +95,19 @@ def MF_DM_dual_plddt_PAE(prediction, rank):
   plt.title(f'Predicted LDDT')
   plt.suptitle(f'rank_{rank}_{prediction}')
   plt.ylim(0,100)
-  plt.axhline(y=100, color='grey', linestyle='-')
-  plt.axhline(y=90, color='green', linestyle='--')
-  plt.axhline(y=70, color='orange', linestyle='--')
-  plt.axhline(y=50, color='red', linestyle='--')
+  plt.axhline(y=100, color='grey', linestyle='-', linewidth=1)
+  plt.axhline(y=90, color='green', linestyle='--', linewidth=1)
+  plt.axhline(y=70, color='orange', linestyle='--', linewidth=1)
+  plt.axhline(y=50, color='red', linestyle='--', linewidth=1)
+  add_line_sequence(Ls)
   plt.xlabel('Residue')
   plt.ylabel('pLDDT')
 
   plt.subplot(1, 2, 2)
   plt.imshow(pae, vmin=0., vmax=30, cmap='bwr')
   plt.colorbar(fraction=0.046, pad=0.04)
+  add_line_sequence(Ls, max_value=np.sum(Ls))
+  add_line_sequence(Ls, max_value=np.sum(Ls), orientation='horizontal')
   plt.title('Predicted Aligned Error (Ångströms)')
   plt.suptitle(f'rank_{rank}_{prediction}')
   plt.xlabel('Scored residue')
@@ -162,13 +169,13 @@ def MF_score_histogram(scores:dict):
 
   if s_type == 'iptm+ptm':
       plt.xlim(0,1)
-      plt.axvline(x=0.8, color='green', linestyle='--')
-      plt.axvline(x=0.6, color='orange', linestyle='--')
+      plt.axvline(x=0.8, color='green', linestyle='--', linewidth=1)
+      plt.axvline(x=0.6, color='orange', linestyle='--', linewidth=1)
   elif s_type == 'plddts':
       plt.xlim(0,100)
-      plt.axvline(x=90, color='green', linestyle='--')
-      plt.axvline(x=70, color='orange', linestyle='--')
-      plt.axvline(x=50, color='red', linestyle='--')
+      plt.axvline(x=90, color='green', linestyle='--', linewidth=1)
+      plt.axvline(x=70, color='orange', linestyle='--', linewidth=1)
+      plt.axvline(x=50, color='red', linestyle='--', linewidth=1)
   if FLAGS.action == "save":
     histogram.savefig(f"{FLAGS.output_path}/score_distribution_{s_type}.png", dpi=200)
     print(f"Saved as score_distribution_{s_type}.png")
@@ -199,8 +206,8 @@ def MF_versions_density(scores:dict):
   )
 
   plt.xlim(0,1)
-  plt.axvline(x=0.8, color='green', linestyle='--')
-  plt.axvline(x=0.6, color='orange', linestyle='--')
+  plt.axvline(x=0.8, color='green', linestyle='--', linewidth=1)
+  plt.axvline(x=0.6, color='orange', linestyle='--', linewidth=1)
 
   if FLAGS.action == "save":
     kde_versions.savefig(f"{FLAGS.output_path}/versions_density.png",dpi=200)
@@ -246,14 +253,15 @@ def MF_models_scores(scores:dict):
   ax.spines['right'].set_visible(False)
   if s_type == 'iptm+ptm':
     ax.set_ylim(bottom=0, top=1.1)
-    plt.axhline(y=1, color='grey', linestyle='-')
-    plt.axhline(y=0.8, color='green', linestyle='--')
-    plt.axhline(y=0.6, color='orange', linestyle='--')
+    plt.axhline(y=1, color='grey', linestyle='-', linewidth=1)
+    plt.axhline(y=0.8, color='green', linestyle='--', linewidth=1)
+    plt.axhline(y=0.6, color='orange', linestyle='--', linewidth=1)
   elif s_type == 'plddts':
-    plt.axhline(y=100, color='grey', linestyle='-')
-    plt.axhline(y=90, color='green', linestyle='--')
-    plt.axhline(y=70, color='orange', linestyle='--')
-    plt.axhline(y=50, color='red', linestyle='--')
+    plt.axhline(y=100, color='grey', linestyle='-', linewidth=1)
+    plt.axhline(y=90, color='green', linestyle='--', linewidth=1)
+    plt.axhline(y=70, color='orange', linestyle='--', linewidth=1)
+    add_line_sequence(Ls, max_value=np.sum(Ls))
+    plt.axhline(y=50, color='red', linestyle='--', linewidth=1)
     ax.set_ylim(bottom=0, top=110)
   
   plt.tight_layout()
@@ -430,6 +438,33 @@ def MF_recycles():
     else:
       print(f'Recycles are broken for {os.path.basename(log_file)}')
 
+def sequence_length(features_pkl):
+  with open(features_pkl, 'rb') as f:
+    feature_dict = pickle.load(f)
+
+  seq = feature_dict["msa"][0]
+  if "asym_id" in feature_dict:
+    Ls = [0]
+    k = feature_dict["asym_id"][0]
+    for i in feature_dict["asym_id"]:
+      if i == k: Ls[-1] += 1
+      else: Ls.append(1)
+      k = i
+  else:
+    Ls = [len(seq)]
+
+  return(Ls)
+
+def add_line_sequence(Ls, max_value=100, orientation='vertical'):
+  L_prev = 0
+  for L_i in Ls[:-1]:
+    L = L_prev + L_i
+    L_prev += L_i
+    if orientation == 'vertical':
+      plt.plot([L,L],[0,max_value], color="black", linestyle='--', linewidth=1)
+    if orientation == 'horizontal':
+      plt.plot([0,max_value],[L,L], color="black", linestyle='--', linewidth=1)
+
 def main(argv):
   FLAGS.input_path = os.path.realpath(FLAGS.input_path)
   MF_plots = {
@@ -452,6 +487,7 @@ def main(argv):
   if "distribution_comparison" in FLAGS.chosen_plots and not FLAGS.runs_to_compare:
     print('Flag --runs_to_compare is required for --chosen_plots=distribution_comparison')
     FLAGS.chosen_plots = [ plot for plot in FLAGS.chosen_plots if plot != 'distribution_comparison' ]
+
 
   if not shutil.os.path.exists(FLAGS.output_path):
     shutil.os.makedirs(FLAGS.output_path)

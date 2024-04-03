@@ -210,13 +210,13 @@ def plot_plddts(plddts, Ls=None, dpi=100, fig=True):
     for L_i in Ls[:-1]:
       L = L_prev + L_i
       L_prev += L_i
-      plt.plot([L,L],[0,100],color="black")
+      plt.plot([L,L],[0,100], color="black", linestyle='--', linewidth=1)
   plt.legend()
   plt.ylim(0,100)
-  plt.axhline(y=100, color='grey', linestyle='-')
-  plt.axhline(y=90, color='green', linestyle='--')
-  plt.axhline(y=70, color='orange', linestyle='--')
-  plt.axhline(y=50, color='red', linestyle='--')
+  plt.axhline(y=100, color='grey', linestyle='-', linewidth=1)
+  plt.axhline(y=90, color='green', linestyle='--', linewidth=1)
+  plt.axhline(y=70, color='orange', linestyle='--', linewidth=1)
+  plt.axhline(y=50, color='red', linestyle='--', linewidth=1)
   plt.ylabel("Predicted lDDT")
   plt.xlabel("Residue")
   return plt
