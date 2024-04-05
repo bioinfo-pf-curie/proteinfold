@@ -21,7 +21,9 @@ process afMassive {
   label 'afMassive'
   label 'highMem'
   label 'medCpu'
-  publishDir path: "${params.outDir}/afMassive/${protein}", mode: 'copy'
+  publishDir path: "${params.outDir}/afMassive/",
+             mode: 'copy',
+             saveAs: { it.replaceAll('predictions/', '') }
   containerOptions { (params.useGpu) ? "--nv --env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
