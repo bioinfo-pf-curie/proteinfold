@@ -10,7 +10,6 @@ process multiqcProteinStruct {
   publishDir "${params.outDir}/multiqc/ProteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
-  //path multiqcConfig
   tuple val(protein), path('plots/*'), path ('softwareVersions/*')
   tuple val(protein), path ('softwareOptions/*')
   tuple val(protein), path ('workflowSummary/*')
@@ -25,4 +24,5 @@ process multiqcProteinStruct {
   apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
   multiqc -c multiqcConfig.yaml -c multiqc-config-header.yaml . plots
   """    
+
 }

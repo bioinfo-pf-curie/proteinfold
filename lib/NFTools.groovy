@@ -312,7 +312,11 @@ Available Profiles
         <dl class=\"dl-horizontal\">
             $x
         </dl>
-    """.stripIndent()}
+    """.split('\n')
+       .findAll { line ->
+                    !line.contains('<dt>Run Name')
+                }.join('\n')
+       .stripIndent()}
      }
 
 

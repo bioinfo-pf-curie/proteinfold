@@ -101,13 +101,22 @@ workflow afMassiveWkfl {
     massiveFoldPlots(afMassive.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
   }
+ 
+   
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
   //////////////////////////////////
   // multiqc by protein structure //
   //////////////////////////////////
   multiqcProteinStructWkfl(
-    optionsCh,
-    versionsCh,
+    optionsYamlCh,
+    versionsYamlCh,
     plotsCh,
     workflowSummaryCh
   )
@@ -120,16 +129,14 @@ workflow afMassiveWkfl {
     metricsMultimer(
       afMassive.out.predictions
         .map { it[2] }
-        .collect()
+        .collect(sort: true)
     )
     
     // step - multiqc report with the metric table
-    getSoftwareOptions(optionsCh.unique().collectFile())
-    getSoftwareVersions(versionsCh.unique().collectFile())
     multiqcMetricsMultimer(
       metricsMultimer.out.metrics,
-      getSoftwareOptions.out.optionsYaml.collect().ifEmpty([]),
-      getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
+      optionsYamlCh,
+      versionsYamlCh,
       Channel.fromPath("${projectDir}/assets/multiqcConfigMetricsMultimer.yaml") 
     )
   }

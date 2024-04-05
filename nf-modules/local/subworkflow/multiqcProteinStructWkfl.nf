@@ -15,16 +15,14 @@ of the license and that you accept its terms.
 */
 
 // Processes
-include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
-include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { multiqcProteinStruct } from '../process/multiqcProteinStruct'
 
 workflow multiqcProteinStructWkfl {
 
   take:
 
-  optionsCh
-  versionsCh
+  optionsYamlCh
+  versionsYamlCh
   plotsCh
   workflowSummaryCh
 
@@ -32,21 +30,19 @@ workflow multiqcProteinStructWkfl {
   main:
   
   // Perform multiqc by protein structure
-  getSoftwareVersions(versionsCh.unique().collectFile())
-  getSoftwareOptions(optionsCh.unique().collectFile())
   multiqcProteinStruct(
     plotsCh
-      .combine(getSoftwareVersions.out.versionsYaml.collect().ifEmpty([])),
+      .combine(versionsYamlCh),
     plotsCh
       .map {
         it[0]
       }
-      .combine(getSoftwareOptions.out.optionsYaml.collect().ifEmpty([])),
+      .combine(optionsYamlCh),
     plotsCh
       .map {
         it[0]
       }
-      .combine(workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"))
+      .combine(workflowSummaryCh)
   )
 
 }

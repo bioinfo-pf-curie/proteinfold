@@ -261,6 +261,7 @@ summary = [
 ].findAll{ it.value != null }
 
 workflowSummaryCh = NFTools.summarize(summary, workflow, params)
+                      .collectFile(name: "workflow_summary_mqc.yaml", sort: true)
 
 /*
 ==================================

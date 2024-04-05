@@ -81,13 +81,22 @@ workflow colabFoldWkfl {
     optionsCh = optionsCh.mix(colabFold.out.options)
     plotsCh = colabFold.out.plots
   }
+ 
+   
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
   //////////////////////////////////
   // multiqc by protein structure //
   //////////////////////////////////
   multiqcProteinStructWkfl(
-    optionsCh,
-    versionsCh,
+    optionsYamlCh,
+    versionsYamlCh,
     plotsCh,
     workflowSummaryCh
   )
