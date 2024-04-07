@@ -18,7 +18,7 @@ flags.DEFINE_string('output_file', None,
                     'Path to json file to write the PAE.')
 
 # Function from:
-#   - https://github.com/google-deepmind/alphafold/blob/main/alphafold/common/confidence.py
+#   - https://github.com/google-deepmind/alphafold/blob/v2.3.2/alphafold/notebooks/notebook_utils.py#L146
 def pae_json(pae: np.ndarray, max_pae: float) -> str:
   """Returns the PAE in the same format as is used in the AFDB.
 
