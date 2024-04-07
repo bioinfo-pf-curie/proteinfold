@@ -109,6 +109,11 @@ if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-
 }
 
 // Get realpath for the annotations to avoid symlink issues in bindings with apptainer
+if (params.launchAfMassive){
+  File afMassiveDB = new File(params.genomes.afmassive.database)
+  params.afMassiveDatabase = afMassiveDB.getCanonicalPath()
+}
+
 if (params.launchAlphaFill){
   File alphaFillDB = new File(params.genomes.alphafill.database)
   params.alphaFillDatabase = alphaFillDB.getCanonicalPath()
@@ -117,11 +122,6 @@ if (params.launchAlphaFill){
 if (params.launchAlphaFold){
   File alphaFoldDB = new File(params.genomes.alphafold.database)
   params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
-}
-
-if (params.launchDynamicBind){
-  File dynamicBindDB = new File(params.genomes.dynamicbind.database)
-  params.dynamicBindDatabase = dynamicBindDB.getCanonicalPath()
 }
 
 if (params.launchColabFold){
@@ -133,16 +133,20 @@ if (params.launchColabFold){
   params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
 }
 
+if (params.launchDynamicBind){
+  File dynamicBindDB = new File(params.genomes.dynamicbind.database)
+  params.dynamicBindDatabase = dynamicBindDB.getCanonicalPath()
+}
+
 if (params.launchOpenFold){
   File openFoldDB = new File(params.genomes.openfold.database)
   params.openFoldDatabase = openFoldDB.getCanonicalPath()
 }
 
-if (params.launchAfMassive){
-  File afMassiveDB = new File(params.genomes.afmassive.database)
-  params.afMassiveDatabase = afMassiveDB.getCanonicalPath()
+if (params.launchNanoBert){
+  File nanoBertDB = new File(params.genomes.nanobert.database)
+  params.nanoBertDatabase = nanoBertDB.getCanonicalPath()
 }
-
 
 if (params.onlyMsas && params.fromMsas != null){
   exit 1, "The --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
@@ -289,6 +293,7 @@ include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
+include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
 
 /*
 =====================================
@@ -326,11 +331,6 @@ workflow {
     )
   }
 
-  // Launch the molecular docking with DynamicBind
-  if (params.launchDynamicBind){
-    dynamicBind(proteinLigandCh, params.dynamicBindDatabase)
-  }
-
   // Launch the prediction of the protein 3D structure with ColabFold
   if (params.launchColabFold){
     colabFoldWkfl(
@@ -342,6 +342,18 @@ workflow {
     )
   }
 
+  // Launch the molecular docking with DynamicBind
+  if (params.launchDynamicBind){
+    dynamicBind(proteinLigandCh, params.dynamicBindDatabase)
+  }
+
+  // Launch the prediction of the protein 3D structure with AlphaFold
+  if (params.launchNanoBert){
+    nanoBertWkfl(
+      fastaFilesCh,
+      fastaPathCh
+    )
+  }
 
 
   // Generate the help for each tool
