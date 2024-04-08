@@ -15,8 +15,10 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('fasta_file', None, 'FASTA input file.')
 flags.DEFINE_string('output_dir', None,
                     'Output directory to write nanoBERT results.')
-flags.DEFINE_string('model_dir', '/app/nanobert',
+flags.DEFINE_string('model_dir', None,
                     'Directory with nanoBERT model parameters.')
+flags.DEFINE_string('model_name', None,
+                    'Name of the model. This is used as a prefix to name the output files.')
 flags.DEFINE_integer('top_k', 5, 'Select the tok k scores.')
 
 
@@ -115,7 +117,7 @@ def write_mqc_list_dict(filename:str, list_dict:list[dict]):
         file.write('data:\n' )
         for row in list_dict:
             #file.write('  p' + str(row['residue']) + ':\n')
-            file.write('  \'p' + str(row['residue']) + '->' +  str(row['aa'])+ '\':\n')
+            file.write('  \'r' + str(row['residue']) + '->' +  str(row['aa'])+ '\':\n')
             file.write('    x: ' + str(row['residue']) + '\n')
             file.write('    y: ' + str(row['score']) + '\n')
             file.write('    color: \'' + str(interpolate_color(row['score'])) + '\'\n')
@@ -186,9 +188,9 @@ def main(argv):
         all_score_info = all_score_info + [score_info]
         all_residue_probability = all_residue_probability + residue_probability
 
-    write_csv_list_dict(os.path.join(f'{FLAGS.output_dir}', 'nanobert_scores.tsv'), all_residue_probability)
-    write_csv_list_dict(os.path.join(f'{FLAGS.output_dir}', 'nanobert_matrix_scores.tsv'), all_score_info)
-    write_mqc_list_dict(os.path.join(f'{FLAGS.output_dir}', 'nanobert_scores.yaml'), all_residue_probability)
+    write_csv_list_dict(os.path.join(f'{FLAGS.output_dir}', f'{FLAGS.model_name}_scores.tsv'), all_residue_probability)
+    write_csv_list_dict(os.path.join(f'{FLAGS.output_dir}', f'{FLAGS.model_name}_matrix_scores.tsv'), all_score_info)
+    write_mqc_list_dict(os.path.join(f'{FLAGS.output_dir}', f'{FLAGS.model_name}_scores.yaml'), all_residue_probability)
 
 
 if __name__ == "__main__":
@@ -199,6 +201,7 @@ if __name__ == "__main__":
     """
     flags.mark_flags_as_required([
         'fasta_file',
+        'model_dir',
         'output_dir',
     ])
 

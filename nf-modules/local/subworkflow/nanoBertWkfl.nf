@@ -23,6 +23,7 @@ of the license and that you accept its terms.
 // Processes
 include { fastaChecker } from '../process/fastaChecker'
 include { nanoBert } from '../process/nanoBert'
+include { multiqcScoresNanoBert } from '../process/multiqcScoresNanoBert'
 include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 
@@ -53,5 +54,11 @@ workflow nanoBertWkfl {
   /////////////////////////////////////////////////////////
   fastaChecker(fastaPathCh)
   nanoBert(fastaFilesCh, params.nanoBertDatabase)
+
+  // step - generate multiqc for nanoBERT
+  multiqcScoresNanoBert(
+    nanoBert.out.scores
+      .combine(Channel.fromPath("${projectDir}/assets/multiqcConfigScoresNanoBert.yaml"))
+  )
 
 }

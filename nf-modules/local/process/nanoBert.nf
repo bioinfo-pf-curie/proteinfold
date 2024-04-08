@@ -18,28 +18,32 @@ of the license and that you accept its terms.
 process nanoBert {
   tag "${protein}" 
   label 'nanoBert'
-  label 'minMem'
-  label 'minCpu'
+  label 'medMem'
+  label 'highCpu'
   publishDir path: "${params.outDir}/nanoBert/${protein}",
              mode: 'copy'
 
   input:
   tuple val(protein), path(fastaFile)
-  path nanoBertDatabase
+  // this is: path nanoBertDatabase
+  // but renames as 'models''
+  path('models')
 
   output:
-  path("*.tsv"), emit: scores
-  path("*.yaml"), emit: yaml
-
+  tuple val("${protein}"), path("nanobert"), emit: scores
 
   script:
   """
-  nanobert.py --fasta_file=${fastaFile} --model_dir=${nanoBertDatabase}/nanoBERT --output_dir=.
+  mkdir nanobert
+  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=nanobert
+  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=human_heavy
   """
 
   stub:
   """
-  nanobert.py --fasta_file=${fastaFile} --model_dir=${nanoBertDatabase}/nanoBERT --output_dir=.
+  mkdir nanobert
+  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=nanobert
+  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=human_heavy
   """
 
 }
