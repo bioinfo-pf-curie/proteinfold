@@ -136,7 +136,7 @@ workflow alphaFoldWkfl {
   ///////////////
   // AlphaFill //
   ///////////////
-  if(params.alphaFoldOptions.contains('multimer') && params.launchAlphaFill){
+  if(params.launchAlphaFill){
     alphaFillWkfl(alphaFold.out.predictions)
   }
 

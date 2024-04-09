@@ -137,7 +137,7 @@ workflow afMassiveWkfl {
   ///////////////
   // AlphaFill //
   ///////////////
-  if(params.alphaFoldOptions.contains('multimer') && params.launchAlphaFill){
+  if(params.launchAlphaFill){
     alphaFillWkfl(afMassive.out.predictions)
   }
 
