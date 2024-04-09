@@ -7,7 +7,7 @@ process multiqcProteinStruct {
   label 'multiqc'
   label 'minCpu'
   label 'lowMem'
-  publishDir "${params.outDir}/multiqc/ProteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
+  publishDir "${params.outDir}/multiqc/proteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
   tuple val(protein), path('plots/*'), path ('softwareVersions/*')

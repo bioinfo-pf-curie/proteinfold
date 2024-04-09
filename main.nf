@@ -46,6 +46,8 @@ customRunName = NFTools.checkRunName(workflow.runName, params.name)
 include { checkInput4Docking } from './lib/functions'
 include { printFileContent } from './lib/functions'
 include { elementsNotPresent } from './lib/functions'
+include { createFromCh as createMsasCh } from './lib/functions'
+include { createFromCh as createPredictionsCh } from './lib/functions'
 
 /*
 ===================================
@@ -184,55 +186,16 @@ fastaChainsCh = fastaFilesCh
 // set the msasCh when the pipeline is launched using existing msas
 msasCh = Channel.empty()
 if(params.fromMsas != null){
-
-  File fromMsas = new File(params.fromMsas)
-  if (!fromMsas.exists()){
-    exit 1, "The path to the msas folder '" + params.fromMsas + "' does not exist."
-  }
-  if (!fromMsas.isDirectory()){
-    exit 1, "The path to the msas folder '" + params.fromMsas + "' is not a directory."
-  }
-
-  msasCh = Channel.fromPath("${params.fromMsas}/*", type: 'dir')
-                .map { msas -> 
-                  String protein = msas.toString()
-                                    .replaceAll(".*/", "")
-                  File proteinMsasDir = new File("${params.fromMsas}/${protein}")
-                  msasFileList = [] 
-                  proteinMsasDir.eachFile {file -> msasFileList.add(file.getAbsolutePath())}
-                  tuple(protein, msasFileList)
-                }
- 
-  proteinInMsas = msasCh.map { it[0]}.collect().map { tuple ('list', it) }
-  proteinInFasta = fastaFilesCh.map { it[0]}.collect().map { tuple ('list', it) }
-  proteinUnion = proteinInMsas.join(proteinInFasta)
-
-
-  // Print warning if the msas is present but not the fasta file  
-  proteinUnion
-    .map{
-      elementsNotPresent(it[2].toList(), it[1].toList())
-        .each{ prot ->
-                 String msg
-                 msg = "WARNING - MSAS folder is present but not FASTA file available for protein '"
-                 msg = msg + prot + "'. The protein will be ignored."
-                 NFTools.printOrangeText(msg)
-        }
-    }
-    
-  // Print warning if the fasta file is present but not the msas folder
-  proteinUnion
-    .map{
-      elementsNotPresent(it[1].toList(), it[2].toList())
-        .each{ prot ->
-          String msg
-          msg = "WARNING - FASTA file is present but no MSAS folder available for protein '"
-          msg = msg + prot + "'. The protein will be ignored."
-          NFTools.printOrangeText(msg)
-        }
-    }
-
+  msasCh = createMsasCh('fromMsas', fastaFilesCh)
 }
+
+// set the predictionsCh when the pipeline is launched using existing predicted structures
+predictionsCh = Channel.empty()
+if(params.fromPredictions != null){
+  predictionsCh = createPredictionsCh('fromPredictions', fastaFilesCh)
+                    .map { tuple(it[0], '', file(file(it[1][0]).getParent())) }
+}
+
 
 /*
 ===========================
@@ -293,8 +256,10 @@ include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
+include { multiqcProteinStructWkfl } from './nf-modules/local/subworkflow/multiqcProteinStructWkfl'
 include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
 
+  
 /*
 =====================================
             WORKFLOW 
@@ -308,6 +273,7 @@ workflow {
   plotsCh = Channel.empty()
 
   main:
+
 
   // Launch the prediction of the protein 3D structure with AfMassive
   if (params.launchAfMassive){
@@ -345,6 +311,19 @@ workflow {
   // Launch the molecular docking with DynamicBind
   if (params.launchDynamicBind){
     dynamicBind(proteinLigandCh, params.dynamicBindDatabase)
+  }
+
+  // Launch the generation of multiqc ProteinStruct HTML reports
+  // using existing predicted structure
+  // yaml files for multiqc are set to empty
+  if (params.htmlProteinStruct & params.fromPredictions != null ){
+    massiveFoldPlots(predictionsCh)
+    multiqcProteinStructWkfl(
+      Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
+      Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
+      massiveFoldPlots.out.plots,
+      Channel.of('').collectFile(name: 'empty3.txt')
+    )
   }
 
   // Launch the prediction of the protein 3D structure with AlphaFold

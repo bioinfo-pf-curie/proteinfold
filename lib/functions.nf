@@ -35,6 +35,66 @@ def printFileContent(file) {
 }
 
 /*
+=================================================
+  Create channel for a list a protein directories
+=================================================
+*/
+def createFromCh(def fromParams, fastaFilesCh) {
+  File fromParamsFile = new File(params[fromParams])
+  if (!fromParamsFile.exists()){
+    exit 1, "The path to the folder '" + params[fromParams] + "' does not exist."
+  }
+  if (!fromParamsFile.isDirectory()){
+    exit 1, "The path to the folder '" + params[fromParams] + "' is not a directory."
+  }
+
+  def fromCh
+  def proteinInDir
+  def proteinInFasta
+  def proteinUnion
+
+  fromCh = Channel.fromPath("${params[fromParams]}/*", type: 'dir')
+             .map { def dir -> 
+                String protein = dir.toString()
+                                   .replaceAll(".*/", "")
+                File proteinDir = new File("${params[fromParams]}/${protein}")
+                def dirFileList = [] 
+                proteinDir.eachFile {def file -> dirFileList.add(file.getAbsolutePath())}
+                tuple(protein, dirFileList)
+             }
+ 
+  proteinInDir = fromCh.map { it[0]}.collect().map { tuple ('list', it) }
+  proteinInFasta = fastaFilesCh.map { it[0]}.collect().map { tuple ('list', it) }
+  proteinUnion = proteinInDir.join(proteinInFasta)
+
+  // Print warning if the msas is present but not the fasta file  
+  proteinUnion
+    .map{
+      elementsNotPresent(it[2].toList(), it[1].toList())
+        .each{ def prot ->
+                 String msg
+                 msg = "WARNING (option ${fromParams}) - folder is present but no FASTA file available for protein '" 
+                 msg = msg + prot + "'. The protein will be ignored."
+                 NFTools.printOrangeText(msg)
+        }
+    }
+    
+  // Print warning if the fasta file is present but not the msas folder
+  proteinUnion
+    .map{
+      elementsNotPresent(it[1].toList(), it[2].toList())
+        .each{ def prot ->
+          String msg
+          msg = "WARNING (option ${fromParams}) - FASTA file is present but no folder available for protein '"
+          msg = msg + prot + "'. The protein will be ignored. "
+          NFTools.printOrangeText(msg)
+        }
+    }
+
+    return fromCh
+}
+
+/*
 =============================================
    Set of functions to check the input file
    with protein (pdb) and ligand (sdf) required
