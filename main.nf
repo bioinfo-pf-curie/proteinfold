@@ -239,6 +239,10 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 // Processes
 include { getSoftwareOptions } from './nf-modules/common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
+include { afMassive } from './nf-modules/local/process/afMassive'
+include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
+include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
+include { alphaFillHelp } from './nf-modules/local/process/alphaFillHelp'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
@@ -246,9 +250,6 @@ include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { dynamicBind } from './nf-modules/local/process/dynamicBind'
 include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
-include { afMassive } from './nf-modules/local/process/afMassive'
-include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
-include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 
@@ -259,7 +260,6 @@ include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { multiqcProteinStructWkfl } from './nf-modules/local/subworkflow/multiqcProteinStructWkfl'
 include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
 
-  
 /*
 =====================================
             WORKFLOW 
@@ -336,6 +336,12 @@ workflow {
 
 
   // Generate the help for each tool
+  if(params.afMassiveHelp){
+    afMassiveHelp()
+  }
+  if(params.alphaFillHelp){
+    alphaFillHelp()
+  }
   if(params.alphaFoldHelp){
     alphaFoldHelp()
   }
@@ -345,14 +351,21 @@ workflow {
   if(params.dynamicBindHelp){
     dynamicBindHelp()
   }
-  if(params.afMassiveHelp){
-    afMassiveHelp()
-  }
 }
 
 
 workflow.onComplete {
   if(printToolHelp){
+    if (params.alphaFillHelp) {
+      NFTools.printGreenText("\n\n=====================================\nAlphaFill help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/alphaFillHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nAlphaFill help, see options above.\n=====================================\n")
+    }
+    if (params.afMassiveHelp) {
+      NFTools.printGreenText("\n\n=====================================\nAfMassive help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/afMassiveHelp.txt")
+      NFTools.printGreenText("\n\n=====================================\nAfMassive help, see options above.\n=====================================\n")
+    }
     if (params.alphaFoldHelp) {
       NFTools.printGreenText("\n\n=====================================\nAlphaFold help, list of options:\n=====================================\n")
       printFileContent("${params.outDir}/alphaFoldHelp.txt")
@@ -367,11 +380,6 @@ workflow.onComplete {
       NFTools.printGreenText("\n\n=====================================\nDynamicBind help, list of options:\n=====================================\n")
       printFileContent("${params.outDir}/dynamicBindHelp.txt")
       NFTools.printGreenText("\n\n=====================================\nDynamicBind help, see options above.\n=====================================\n")
-    }
-    if (params.afMassiveHelp) {
-      NFTools.printGreenText("\n\n=====================================\nAfMassive help, list of options:\n=====================================\n")
-      printFileContent("${params.outDir}/afMassiveHelp.txt")
-      NFTools.printGreenText("\n\n=====================================\nAfMassive help, see options above.\n=====================================\n")
     }
   } else {
     NFTools.makeReports(workflow, params, summary, customRunName, mqcReport)

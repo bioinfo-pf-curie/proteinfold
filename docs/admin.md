@@ -9,19 +9,11 @@ nextflow run main.nf -stub-run -params-file test/params-file/alphafold-monomer.j
 ```
 
 ```bash
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-monomer-alphafill.json -profile singularity
+```
+
+```bash
 nextflow run main.nf -stub-run -params-file test/params-file/alphafold-multimer.json -profile singularity
-```
-
-```bash
-nextflow run main.nf -stub-run -params-file test/params-file/afmassive-monomer.json -profile singularity
-```
-
-```bash
-nextflow run main.nf -stub-run -params-file test/params-file/colabfold-monomer.json -profile singularity --useGpu
-```
-
-```bash
-nextflow run main.nf -stub-run -params-file test/params-file/colabfold-multimer.json -profile singularity --useGpu 
 ```
 
 ```bash
@@ -29,5 +21,21 @@ nextflow run main.nf -stub-run -params-file test/params-file/alphafold-multimer-
 ```
 
 ```bash
+nextflow run main.nf -stub-run -params-file test/params-file/afmassive-monomer.json -profile singularity
+```
+
+```bash
 nextflow run main.nf -stub-run -params-file test/params-file/afmassive-multimer-alphafill.json -profile singularity
+```
+
+```bash
+nextflow run main.nf -stub-run -params-file test/params-file/colabfold-monomer.json -profile singularity --useGpu
+```
+
+```bash
+nextflow run main.nf -stub-run -params-file test/params-file/colabfold-multimer.json -profile singularity --useGpu
+```
+
+```bash
+nextflow run main.nf -resume -stub-run -params-file test/params-file/nanobert.json -profile singularity
 ```

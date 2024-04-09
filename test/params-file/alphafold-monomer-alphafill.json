@@ -1,0 +1,7 @@
+{
+	"launchAlphaFold": "true",
+	"launchAlphaFill": "true",
+	"alphaFillDatabase": "${projectDir}/test/data/alphafill/database",
+	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
+	"fastaPath": "test/data/fasta/monomer2"
+}
