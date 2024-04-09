@@ -33,6 +33,7 @@ include { multiqcMetricsMultimer } from '../process/multiqcMetricsMultimer'
 
 // Subworkflows
 include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
+include { multiqcMetricsMultimerWkfl } from '../subworkflow/multiqcMetricsMultimerWkfl'
 include { multiqcProteinStructWkfl } from '../subworkflow/multiqcProteinStructWkfl'
 
 /*
@@ -125,19 +126,11 @@ workflow afMassiveWkfl {
   // metrics for the multimer prediction //
   /////////////////////////////////////////
   if(params.alphaFoldOptions.contains('multimer')){
-    // step - compute the metrics 
-    metricsMultimer(
-      afMassive.out.predictions
-        .map { it[2] }
-        .collect(sort: true)
-    )
-    
-    // step - multiqc report with the metric table
-    multiqcMetricsMultimer(
-      metricsMultimer.out.metrics,
+    multiqcMetricsMultimerWkfl(
       optionsYamlCh,
       versionsYamlCh,
-      Channel.fromPath("${projectDir}/assets/multiqcConfigMetricsMultimer.yaml") 
+      afMassive.out.predictions,
+      workflowSummaryCh
     )
   }
 
