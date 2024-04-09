@@ -254,6 +254,7 @@ include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 
 // Subworkflows
+include { alphaFillWkfl } from './nf-modules/local/subworkflow/alphaFillWkfl'
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
@@ -324,6 +325,11 @@ workflow {
       massiveFoldPlots.out.plots,
       Channel.of('').collectFile(name: 'empty3.txt')
     )
+  }
+
+  // Launch AlphaFill using existing predicted structure
+  if (params.launchAlphaFill & params.fromPredictions != null ){
+    alphaFillWkfl(predictionsCh)
   }
 
   // Launch the prediction of the protein 3D structure with AlphaFold
