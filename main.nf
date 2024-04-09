@@ -55,6 +55,14 @@ include { createFromCh as createPredictionsCh } from './lib/functions'
 ===================================
 */
 
+
+// Define a variable to test whether the pipeline has been launched with -stub-run
+// or -stub
+Boolean isStubRun = false
+if ( workflow.commandLine.contains('-stub')) {
+  isStubRun = true
+}
+
 // Define a variable to track settings for which the fastaPath can be null
 Boolean allowFastaPathNull = false
 
@@ -72,7 +80,7 @@ if(params.launchDynamicBind) {
   if(params.proteinLigandFile == null) {
     exit 1, "To launch DynamicBind you must define the --proteinLigandFile option"
   }
-  if (!params.useGpu){
+  if (!params.useGpu && !isStubRun){
     exit 1, "DynamicBind works only using GPU. Launch the pipeline with the '--useGpu true' option."
   }
 }
@@ -127,7 +135,7 @@ if (params.launchAlphaFold){
 }
 
 if (params.launchColabFold){
-  if (!params.useGpu){
+  if (!params.useGpu && !isStubRun){
     exit 1, "ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
   }
 
@@ -209,14 +217,19 @@ summary = [
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.fastaPath ?: null,
+  'AfMassive Database' : params.launchAfMassive ? params.afMassiveDatabase : null,
+  'AfMassive Options' : params.launchAfMassive ? params.afMassiveOptions : null,
+  'AlphaFill Database' : params.launchAlphaFill ? params.alphaFillDatabase : null,
+  'AlphaFill Options' : params.launchAlphaFill ? params.alphaFillOptions : null,
+  'AlphaFold Database' : params.launchAlphaFold ? params.alphaFoldDatabase : null,
   'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'DynamicBind Database' : params.launchDynamicBind ? params.dynamicBindDatabase : null,
   'DynamicBind Options' : params.launchDynamicBind ? params.dynamicBindOptions : null,
-  'AfMassive Database' : params.launchAfMassive ? params.afMassiveDatabase : null,
-  'AfMassive Options' : params.launchAfMassive ? params.afMassiveOptions : null,
+  'nanoBERT Options' : params.launchNanoBert ? params.nanoBertOptions : null,
   'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
+  'Use existing predictions' : params.fromPredictions != null ? params.fromPredictions : null,
   'Perform only msas' : params.onlyMsas ? "True" : "False",
   'Use GPU' : params.useGpu ? "True" : "False",
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
@@ -259,6 +272,7 @@ include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { multiqcProteinStructWkfl } from './nf-modules/local/subworkflow/multiqcProteinStructWkfl'
+include { multiqcMetricsMultimerWkfl } from './nf-modules/local/subworkflow/multiqcMetricsMultimerWkfl'
 include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
 
 /*
@@ -275,6 +289,9 @@ workflow {
 
   main:
 
+  // ********************************** //
+  // *        Prediction models       * //
+  // ********************************** //
 
   // Launch the prediction of the protein 3D structure with AfMassive
   if (params.launchAfMassive){
@@ -314,25 +331,12 @@ workflow {
     dynamicBind(proteinLigandCh, params.dynamicBindDatabase)
   }
 
-  // Launch the generation of multiqc ProteinStruct HTML reports
-  // using existing predicted structure
-  // yaml files for multiqc are set to empty
-  if (params.htmlProteinStruct & params.fromPredictions != null ){
-    massiveFoldPlots(predictionsCh)
-    multiqcProteinStructWkfl(
-      Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
-      Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
-      massiveFoldPlots.out.plots,
-      Channel.of('').collectFile(name: 'empty3.txt')
-    )
-  }
-
   // Launch AlphaFill using existing predicted structure
-  if (params.launchAlphaFill & params.fromPredictions != null ){
+  if (params.launchAlphaFill && params.fromPredictions != null ){
     alphaFillWkfl(predictionsCh)
   }
 
-  // Launch the prediction of the protein 3D structure with AlphaFold
+  // Launch the nanoBERT predictions
   if (params.launchNanoBert){
     nanoBertWkfl(
       fastaFilesCh,
@@ -340,6 +344,39 @@ workflow {
     )
   }
 
+  // **************************************************************** //
+  // * Generate HTML reports from existing predicted pdb structures * //
+  // **************************************************************** //
+
+  // Launch the generation of multiqc ProteinStruct HTML reports
+  // using existing predicted structure
+  // yaml files for multiqc are set to empty
+  if (params.htmlProteinStruct && params.fromPredictions != null ){
+    massiveFoldPlots(predictionsCh)
+    multiqcProteinStructWkfl(
+      Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
+      Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
+      massiveFoldPlots.out.plots,
+      Channel.of('').collectFile(name: 'empty.txt')
+    )
+  }
+
+  // Launch the generation of multiqc MetricsMultimer HTML reports
+  // using existing predicted structure
+  // yaml files for multiqc are set to empty
+  if (params.htmlMetricsMultimer && params.fromPredictions != null ){
+    multiqcMetricsMultimerWkfl(
+      Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
+      Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
+      predictionsCh,
+      Channel.of('').collectFile(name: 'empty.txt')
+    )
+  }
+
+
+  // *********************************** //
+  // * Generate help of different tool * //
+  // *********************************** //
 
   // Generate the help for each tool
   if(params.afMassiveHelp){
