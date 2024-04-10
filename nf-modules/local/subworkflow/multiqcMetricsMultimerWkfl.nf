@@ -29,12 +29,28 @@ workflow multiqcMetricsMultimerWkfl {
 
 
   main:
-  
+
+  int maxPickleSize = 0
+
+  // get max size of pickle file for adaptive memory calibration
+  maxPickleSizeCh = predictionsCh
+                      .map { def prot ->
+                        prot[2].listFiles() { def file ->
+                          if (file.toString().endsWith('pkl')) {
+                            def pickle = new File(file.toString())
+                            maxPickleSize = pickle.length() > maxPickleSize ? pickle.length() : maxPickleSize
+                          }
+                        }
+                        return maxPickleSize
+                      }
+                      .max()
+
   // step - compute the metrics 
   metricsMultimer(
     predictionsCh
       .map { it[2] }
-      .collect(sort: true)
+      .collect(sort: true),
+    maxPickleSizeCh
   )
   
   // step - multiqc report with the metric table
