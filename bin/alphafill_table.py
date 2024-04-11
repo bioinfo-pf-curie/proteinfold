@@ -48,7 +48,7 @@ def extract_hits(ligand_description):
     transplants.append(transplant)
 
   if len(scores['hits']) == 0:
-    transplant = {'Hit': 'nothing detected'}
+    transplant = {'Hit': 'None', 'Compound': 'nothing predicted by AlphaFill'}
     transplants.append(transplant)
 
   with open(f'{FLAGS.output_file}', 'w', newline='') as csv_file:
