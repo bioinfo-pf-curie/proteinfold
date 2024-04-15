@@ -43,6 +43,7 @@ process afMassive {
   launch_alphafold.sh \${alphafold_options} ${params.afMassiveOptions} --start_prediction ${predNumber} --end_prediction ${predNumber} --models_to_use=${modelsToUse} --random_seed=${randomSeed} --fasta_paths=${fastaFile}
   bash rename_json_by_model.sh predictions/${protein} _${modelsToUse}_pred_${predNumber}
   mv predictions/${protein}/features.pkl predictions/${protein}/features_${modelsToUse}_pred_${predNumber}.pkl
+  mv predictions/${protein}/ranked_0.pdb predictions/${protein}/ranked_0_${modelsToUse}_pred_${predNumber}.pdb
   echo "AFmassive \$(get_version.sh)" > versions.txt
   echo "AFmassive (prediction) options=\${alphafold_options} ${params.afMassiveOptions}" > options.txt
   """
