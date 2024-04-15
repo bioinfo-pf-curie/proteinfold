@@ -163,6 +163,7 @@ workflow afMassiveWkfl {
     optionsYamlCh,
     versionsYamlCh,
     plotsCh,
+    afMassiveGather.out.ranking,
     workflowSummaryCh
   )
 

@@ -111,6 +111,7 @@ workflow alphaFoldWkfl {
   optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
   versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
+
   //////////////////////////////////
   // multiqc by protein structure //
   //////////////////////////////////
@@ -118,6 +119,7 @@ workflow alphaFoldWkfl {
     optionsYamlCh,
     versionsYamlCh,
     plotsCh,
+    alphaFold.out.ranking,
     workflowSummaryCh
   )
 

@@ -119,6 +119,18 @@ fi
 
 echo "custom_data:"
 
+cat << EOF
+  ranking_debug_table:
+    id: 'ranking_debug_table'
+    parent_id: ranking_debug
+    parent_name: 'Model ranking'
+    section_name: 'Model ranking'
+    description: 'Model ranking'
+    plot_type: 'table'
+    pconfig:
+      id: 'ranking_debug_table'
+      format: '{:,.3f}'
+EOF
 
 ### definition_legend ###
 cat << EOF
@@ -231,6 +243,11 @@ for file in "${png_files[@]}"; do
     echo "    fn: \"${file}.png\""
 done
 
+
+echo ""
+echo "  ranking_debug_table:"
+echo "    fn: ranking_debug.tsv"
+
 echo ""
 echo "ignore_images: false"
 echo ""
@@ -247,6 +264,10 @@ for file in "${png_files[@]}"; do
 done
 
 
+echo "  ranking_debug:"
+echo "    order: -1300"
+echo "  ranking_debug_table:"
+echo "    order: -1290"
 echo "  legend:"
 echo "    order: -1500"
 echo "  definition_legend:"

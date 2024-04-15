@@ -38,10 +38,13 @@ process colabFold {
   path("predictions/versions.txt"), emit: versions
   path("predictions/options.txt"), emit: options
   tuple val(protein), path("predictions/*.png"), emit: plots
+  // ranking_debug.json is empty, just for compatibility with multiqc report
+  tuple val(protein), path("predictions/ranking_debug.json"), emit: ranking
 
   script:
   """
   colabfold_batch --jobname-prefix ${protein} --save-all  ${params.colabFoldOptions} ${msas} predictions
+  touch predictions/ranking_debug.json
   echo "ColabFold \$(get_version.sh)" > predictions/versions.txt
   echo "colabfold_batch options=${params.colabFoldOptions}" > predictions/options.txt
   """
@@ -57,6 +60,7 @@ process colabFold {
   fi
   mkdir -p predictions/
   touch predictions/${protein}.txt
+  touch predictions/ranking_debug.json
   cp -r ${projectDir}/test/data/plots/colabfold/\${folder}/${protein}/* predictions
   echo "ColabFold \$(get_version.sh)" > predictions/versions.txt
   echo "colabfold_batch options=${params.colabFoldOptions}" > predictions/options.txt

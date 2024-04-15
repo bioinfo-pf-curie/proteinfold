@@ -24,14 +24,17 @@ workflow multiqcProteinStructWkfl {
   optionsYamlCh
   versionsYamlCh
   plotsCh
+  rankingCh
   workflowSummaryCh
 
 
   main:
   
+  
   // Perform multiqc by protein structure
   multiqcProteinStruct(
     plotsCh
+      .join(rankingCh)
       .combine(versionsYamlCh),
     plotsCh
       .map {

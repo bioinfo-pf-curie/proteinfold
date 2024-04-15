@@ -98,6 +98,7 @@ workflow colabFoldWkfl {
     optionsYamlCh,
     versionsYamlCh,
     plotsCh,
+    colabFold.out.ranking,
     workflowSummaryCh
   )
 
