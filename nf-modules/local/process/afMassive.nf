@@ -17,23 +17,20 @@ of the license and that you accept its terms.
 // This process launches afMassive
 // - it uses the afMassiveOptions
 process afMassive {
-  tag "${protein}" 
+  tag "${protein}-${modelsToUse}-${predNumber}-${randomSeed}" 
   label 'afMassive'
   label 'highMem'
   label 'medCpu'
-  publishDir path: "${params.outDir}/afMassive/",
-             mode: 'copy',
-             saveAs: { it.replaceAll('predictions/', '') }
   containerOptions { (params.useGpu) ? "--nv --env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
   input:
-  tuple val(protein), path(fastaFile), path("msas/*")
+  tuple val(protein), path(fastaFile), path("msas/*"), val(predNumber), val(modelsToUse), val(randomSeed)
   path alphaFoldOptions
   path afMassiveDatabase
 
   output:
-  tuple val(protein), val("afMassive"), path("predictions/*", type: 'dir'), emit: predictions
+  tuple val(protein), val("afMassive"), path("predictions/${protein}/*", type: 'file'), emit: predictions
   path("versions.txt"), emit: versions
   path("options.txt"), emit: options
 
@@ -43,7 +40,9 @@ process afMassive {
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
   alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
-  launch_alphafold.sh \${alphafold_options} ${params.afMassiveOptions} --fasta_paths=${fastaFile}
+  launch_alphafold.sh \${alphafold_options} ${params.afMassiveOptions} --start_prediction ${predNumber} --end_prediction ${predNumber} --models_to_use=${modelsToUse} --random_seed=${randomSeed} --fasta_paths=${fastaFile}
+  bash rename_json_by_model.sh predictions/${protein} _${modelsToUse}_pred_${predNumber}
+  mv predictions/${protein}/features.pkl predictions/${protein}/features_${modelsToUse}_pred_${predNumber}.pkl
   echo "AFmassive \$(get_version.sh)" > versions.txt
   echo "AFmassive (prediction) options=\${alphafold_options} ${params.afMassiveOptions}" > options.txt
   """
@@ -62,6 +61,18 @@ process afMassive {
   cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
   echo "AFmassive \$(get_version.sh)" > versions.txt
   echo "AFmassive (prediction) options=\${alphafold_options} ${params.afMassiveOptions}" > options.txt
+  cd predictions/${protein}
+  mv features.pkl features_${modelsToUse}_pred_${predNumber}.pkl
+  rm ranked_0.pdb
+  mv *.pdb unrelaxed_${modelsToUse}_pred_${predNumber}.pdb
+  if [[ ! -f result_${modelsToUse}_pred_${predNumber}.pkl ]]; then mv result* result_${modelsToUse}_pred_${predNumber}.pkl; fi
+  head -2 ranking_debug.json > ranking_debug_${modelsToUse}_pred_${predNumber}.json
+  grep "${modelsToUse}_pred_${predNumber}" ranking_debug.json | head -1 | sed -e 's/,//g' >> ranking_debug_${modelsToUse}_pred_${predNumber}.json
+  grep "}," ranking_debug.json >> ranking_debug_${modelsToUse}_pred_${predNumber}.json
+  grep "order" ranking_debug.json >> ranking_debug_${modelsToUse}_pred_${predNumber}.json
+  grep "${modelsToUse}_pred_${predNumber}" ranking_debug.json | tail -1 | sed -e 's/,//g' >> ranking_debug_${modelsToUse}_pred_${predNumber}.json
+  tail -2 ranking_debug.json >> ranking_debug_${modelsToUse}_pred_${predNumber}.json
+  rm ranking_debug.json
   """
 
 }
