@@ -11,4 +11,5 @@ RUN echo $'#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_AFma
 
 ENV LC_ALL C
 ENV PATH /app:$PATH
+ENV PYTHONPATH /app/alphafold/:$PYTHONPATH
 

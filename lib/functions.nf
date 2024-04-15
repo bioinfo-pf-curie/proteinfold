@@ -33,6 +33,104 @@ def printFileContent(file) {
         System.out.println("File not found: $file")
     }
 }
+/*
+=================================================
+  Create channel with alphaFold models to run the
+  predictions in parallel inseatd of sequential.
+  This is used with afMassive
+=================================================
+*/
+
+def createAfModelsCh(String alphaFoldOptions) {
+
+  // Set variables
+  List afModels
+  int modelNumber = 0
+  String modelsToRelaxOptions = ""
+  int predNumber = 5
+  int randomSeed
+  Map afModelsInfo = [:]
+
+  // This variable will store the new parameters
+  String alphaFoldOptionsParallel = alphaFoldOptions
+
+  // Multimer
+  if(alphaFoldOptions.contains('model_preset=multimer')){
+    afModels = []
+    for (int version = 1; version < 4; version++) {
+      for (int model = 1; model < 6; model++) {
+        modelNumber++
+        afModels.add("model_" + model + "_multimer_v" + version)
+      }
+    }
+  }
+
+  // Monomer
+  if(!alphaFoldOptions.contains('model_preset=monomer_ptm') 
+     && (alphaFoldOptions.contains('model_preset=monomer') || !alphaFoldOptions.contains('model_preset'))) {
+    afModels = []
+    for (int model = 1; model < 6; model++) {
+      modelNumber++
+      afModels.add("model_" + model)
+    }
+  }
+
+  // Monomer pTM
+  if(alphaFoldOptions.contains('model_preset=monomer_ptm')){
+    afModels = []
+    for (int model = 1; model < 6; model++) {
+      modelNumber++
+      afModels.add("model_" + model + "_ptm")
+    }
+  }
+
+  // We can not keep the same random_seed for each prediction
+  // otherwise results would be the same.
+  if(alphaFoldOptions.contains('random_seed')){
+    String randomSeedParams = (alphaFoldOptions =~ /--random_seed=\d+/)[0]
+    alphaFoldOptionsParallel = alphaFoldOptions
+                                 .replace(randomSeedParams, '')
+    randomSeed = randomSeedParams
+                   .replaceAll('--random_seed=', '')
+                   .toInteger()
+  }
+
+  // Check what is the option for relaxation.
+  // We do not want to relax all the models 
+  // as we we have only one model each time
+  // which will be obviously the best
+  if(alphaFoldOptions.contains('models_to_relax')){
+    modelsToRelaxOptions = (alphaFoldOptions =~ /--models_to_relax=\w+/)[0]
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel
+                                 .replaceAll(modelsToRelaxOptions, '')
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel + "--models_to_relax=none"
+  }
+   
+  // This is necessary to have a deterministic combination of model/pred with the random seed
+  def afModelsList = [] 
+  for (int pred_i = 1; pred_i <= predNumber; pred_i++) {
+    afModels.each { 
+      randomSeed = randomSeed + 1
+      afModelsList.add(tuple(pred_i, it, randomSeed))
+    }
+
+  afModelsCh = Channel.fromList(afModelsList)
+  
+  }
+
+  //afModelsCh = Channel.of(1..predNumber)
+  //               .combine(Channel.fromList(afModels))
+  //               .merge(Channel.of(1..(modelNumber*predNumber))
+  //                        .map { it + randomSeed }
+  //                      )
+
+  afModelsInfo['alphaFoldOptionsParallel'] = alphaFoldOptionsParallel
+  afModelsInfo['channel'] = afModelsCh
+  afModelsInfo['modelsToRelaxOptions'] = modelsToRelaxOptions
+
+  return afModelsInfo
+
+}
 
 /*
 =================================================
