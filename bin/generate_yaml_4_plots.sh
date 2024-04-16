@@ -1,7 +1,8 @@
-#! /bin/bash
+#! /bin/bash 
+
+# shellcheck source=/dev/null
 
 set -euo pipefail
-#!/bin/bash
 
 # Check if an argument is provided
 if [ $# -eq 0 ]; then
@@ -13,17 +14,17 @@ folder="$1"
 png_files=()
 
 # Check if the folder exists
-if [ ! -d "$folder" ]; then
-    echo "Folder '$folder' does not exist."
+if [ ! -d "${folder}" ]; then
+    echo "Folder '${folder}' does not exist."
     exit 1
 fi
 
 # Search for png files and populate the array
 while IFS= read -r -d '' file; do
     # Use basename to extract the filename
-    filename=$(basename "$file" | sed -e "s/\.png//g")
-    png_files+=("$filename")
-done < <(find "$folder" \( -type f -o -type l \) -name "*.png" -print0)
+    filename=$(basename "${file}" | sed -e "s/\.png//g")
+    png_files+=("${filename}")
+done < <(find "${folder}" \( -type f -o -type l \) -name "*.png" -print0)
 
 png_files=($(printf "%s\n" "${png_files[@]}" | sort -r))
 
@@ -36,62 +37,65 @@ has_iptm=0
 has_colabfold=0
 has_alphafold=0
 has_afmassive=0
+params_file="params.txt"
+
 function section_info {
+	params_file="$2"
   if [[ "$1" =~ "coverage" ]]; then
 	  echo "    section_name: \"Sequence coverage\""
 	  echo "    description: \"Number of sequences found during the multiple aligments step.\""
-	  exit 0
+	  return 0
   fi
-  if [[ "$1" =~ "models_scores_plddts" ]]; then
+  if [[ "$1" == *"models_scores_plddts"* ]]; then
 	  echo "    section_name: \"Model scores\""
 	  echo "    description: \"Scores of the models based on the plDDTs.\""
-	  declare -g has_plddt=1
-	  exit 0
+	  echo has_plddt=1 >> "${params_file}"
+	  return 0
   fi
-  if [[ "$1" =~ "models_scores_iptm+ptm" ]]; then
+  if [[ "$1" == *"models_scores_iptm+ptm"* ]]; then
 	  echo "    section_name: \"Model scores\""
 	  echo "    description: \"Scores of the models based on the 0.80*ipTM + 0.2*pTM criteria.\""
-      declare -g has_iptm=1
-	  exit 0
+    echo has_iptm=1 >> "${params_file}"
+	  return 0
   fi
-  if [[ "$1" =~ "score_distribution_plddts" ]]; then
+  if [[ "$1" == *"score_distribution_plddts"* ]]; then
 	  echo "    section_name: \"Score histogram\""
 	  echo "    description: \"Scores of the models based on the plDDTs.\""
-	  declare -g has_plddt=1
-	  exit 0
+	  echo has_plddt=1 >> "${params_file}"
+	  return 0
   fi
-  if [[ "$1" =~ "score_distribution_iptm+ptm" ]]; then
+  if [[ "$1" == *"score_distribution_iptm+ptm"* ]]; then
 	  echo "    section_name: \"Score histogram\""
 	  echo "    description: \"Scores of the models based on the 0.80*ipTM + 0.2*pTM criteria.\""
-    declare -g has_iptm=1
-	  exit 0
+    echo has_iptm=1 >> "${params_file}"
+	  return 0
   fi
-  if [[ "$1" =~ "plddt_PAE" ]]; then
+  if [[ "$1" == *"plddt_PAE"* ]]; then
 	  rank=${1:5:1}
-	  $((rank++))
+	  ((rank++))
 	  echo "    section_name: \"plDDT/PAE: model number ${rank}\""
 	  echo "    description: \"The predicted local Distance Difference Test and Predicted Aligned Error.\""
-	  declare -g has_plddt=1
-	  declare -g has_pae=1
-	  exit 0
+	  echo has_plddt=1 >> "${params_file}"
+	  echo has_pae=1 >> "${params_file}"
+	  return 0
   fi
-  if [[ "$1" =~ "top_5_plddt" || "$1" =~ "0_plddt" ]]; then
+  if [[ "$1" == *"top_5_plddt"* || "$1" =~ "0_plddt" ]]; then
 	  echo "    section_name: \"plDDT: top 5 models\""
 	  echo "    description: \"The predicted local Distance Difference Test of the top 5 models.\""
-	  declare -g has_plddt=1
-	  exit 0
+	  has_plddt=1 >> "${params_file}"
+	  return 0
   fi
-  if [[ "$1" =~ "top_5_PAE" || "$1" =~ "0_pae"  ]]; then
+  if [[ "$1" == *"top_5_PAE"* || "$1" =~ "0_pae"  ]]; then
 	  echo "    section_name: \"PAE: top 5 models\""
 	  echo "    description: \"The Predicted Aligned Error of the top 5 models.\""
-	  declare -g has_pae=1
-	  exit 0
+	  has_pae=1 >> "${params_file}"
+	  return 0
   fi
-  if [[ "$1" =~ "versions_density" ]]; then
+  if [[ "$1" == *"versions_density"* ]]; then
 	  echo "    section_name: \"Score density by AlphaFold model\""
 	  echo "    description: \"Different versions of AlphaFold multimer have been released (v1, v2, v3). This plots de density of the scores for each version. The scores of the models are based on the 0.80*ipTM + 0.2*pTM criteria.\""
-    declare -g has_iptm=1
-	  exit 0
+    echo has_iptm=1 >> "${params_file}"
+	  return 0
   fi
 
   #echo "ERROR: the png file '$i' does no match any pattern"
@@ -101,7 +105,7 @@ function section_info {
 # detect software used #
 ########################
 
-software_versions=$(tr -s '\n' ' ' < $2)
+software_versions=$(tr -s '\n' ' ' < "$2")
 if [[ "${software_versions}" =~ "colabfold" ]]; then
 	has_colabfold=1
 fi
@@ -111,6 +115,19 @@ if [[ "${software_versions}" =~ "AFMassive" ]]; then
 fi
 if [[ "${software_versions}" =~ "AlphaFold" ]]; then
 	has_alphafold=1
+fi
+
+
+
+########################################
+# detect the different plots available #
+########################################
+for file in "${png_files[@]}"; do
+	var=$(section_info "${file}" "${params_file}")
+done
+
+if [[ -f ${params_file} ]]; then
+	source "${params_file}"
 fi
 
 ##########################
@@ -340,13 +357,12 @@ fi
 # Print the array elements
 for file in "${png_files[@]}"; do
     echo ""
-    echo "  $file:"
-    echo "    id: \"$file\""
+    echo "  ${file}:"
+    echo "    id: \"${file}\""
     echo "    parent_id: prediction_structure_plots"
     echo "    parent_name: \"Plots\""
-		section_info $file > /dev/null
 cat << EOF
-$(section_info $file)
+$(section_info "${file}" "${params_file}")
 EOF
 done
 
@@ -355,7 +371,7 @@ echo "sp:"
 
 for file in "${png_files[@]}"; do
     echo ""
-    echo "  $file:"
+    echo "  ${file}:"
     echo "    fn: \"${file}.png\""
 done
 
@@ -383,7 +399,6 @@ for file in "${png_files[@]}"; do
     echo "    order: ${counter}"
 done
 
-
 # test that ranking_debug.tsv file contains data,
 # since colabFold process generates empty file
 if [[ -s ranking_debug.tsv ]]; then
@@ -410,5 +425,4 @@ echo "  software_options:"
 echo "    order: -1980"
 echo "  summary:"
 echo "    order: -2300"
-
 
