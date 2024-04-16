@@ -4,10 +4,7 @@
 
 import csv
 import os
-import sys
 import json
-
-from shutil import copy as cp
 
 from absl import app, flags
 
