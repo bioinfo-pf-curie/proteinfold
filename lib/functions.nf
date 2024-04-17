@@ -104,6 +104,8 @@ def createAfModelsCh(String alphaFoldOptions) {
     alphaFoldOptionsParallel = alphaFoldOptionsParallel
                                  .replaceAll(modelsToRelaxOptions, '')
     alphaFoldOptionsParallel = alphaFoldOptionsParallel + "--models_to_relax=none"
+  } else {
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel + "--models_to_relax=none"
   }
    
   // This is necessary to have a deterministic combination of model/pred with the random seed
