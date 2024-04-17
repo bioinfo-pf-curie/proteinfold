@@ -7,6 +7,41 @@ table_cond_formatting_rules:
       - gt: 0.92 
     unreliable:
       - gt: 3.10
+  l_RMSd-1:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-2:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-3:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-4:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-5:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
 
 table_cond_formatting_colours:
   - correct: "#5cb85c"
@@ -15,15 +50,70 @@ table_cond_formatting_colours:
 
 custom_data:
 
-  scores_alphafill_table:
-    id: 'scores_alphafill_table'
+  scores_alphafill_identity25_table:
+    id: 'scores_alphafill_identity25_table'
     parent_id: scores_alphafill
     parent_name: 'AlphaFill scores'
-    section_name: 'AlphaFill scores'
-    description: 'AlphaFill scores'
+    section_name: 'Identity 25%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 25% (i.e. --min-hsp-identity 0.25)'
     plot_type: 'table'
     pconfig:
-      id: 'scores_alphafill_table'
+      id: 'scores_alphafill_identity25_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity30_table:
+    id: 'scores_alphafill_identity30_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 30%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 30% (i.e. --min-hsp-identity 0.30)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity30_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity40_table:
+    id: 'scores_alphafill_identity40_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 40%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 40% (i.e. --min-hsp-identity 0.40)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity40_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity50_table:
+    id: 'scores_alphafill_identity50_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 50%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 50% (i.e. --min-hsp-identity 0.50)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity50_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity60_table:
+    id: 'scores_alphafill_identity60_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 60%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 60% (i.e. --min-hsp-identity 0.60)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity60_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity70_table:
+    id: 'scores_alphafill_identity70_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 70%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 70% (i.e. --min-hsp-identity 0.70)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity70_table'
       format: '{:,.3f}'
 
   alphafill_legend:
@@ -87,12 +177,39 @@ custom_data:
 
 sp:
 
-  scores_alphafill_table:
-    fn: 'scores_alphafill.tsv'
+  scores_alphafill_identity25_table:
+    fn: "identity0.25.tsv"
+
+  scores_alphafill_identity30_table:
+    fn: "identity0.30.tsv"
+
+  scores_alphafill_identity40_table:
+    fn: "identity0.40.tsv"
+
+  scores_alphafill_identity50_table:
+    fn: "identity0.50.tsv"
+
+  scores_alphafill_identity60_table:
+    fn: "identity0.60.tsv"
+
+  scores_alphafill_identity70_table:
+    fn: "identity0.70.tsv"
 
 report_section_order:
-  scores_alphafill_table:
+  scores_alphafill:
     order: -1000
+  scores_alphafill_identity25_table:
+    order: -990
+  scores_alphafill_identity30_table:
+    order: -980
+  scores_alphafill_identity40_table:
+    order: -970
+  scores_alphafill_identity50_table:
+    order: -960
+  scores_alphafill_identity60_table:
+    order: -950
+  scores_alphafill_identity70_table:
+    order: -940
   legend:
     order: -1500
   alphafill_legend:

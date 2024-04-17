@@ -26,16 +26,20 @@ process generateAlphaFillTsv {
   path(alphaFillDatabase)
 
   output:
-  tuple val(protein), path("${protein}.tsv"), emit: tsv
+  tuple val(protein), path("*.tsv"), emit: tsv
 
   script:
   """
-  alphafill_table.py --input_file=${json} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=${protein}.tsv
+  for file in ${json}; do
+  	alphafill_table.py --input_file=\${file} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=\${file%%json}tsv
+  done
   """
 
   stub:
   """
-  alphafill_table.py --input_file=${json} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=${protein}.tsv
+  for file in ${json}; do
+  	alphafill_table.py --input_file=\${file} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=\${file%%json}tsv
+  done
   """
 }
 

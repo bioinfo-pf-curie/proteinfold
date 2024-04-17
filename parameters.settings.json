@@ -146,19 +146,6 @@
       "group": "Other options"
     },
     {
-      "name": "alphaFillOptions",
-      "label": "alphaFill options",
-      "usage": "Prediction model options passed to AlphaFill.",
-      "type": "JSON",
-      "nargs": 1,
-      "choices": [],
-      "default_value": "--min-hsp-identity 0.7",
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
       "name": "launchAlphaFill",
       "label": "launch alphaFill",
       "usage": "Launch AlphaFill.",

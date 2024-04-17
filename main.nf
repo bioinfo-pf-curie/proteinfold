@@ -220,7 +220,6 @@ summary = [
   'AfMassive Database' : params.launchAfMassive ? params.afMassiveDatabase : null,
   'AfMassive Options' : params.launchAfMassive ? params.afMassiveOptions : null,
   'AlphaFill Database' : params.launchAlphaFill ? params.alphaFillDatabase : null,
-  'AlphaFill Options' : params.launchAlphaFill ? params.alphaFillOptions : null,
   'AlphaFold Database' : params.launchAlphaFold ? params.alphaFoldDatabase : null,
   'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,

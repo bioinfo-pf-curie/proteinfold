@@ -21,26 +21,53 @@ process alphaFill {
   label 'alphaFill'
   label 'medMem'
   label 'minCpu'
-  publishDir path: "${params.outDir}/alphaFill/", mode: 'copy'
+  publishDir path: "${params.outDir}/alphaFill/${protein}", mode: 'copy'
 
   input:
   tuple val(protein), val(toolFold), path("predictions/*")
   path alphaFillDatabase
 
   output:
-  tuple val(protein), path("${protein}.cif"), path("${protein}.json"), emit: predictions
+  tuple val(protein), path("*.cif"), path("*.json"), emit: predictions
 
 
   script:
   """
-  alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
+  identity=0.25
+  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphafilldatabase}/mmcif_files --pdb-fasta ${alphafilldatabase}/fasta/pdb-redo.fasta --ligands ${alphafilldatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
+  identity=0.30
+  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
+  identity=0.40
+  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
+  identity=0.50
+  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
+  identity=0.60
+  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
+  identity=0.7
+  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
   """
 
   stub:
   """
-  echo alphafill process -t ${task.cpus} ${params.alphaFillOptions} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}.cif
-  touch ${protein}.cif
-  cp $projectDir/test/data/alphafill/json/alphafill-res.json ${protein}.json
+  identity=0.25
+  echo alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb ${protein}-identity\${identity}.cif
+  touch identity\${identity}.cif
+  cp $projectDir/test/data/alphafill/json/alphafill-res.json identity\${identity}.json
+  identity=0.30
+  touch identity\${identity}.cif
+  cp $projectDir/test/data/alphafill/json/alphafill-res.json identity\${identity}.json
+  identity=0.40
+  touch identity\${identity}.cif
+  cp $projectDir/test/data/alphafill/json/alphafill-res.json identity\${identity}.json
+  identity=0.50
+  touch identity\${identity}.cif
+  cp $projectDir/test/data/alphafill/json/alphafill-res.json identity\${identity}.json
+  identity=0.60
+  touch identity\${identity}.cif
+  cp $projectDir/test/data/alphafill/json/alphafill-res.json identity\${identity}.json
+  identity=0.70
+  touch identity\${identity}.cif
+  cp $projectDir/test/data/alphafill/json/alphafill-res.json identity\${identity}.json
   """
 }
 

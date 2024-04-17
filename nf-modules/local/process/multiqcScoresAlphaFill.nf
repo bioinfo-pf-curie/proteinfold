@@ -10,7 +10,7 @@ process multiqcScoresAlphaFill {
   publishDir "${params.outDir}/multiqc/ScoresAlphaFill/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
-  tuple val(protein), path("scores_alphafill.tsv"), path(multiqcConfigScoresAlphaFill)
+  tuple val(protein), path(tsv), path(multiqcConfigScoresAlphaFill)
             
 
   output:
