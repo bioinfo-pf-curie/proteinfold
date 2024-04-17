@@ -20,14 +20,14 @@ process multiqcMetricsMultimer {
 
   script:
   """
-  apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Quality metrics of the multimer structure" > multiqc-config-header.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Quality metrics of the multimer structure" > multiqc-config-header.yaml
   cat $multiqcConfigMetricsMultimer >> multiqc-config-header.yaml
   multiqc -c multiqc-config-header.yaml .
   """    
 
   stub:
   """
-  apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Quality metrics of the multimer structure" > multiqc-config-header.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Quality metrics of the multimer structure" > multiqc-config-header.yaml
   cat $multiqcConfigMetricsMultimer >> multiqc-config-header.yaml
   multiqc -c multiqc-config-header.yaml .
   """    

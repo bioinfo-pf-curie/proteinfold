@@ -22,7 +22,7 @@ process multiqcProteinStruct {
   script:
   """
   bash generate_yaml_4_plots.sh plots softwareVersions/software_versions_mqc.yaml > multiqcConfig.yaml
-  apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
   multiqc -c multiqcConfig.yaml -c multiqc-config-header.yaml . plots
   """    
 

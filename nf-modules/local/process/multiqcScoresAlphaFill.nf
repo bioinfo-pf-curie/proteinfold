@@ -18,7 +18,7 @@ process multiqcScoresAlphaFill {
 
   script:
   """
-  apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
   cat $multiqcConfigScoresAlphaFill >> multiqc-config-header.yaml
   multiqc -c multiqc-config-header.yaml .
   """    

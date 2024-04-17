@@ -50,7 +50,7 @@ process multiqcScoresNanoBert {
   EOF
   cat nanobert/human_heavy_scores.yaml >> scores_human_heavy_plot_mqc.yaml
 
-  apMqcHeader.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
   cat $multiqcConfigScoresNanoBert >> multiqc-config-header.yaml
   multiqc -c multiqc-config-header.yaml .
   """    
