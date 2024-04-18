@@ -31,7 +31,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 versions = {}
-with open(args.input, 'w',  encoding="utf-8") as f:
+with open(args.input, 'r',  encoding="utf-8") as f:
     for line in f:
         if line.strip():
             (key, val) = line.strip().split(args.split)

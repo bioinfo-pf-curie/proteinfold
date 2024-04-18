@@ -1,10 +1,14 @@
-import os
-import numpy as np
-import pandas as pd
-import pickle,gzip
-import json
+""" Calculate mpDockQ/pDockQ """
+
 from collections import defaultdict
+import gzip
+import json
 import math
+import os
+import pickle
+
+import numpy as np
+
 
 ################FUNCTIONS#################
 def parse_atm_record(line):
@@ -28,6 +32,7 @@ def parse_atm_record(line):
 
     return record
 
+
 def read_pdb(pdbfile):
     '''Read a pdb file per chain
     '''
@@ -36,42 +41,53 @@ def read_pdb(pdbfile):
     chain_CA_inds = {}
     chain_CB_inds = {}
 
-    with open(pdbfile) as file:
+    with open(pdbfile, 'r', encoding="utf-8") as file:
         for line in file:
             if 'ATOM' in line:
                 record = parse_atm_record(line)
                 if record['chain'] in [*pdb_chains.keys()]:
                     pdb_chains[record['chain']].append(line)
-                    chain_coords[record['chain']].append([record['x'],record['y'],record['z']])
-                    coord_ind+=1
-                    if record['atm_name']=='CA':
+                    chain_coords[record['chain']].append(
+                        [record['x'], record['y'], record['z']])
+                    coord_ind += 1
+                    if record['atm_name'] == 'CA':
                         chain_CA_inds[record['chain']].append(coord_ind)
-                    if record['atm_name']=='CB' or (record['atm_name']=='CA' and record['res_name']=='GLY'):
+                    if record['atm_name'] == 'CB' or (
+                            record['atm_name'] == 'CA'
+                            and record['res_name'] == 'GLY'):
                         chain_CB_inds[record['chain']].append(coord_ind)
-
 
                 else:
                     pdb_chains[record['chain']] = [line]
-                    chain_coords[record['chain']]= [[record['x'],record['y'],record['z']]]
-                    chain_CA_inds[record['chain']]= []
-                    chain_CB_inds[record['chain']]= []
+                    chain_coords[record['chain']] = [[
+                        record['x'], record['y'], record['z']
+                    ]]
+                    chain_CA_inds[record['chain']] = []
+                    chain_CB_inds[record['chain']] = []
                     #Reset coord ind
                     coord_ind = 0
 
-
     return pdb_chains, chain_coords, chain_CA_inds, chain_CB_inds
 
+
 def get_best_plddt(work_dir):
-    json_path = os.path.join(work_dir,'ranking_debug.json')
-    best_model = json.load(open(json_path,'r'))['order'][0]
+    json_path = os.path.join(work_dir, 'ranking_debug.json')
+    with open(json_path, 'r', encoding="utf-8") as json_file:
+        best_model = json.load(json_file)['order'][0]
     try:
-        best_plddt = pickle.load(open(os.path.join(work_dir,"result_{}.pkl".format(best_model)),'rb'))['plddt']
+        pickle_path = os.path.join(work_dir, f"result_{best_model}.pkl")
+        with open(pickle_path, 'rb') as pickle_file:
+            best_plddt = pickle.load(pickle_file)['plddt']
     except FileNotFoundError:
-        print("result pickle for the best model not found. Now search for zipped pickle.")
-        best_plddt = pickle.load(gzip.open(os.path.join(work_dir,"result_{}.pkl.gz".format(best_model)),'rb'))['plddt']
+        print(
+            "result pickle for the best model not found. Now search for zipped pickle."
+        )
+        pickle_path = os.path.join(work_dir, f"result_{best_model}.pk.gz")
+        best_plddt = pickle.load(gzip.open(pickle_path,'rb'))['plddt']
     finally:
-        print(f"finished loading the plddt values.")
+        print("finished loading the plddt values.")
     return best_plddt
+
 
 def read_plddt(best_plddt, chain_CA_inds):
     '''Get the plDDT for each chain
@@ -81,14 +97,15 @@ def read_plddt(best_plddt, chain_CA_inds):
     for name in chain_names:
         curr_len = len(chain_CA_inds[name])
         chain_lengths[name] = curr_len
-    
+
     plddt_per_chain = dict()
     curr_len = 0
-    for k,v in chain_lengths.items():
-        curr_plddt = best_plddt[curr_len:curr_len+v]
+    for k, v in chain_lengths.items():
+        curr_plddt = best_plddt[curr_len:curr_len + v]
         plddt_per_chain[k] = curr_plddt
-        curr_len += v 
+        curr_len += v
     return plddt_per_chain
+
 
 def score_complex(path_coords, path_CB_inds, path_plddt):
     '''
@@ -109,24 +126,28 @@ def score_complex(path_coords, path_CB_inds, path_plddt):
         l1 = len(chain_CB_inds)
         chain_CB_coords = chain_coords[chain_CB_inds]
         chain_plddt = path_plddt[chain_i]
- 
+
         for int_i in np.setdiff1d(chain_inds, i):
             int_chain = chains[int_i]
-            int_chain_CB_coords = np.array(path_coords[int_chain])[path_CB_inds[int_chain]]
+            int_chain_CB_coords = np.array(
+                path_coords[int_chain])[path_CB_inds[int_chain]]
             int_chain_plddt = path_plddt[int_chain]
             #Calc 2-norm
-            mat = np.append(chain_CB_coords,int_chain_CB_coords,axis=0)
-            a_min_b = mat[:,np.newaxis,:] -mat[np.newaxis,:,:]
-            dists = np.sqrt(np.sum(a_min_b.T ** 2, axis=0)).T
-            contact_dists = dists[:l1,l1:]
-            contacts = np.argwhere(contact_dists<=8)
+            mat = np.append(chain_CB_coords, int_chain_CB_coords, axis=0)
+            a_min_b = mat[:, np.newaxis, :] - mat[np.newaxis, :, :]
+            dists = np.sqrt(np.sum(a_min_b.T**2, axis=0)).T
+            contact_dists = dists[:l1, l1:]
+            contacts = np.argwhere(contact_dists <= 8)
             #The first axis contains the contacts from chain 1
             #The second the contacts from chain 2
-            if contacts.shape[0]>0:
-                av_if_plDDT = np.concatenate((chain_plddt[contacts[:,0]], int_chain_plddt[contacts[:,1]])).mean()
-                complex_score += np.log10(contacts.shape[0]+1)*av_if_plDDT
+            if contacts.shape[0] > 0:
+                av_if_plDDT = np.concatenate(
+                    (chain_plddt[contacts[:, 0]],
+                     int_chain_plddt[contacts[:, 1]])).mean()
+                complex_score += np.log10(contacts.shape[0] + 1) * av_if_plDDT
 
     return complex_score, len(chains)
+
 
 def calculate_mpDockQ(complex_score):
     """
@@ -137,7 +158,8 @@ def calculate_mpDockQ(complex_score):
     x_0 = 261.398
     k = 0.036
     b = 0.221
-    return L/(1+math.exp(-1*k*(complex_score-x_0))) + b
+    return L / (1 + math.exp(-1 * k * (complex_score - x_0))) + b
+
 
 def read_pdb_pdockq(pdbfile):
     '''Read a pdb file predicted with AF and rewritten to conatin all chains
@@ -146,20 +168,23 @@ def read_pdb_pdockq(pdbfile):
     '''
 
     chain_coords, chain_plddt = {}, {}
-    with open(pdbfile, 'r') as file:
+    with open(pdbfile, 'r', encoding="utf-8") as file:
         for line in file:
             if not line.startswith('ATOM'):
                 continue
             record = parse_atm_record(line)
             #Get CB - CA for GLY
-            if record['atm_name']=='CB' or (record['atm_name']=='CA' and record['res_name']=='GLY'):
+            if record['atm_name'] == 'CB' or (record['atm_name'] == 'CA'
+                                              and record['res_name'] == 'GLY'):
                 if record['chain'] in [*chain_coords.keys()]:
-                    chain_coords[record['chain']].append([record['x'],record['y'],record['z']])
+                    chain_coords[record['chain']].append(
+                        [record['x'], record['y'], record['z']])
                     chain_plddt[record['chain']].append(record['B'])
                 else:
-                    chain_coords[record['chain']] = [[record['x'],record['y'],record['z']]]
+                    chain_coords[record['chain']] = [[
+                        record['x'], record['y'], record['z']
+                    ]]
                     chain_plddt[record['chain']] = [record['B']]
-
 
     #Convert to arrays
     for chain in chain_coords:
@@ -184,21 +209,25 @@ def calc_pdockq(chain_coords, chain_plddt, t):
     plddt1, plddt2 = chain_plddt[ch1], chain_plddt[ch2]
 
     #Calc 2-norm
-    mat = np.append(coords1, coords2,axis=0)
-    a_min_b = mat[:,np.newaxis,:] -mat[np.newaxis,:,:]
-    dists = np.sqrt(np.sum(a_min_b.T ** 2, axis=0)).T
+    mat = np.append(coords1, coords2, axis=0)
+    a_min_b = mat[:, np.newaxis, :] - mat[np.newaxis, :, :]
+    dists = np.sqrt(np.sum(a_min_b.T**2, axis=0)).T
     l1 = len(coords1)
-    contact_dists = dists[:l1,l1:] #upper triangular --> first dim = chain 1
-    contacts = np.argwhere(contact_dists<=t)
+    contact_dists = dists[:l1, l1:]  #upper triangular --> first dim = chain 1
+    contacts = np.argwhere(contact_dists <= t)
 
-    if contacts.shape[0]<1:
-        pdockq=0
+    if contacts.shape[0] < 1:
+        pdockq = 0
     else:
         #Get the average interface plDDT
-        avg_if_plddt = np.average(np.concatenate([plddt1[np.unique(contacts[:,0])], plddt2[np.unique(contacts[:,1])]]))
+        avg_if_plddt = np.average(
+            np.concatenate([
+                plddt1[np.unique(contacts[:, 0])],
+                plddt2[np.unique(contacts[:, 1])]
+            ]))
         #Get the number of interface contacts
         n_if_contacts = contacts.shape[0]
-        x = avg_if_plddt*np.log10(n_if_contacts)
-        pdockq = 0.724 / (1 + np.exp(-0.052*(x-152.611)))+0.018
+        x = avg_if_plddt * np.log10(n_if_contacts)
+        pdockq = 0.724 / (1 + np.exp(-0.052 * (x - 152.611))) + 0.018
 
     return pdockq
