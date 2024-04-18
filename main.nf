@@ -226,7 +226,6 @@ summary = [
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'DynamicBind Database' : params.launchDynamicBind ? params.dynamicBindDatabase : null,
   'DynamicBind Options' : params.launchDynamicBind ? params.dynamicBindOptions : null,
-  'nanoBERT Options' : params.launchNanoBert ? params.nanoBertOptions : null,
   'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
   'Use existing predictions' : params.fromPredictions != null ? params.fromPredictions : null,
   'Perform only msas' : params.onlyMsas ? "True" : "False",
