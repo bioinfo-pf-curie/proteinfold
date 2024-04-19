@@ -48,6 +48,7 @@ include { printFileContent } from './lib/functions'
 include { elementsNotPresent } from './lib/functions'
 include { createFromCh as createMsasCh } from './lib/functions'
 include { createFromCh as createPredictionsCh } from './lib/functions'
+include { createFromCh as createRankingCh } from './lib/functions'
 
 /*
 ===================================
@@ -202,8 +203,15 @@ predictionsCh = Channel.empty()
 if(params.fromPredictions != null){
   predictionsCh = createPredictionsCh('fromPredictions', fastaFilesCh)
                     .map { tuple(it[0], '', file(file(it[1][0]).getParent())) }
-}
+  rankingCh = createRankingCh('fromPredictions', fastaFilesCh)
+                .map { def rankingJson = it[1]
+                                           .findAll { fileName ->
+                                                     fileName.toString().endsWith('ranking_debug.json')
+																										}
+ 										   tuple(it[0], file(rankingJson[0]))
+                     }
 
+}
 
 /*
 ===========================
@@ -248,8 +256,6 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 */ 
 
 // Processes
-include { getSoftwareOptions } from './nf-modules/common/process/utils/getSoftwareOptions'
-include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { afMassive } from './nf-modules/local/process/afMassive'
 include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
 include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
@@ -261,6 +267,9 @@ include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
 include { dynamicBind } from './nf-modules/local/process/dynamicBind'
 include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
+include { getSoftwareOptions } from './nf-modules/common/process/utils/getSoftwareOptions'
+include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
+include { generateRankingTsv } from './nf-modules/local/process/generateRankingTsv'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
 
@@ -351,10 +360,12 @@ workflow {
   // yaml files for multiqc are set to empty
   if (params.htmlProteinStruct && params.fromPredictions != null ){
     massiveFoldPlots(predictionsCh)
+    generateRankingTsv(rankingCh)
     multiqcProteinStructWkfl(
       Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
       Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
       massiveFoldPlots.out.plots,
+      generateRankingTsv.out.ranking,
       Channel.of('').collectFile(name: 'empty.txt')
     )
   }
