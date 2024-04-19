@@ -194,7 +194,7 @@ def main(argv):
             json_path = os.path.join(result_subdir, "ranking_debug.json")
             with open(json_path, 'r', encoding="utf-8") as json_file:
                 data = json.load(json_file)
-                best_model = ['order'][0]
+                best_model = data['order'][0]
             if "iptm" in data.keys() or "iptm+ptm" in data.keys():
                 iptm_ptm_score = data['iptm+ptm'][best_model]
                 try:

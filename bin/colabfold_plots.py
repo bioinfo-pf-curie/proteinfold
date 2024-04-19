@@ -87,7 +87,7 @@ def plot_msa_v2(feature_dict, sort_lines=True, dpi=100):
     for j in num_aln_n[1:-1]:
         plt.plot([0, lines.shape[1]], [j, j], color="black")
 
-    plt.plot((np.isnan(lines) is False).sum(0), color='black')
+    plt.plot((np.isnan(lines) == False).sum(0), color='black')
     plt.xlim(0, lines.shape[1])
     plt.ylim(0, lines.shape[0])
     plt.colorbar(label="Sequence identity to query")
@@ -166,7 +166,7 @@ def plot_msa(msa, query_sequence, seq_len_list, dpi=100):
     # for j in num_aln_n[1:-1]:
     #    plt.plot([0, lines.shape[1]], [j, j], color="black")
 
-    plt.plot((np.isnan(lines) is False).sum(0), color="black")
+    plt.plot((np.isnan(lines) == False).sum(0), color="black")
     plt.xlim(0, xaxis_size)
     plt.ylim(0, yaxis_size)
     plt.colorbar(label="Sequence identity to query")
