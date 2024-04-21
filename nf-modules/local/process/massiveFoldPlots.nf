@@ -18,7 +18,7 @@ of the license and that you accept its terms.
 // It uses the code from https://github.com/GBLille/AfMassive with a minor patch to
 // check whether PAEs are available within the picle data
 process massiveFoldPlots {
-  tag "${protein}-${toolFold}" 
+  tag { ("${toolFold}".isEmpty()) ? "${protein}" : "${protein}-${toolFold}" }
   label 'python'
   label 'lowMem'
   label 'lowCpu'
