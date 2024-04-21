@@ -17,8 +17,12 @@
 
 **Molecular docking:**
 
+- [AlphaFill](#alphafill)
 - [DynamicBind](#dynamicbind)
 
+**Nanobody mutational space**
+  
+- [nanoBERT](#nanobert)
 
 ## Quick help
 
@@ -90,6 +94,31 @@ Available Profiles
    -profile cluster                     Run the workflow on the cluster, instead of locally
 
 ```
+## AlphaFill
+
+Visit the [AlphaFill](https://github.com/PDB-REDO/alphafill) GitHub repository for more details about the prediction model.
+
+AlphaFill is launched whenener the option `--launchAlphaFill` is set. It can predict the binding of missing compounds from *best* 3D predicted protein structure provided as PDB files. The PDB file used for the prediction must be always named `ranked_0.pdb`.
+
+```bash
+nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
+```
+
+The option `--fromPredictions` takes as imput a directory in which tehre is on folder per protein, each folder container the `ranked_0.pdb` file, for example:
+
+```bash
+├── MISFA
+│   ├── ranked_0.pdb
+└── MRLN
+    ├── ranked_0.pdb
+```
+
+AlphaFill be also launched in used in combination with the following options:
+
+* `--launchAlphaFold`
+* `--launchAfMassive`
+
+In that case, the **best** 3D predicted protein structure obtained by either AlphaFold or AFMassive will be used.
 
 ## AFMassive
 

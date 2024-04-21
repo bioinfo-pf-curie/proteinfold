@@ -20,8 +20,11 @@ This pipeline allows:
   - [AlphaFold](https://github.com/google-deepmind/alphafold/),
   - [ColabFold](https://github.com/sokrypton/ColabFold),
   - [MassiveFold](https://github.com/GBLille/MassiveFold).
-* molecular docking of proten/ligand using:
+* molecular docking of protein/ligand using:
   - [DynamicBind](https://github.com/luwei0917/DynamicBind/)
+  - [AlphaFill](https://github.com/PDB-REDO/alphafill)
+* the navigation of the nanobody mutational space
+  - [nanoBERT](https://huggingface.co/NaturalAntibody/)
 
 ## Quick help
 
