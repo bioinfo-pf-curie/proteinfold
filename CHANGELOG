@@ -1,3 +1,13 @@
+NEW FEATURES
+  - AlphaFill:
+    * tool to predict the binding of missing compounds to predicted 3D protein structure
+    * multiqc report with the predictions
+  - multiqc reports
+    * proteinStruct includes the ranking_debug.json table
+    * new options to geenerate reports from existing results:
+      --htmlProteinStruct
+      --htmlMetricsMultimer
+
 v1.2.0
 03/08/2024
 

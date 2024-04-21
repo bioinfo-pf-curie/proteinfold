@@ -24,6 +24,10 @@
   
 - [nanoBERT](#nanobert)
 
+**MultiQC HTML report from existing results**
+
+- [MultiQC](#multiqc)
+
 ## Quick help
 
 ```bash
@@ -317,4 +321,17 @@ The `protein-ligand.csv` is a CSV file which must contain at least the two follo
 - `ligand`: provided the path to the `sdf` file
 
 Therefore, each row in this file corresponds to a pair protein/ligand to assess their affinity. This file must not contain any space.
+
+
+## MultiQC
+
+
+Two options are available:
+
+```bash
+nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/multimer --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
+
+nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/multimer --htmlMetricsMultimer --fastaPath test/data/fasta/multimer/alphafold
+```
+
 
