@@ -3,6 +3,7 @@ NEW FEATURES
     * tool to predict the binding of missing compounds to predicted 3D protein structure
     * multiqc report with the predictions
   - multiqc reports
+    * Legends and references have been added in the reports
     * proteinStruct includes the ranking_debug.json table
     * new options to geenerate reports from existing results:
       --htmlProteinStruct
