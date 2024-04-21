@@ -27,7 +27,7 @@
       "group": "Other options, nextflow"
     },
     {
-	  "origin": "pipeline",
+	    "origin": "pipeline",
       "name": "fastaPath",
       "label": "Input fasta directory",
       "usage": "Path to the input directory which contains the fasta files.",
@@ -54,7 +54,7 @@
       "group": "References"
     },
     {
-	  "origin": "pipeline",
+	    "origin": "pipeline",
       "name": "proteinLigandFile",
       "label": "Input file",
       "usage": "Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.",
@@ -64,19 +64,6 @@
       "default_value": null,
       "pattern": "",
       "render": "textfield",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "alphaFoldDatabase",
-      "label": "alphaFold database",
-      "usage": "Path to the database required by AlphaFold.",
-      "type": "path",
-      "nargs": 1,
-      "choices": [],
-      "default_value": "",
-      "pattern": ".*",
-      "render": "file",
       "arity": 0,
       "group": "Other options"
     },
@@ -124,6 +111,45 @@
       "label": "launch AfMassive",
       "usage": "Launch AFMassive",
       "type": "boolean",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "multimerVersions",
+      "label": "Multimer versions",
+      "usage": "AlphaFold multimer model versions (v1, v2, v3) which be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true. The list of the versions to be evaluated must be provided with a comma separated string, e.g. 'v1,v2', Default is 'v1,v2,v3'.",
+      "type": "int",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "5",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "predictionsPerModel",
+      "label": "predictions per model",
+      "usage": "Number of predictions per model which be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true.",
+      "type": "int",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "5",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "alphaFoldDatabase",
+      "label": "alphaFold database",
+      "usage": "Path to the database required by AlphaFold.",
+      "type": "path",
       "nargs": 1,
       "choices": [],
       "default_value": "",
