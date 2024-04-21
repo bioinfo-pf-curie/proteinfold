@@ -33,6 +33,23 @@ def printFileContent(file) {
         System.out.println("File not found: $file")
     }
 }
+
+
+// Function to chack that the multimer version is valid
+def checkMultimerVersions(String version) {
+  switch(version) {
+  case 'v1':
+    break
+  case 'v2':
+    break
+  case 'v3':
+    break
+  default:
+    exit 1, "version " + version + " is not supported."
+  }
+}
+
+
 /*
 =================================================
   Create channel with alphaFold models to run the
@@ -41,26 +58,29 @@ def printFileContent(file) {
 =================================================
 */
 
-def createAfModelsCh(String alphaFoldOptions) {
-
+def createAfModelsCh(String alphaFoldOptions,
+                     int predictionsPerModel = 5,
+                     String multimerVersions = "v1,v2,v3") {
   // Set variables
   List afModels
+  Map afModelsInfo = [:]
   int modelNumber = 0
   String modelsToRelaxOptions = ""
-  int predNumber = 5
+  List multimerVersionsList
   int randomSeed
-  Map afModelsInfo = [:]
-
+ 
   // This variable will store the new parameters
   String alphaFoldOptionsParallel = alphaFoldOptions
 
   // Multimer
   if(alphaFoldOptions.contains('model_preset=multimer')){
+    multimerVersionsList = multimerVersions.split(',').toList()
     afModels = []
-    for (int version = 1; version < 4; version++) {
+    for (version in multimerVersionsList) {
+      checkMultimerVersions(version)
       for (int model = 1; model < 6; model++) {
         modelNumber++
-        afModels.add("model_" + model + "_multimer_v" + version)
+        afModels.add("model_" + model + "_multimer_" + version)
       }
     }
   }
@@ -110,7 +130,7 @@ def createAfModelsCh(String alphaFoldOptions) {
    
   // This is necessary to have a deterministic combination of model/pred with the random seed
   def afModelsList = [] 
-  for (int pred_i = 1; pred_i <= predNumber; pred_i++) {
+  for (int pred_i = 1; pred_i <= predictionsPerModel; pred_i++) {
     afModels.each { 
       randomSeed = randomSeed + 1
       afModelsList.add(tuple(pred_i, it, randomSeed))
@@ -120,9 +140,9 @@ def createAfModelsCh(String alphaFoldOptions) {
   
   }
 
-  //afModelsCh = Channel.of(1..predNumber)
+  //afModelsCh = Channel.of(1..predictionsPerModel)
   //               .combine(Channel.fromList(afModels))
-  //               .merge(Channel.of(1..(modelNumber*predNumber))
+  //               .merge(Channel.of(1..(modelNumber*predictionsPerModel))
   //                        .map { it + randomSeed }
   //                      )
 
