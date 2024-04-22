@@ -43,7 +43,7 @@ process alphaFill {
   alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
   identity=0.60
   alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
-  identity=0.7
+  identity=0.70
   alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
   """
 
