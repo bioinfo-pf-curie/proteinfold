@@ -34,7 +34,7 @@ process alphaFill {
   script:
   """
   identity=0.25
-  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphafilldatabase}/mmcif_files --pdb-fasta ${alphafilldatabase}/fasta/pdb-redo.fasta --ligands ${alphafilldatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
+  alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphafillDatabase}/mmcif_files --pdb-fasta ${alphafilldatabase}/fasta/pdb-redo.fasta --ligands ${alphafilldatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
   identity=0.30
   alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/ranked_0.pdb identity\${identity}.cif
   identity=0.40
