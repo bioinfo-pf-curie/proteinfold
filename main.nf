@@ -206,7 +206,12 @@ if(params.fromPredictions != null){
   rankingCh = createRankingCh('fromPredictions', fastaFilesCh)
                 .map { def rankingJson = it[1]
                                            .findAll { fileName ->
-                                                     fileName.toString().endsWith('ranking_debug.json')
+                                                      def jsonFile = fileName.toString().endsWith('ranking_debug.json')
+                                                      if (!jsonFile) {
+                                                        System.out.println("ERROR: there is no ranking_debug.json file for protein: " + it[0])
+                                                        System.exit(1)
+                                                      }
+                                                      jsonFile
 																										}
  										   tuple(it[0], file(rankingJson[0]))
                      }
