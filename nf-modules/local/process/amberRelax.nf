@@ -18,11 +18,10 @@ of the license and that you accept its terms.
 process amberRelax {
   tag "${protein}-${toolFold}" 
   label 'afMassive'
-  label 'lowMem'
-  label 'lowCpu'
+  label 'medMem'
+  label 'medCpu'
   publishDir path: "${params.outDir}/afMassive/${protein}/",
              mode: 'copy'
-
   containerOptions { (params.useGpu) ? "--nv --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "-B \$PWD:/tmp" }
 
   input:
