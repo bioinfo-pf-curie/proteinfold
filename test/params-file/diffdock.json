@@ -1,0 +1,4 @@
+{
+	"launchDiffDock": "true",
+	"proteinLigandFile": "test/data/diffdock/protein_ligand_example.csv"
+}

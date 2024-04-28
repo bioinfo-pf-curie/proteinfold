@@ -1,0 +1,2 @@
+protein,ligand
+test/data/diffdock/1a0q_protein_processed.pdb,test/data/diffdock/1a0q_ligand.sdf
