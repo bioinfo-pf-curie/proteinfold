@@ -74,13 +74,17 @@ if (params.collect().join(' ').find('Help=true')) {
   allowFastaPathNull = true
 }
 
-// DynamicBind does not require fastaPath
-// but it requires a proteinLigandFile
-if(params.launchDynamicBind) {
+// DynamicBind, DiffDock do not require fastaPath
+// but they require a proteinLigandFile
+if(params.launchDynamicBind || params.launchDiffDock) {
   allowFastaPathNull = true
   if(params.proteinLigandFile == null) {
-    exit 1, "To launch DynamicBind you must define the --proteinLigandFile option"
+    exit 1, "The option --proteinLigandFile has not been set"
   }
+}
+
+// DynamicBinbd works only with GPU
+if(params.launchDynamicBind) {
   if (!params.useGpu && !isStubRun){
     exit 1, "DynamicBind works only using GPU. Launch the pipeline with the '--useGpu true' option."
   }
@@ -142,6 +146,11 @@ if (params.launchColabFold){
 
   File colabFoldDB = new File(params.genomes.colabfold.database)
   params.colabFoldDatabase = colabFoldDB.getCanonicalPath()
+}
+
+if (params.launchDiffDock){
+  File diffDockDB = new File(params.genomes.diffdock.database)
+  params.diffDockDatabase = diffDockDB.getCanonicalPath()
 }
 
 if (params.launchDynamicBind){
@@ -235,6 +244,7 @@ summary = [
   'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
+  'DiffDock Database' : params.launchDiffDock ? params.diffDockDatabase : null,
   'DynamicBind Database' : params.launchDynamicBind ? params.dynamicBindDatabase : null,
   'DynamicBind Options' : params.launchDynamicBind ? params.dynamicBindOptions : null,
   'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
@@ -267,6 +277,7 @@ include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
+include { diffDock } from './nf-modules/local/process/diffDock'
 include { dynamicBind } from './nf-modules/local/process/dynamicBind'
 include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
@@ -334,6 +345,11 @@ workflow {
       msasCh,
       workflowSummaryCh
     )
+  }
+
+  // Launch the molecular docking with DiffDock
+  if (params.launchDiffDock){
+    diffDock(proteinLigandCh, params.diffDockDatabase, params.diffDockArgsYamlFile)
   }
 
   // Launch the molecular docking with DynamicBind
