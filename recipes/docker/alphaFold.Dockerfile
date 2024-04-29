@@ -6,5 +6,6 @@ RUN echo $'#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_alph
   && chmod +x /app/get_version.sh
 
 ENV LC_ALL C
-ENV PATH /app:$PATH
+ENV PATH "/opt/conda/bin:/usr/local/cuda/bin:$PATH"
+ENV PATH "$PATH:/app"
 ENV PYTHONPATH /app/alphafold/:$PYTHONPATH

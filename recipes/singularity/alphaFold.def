@@ -3,7 +3,7 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/alphafold:v2.3.2-hhsuit
 
 %environment
   export LC_ALL=C
-  export PATH="/opt/conda/bin:/usr/local/cuda-11.1/bin:$PATH"
+  export PATH="/opt/conda/bin:/usr/local/cuda/bin:$PATH"
   export PATH="$PATH:/app"
   export PYTHONPATH=/app/alphafold/:$PYTHONPATH
 

@@ -13,6 +13,6 @@ RUN /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/dynamicbind
   && cp ~/.bashrc /opt/etc/bashrc
 
 ENV LC_ALL C
-ENV PATH /opt/conda/bin:/usr/local/cuda-11.7/bin:/usr/local/bin/$PATH
+ENV PATH /opt/conda/bin:/usr/local/cuda/bin:/usr/local/bin/$PATH
 ENV PATH $PATH:/app
 ENV BASH_ENV /opt/etc/bashrc

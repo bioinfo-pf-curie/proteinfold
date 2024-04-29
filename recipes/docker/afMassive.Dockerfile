@@ -10,6 +10,7 @@ RUN echo $'#! /bin/bash\nldconfig -C ld.so.cache\npython /app/alphafold/run_AFma
   && patch -p1 < afMassive.patch
 
 ENV LC_ALL C
+ENV PATH "/opt/conda/bin:/usr/local/cuda/bin:$PATH"
+ENV PATH "$PATH:/app"
 ENV PATH /app:$PATH
 ENV PYTHONPATH /app/alphafold/:$PYTHONPATH
-
