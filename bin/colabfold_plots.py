@@ -19,7 +19,7 @@ def plot_predicted_alignment_error(jobname: str,
     for n, (model_name, value) in enumerate(outs.items()):
         plt.subplot(1, num_models, n + 1)
         plt.title(model_name)
-        plt.imshow(value["pae"], label=model_name, cmap="bwr", vmin=0, vmax=30)
+        plt.imshow(value["pae"], label=model_name, cmap="bwr", vmin=0, vmax=31.75)
         plt.colorbar()
     plt.savefig(result_dir.joinpath(jobname + "_PAE.png"))
     if show:
@@ -224,7 +224,7 @@ def plot_confidence(plddt, pae=None, pos_s=None, dpi=100):
         plt.subplot(1, 2, 2)
         plt.title('Predicted Aligned Error')
         pos_n = pae.shape[0]
-        plt.imshow(pae, cmap="bwr", vmin=0, vmax=30, extent=(0, pos_n, pos_n, 0))
+        plt.imshow(pae, cmap="bwr", vmin=0, vmax=31.75, extent=(0, pos_n, pos_n, 0))
         if pos_s is not None and len(pos_s) > 1:
             plot_ticks(pos_s)
         plt.colorbar()
@@ -283,7 +283,7 @@ def plot_pae(pae,
     image = axes.imshow(pae,
                         cmap="bwr",
                         vmin=0,
-                        vmax=30,
+                        vmax=31.75,
                         extent=(0, pos_n, pos_n, 0))
     if pos_s is not None and len(pos_s) > 1:
         plot_ticks(pos_s, axes=axes)
