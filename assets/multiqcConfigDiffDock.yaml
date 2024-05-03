@@ -1,0 +1,108 @@
+table_cond_formatting_rules:
+  Confidence:
+    confidence_low:
+      - lt: -1.5
+    confidence_moderate:
+      - gt: -1.5
+    confidence_high:
+      - gt: 0
+
+table_cond_formatting_colours:
+  - confidence_low: "#d9534f"
+  - confidence_moderate: "#f0ad4e"
+  - confidence_high: "#5cb85c"
+
+custom_data:
+
+  scores_diffdock_table:
+    id: 'scores_diffdock_table'
+    parent_id: scores_diffdock
+    parent_name: 'DiffDock confidence'
+    section_name: 'DiffDock confidence'
+    description: 'This is the confidence score of the top pose.'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_diffdock_table'
+      format: '{:,.3f}'
+
+  diffdock_legend:
+    id: 'confidence_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Confidence'
+    description: 'This is the confidence score of the top pose.'
+    plot_type: 'html'
+    data: |
+            <style type="text/css">
+            table td#confidence_high {padding:0 15px; background-color:#5cb85c;}
+            table td#confidence_moderate {padding:0 15px; background-color:#f0ad4e;}
+            table td#confidence_low {padding:0 15px; background-color:#d9534f;}
+            table td#range {padding:0 15px;}
+            table th#range {padding:0 15px;}
+            </style>
+            <table>
+              <tr>
+                <th>Status</th>
+                <th id="range">Range</th>
+              </tr>
+              <tr>
+                <td id="confidence_high">High</td>
+                <td id="range"> confidence > 0 </td>
+              </tr>
+              <tr>
+                <td id="confidence_moderate">Moderate</td>
+                <td id="range"> -1.5 < confidence < 0 </td>
+              </tr>
+              <tr>
+                <td id="confidence_low">Low</td>
+                <td id="range"> confidence < -1.5  </td>
+              </tr>
+            </table>
+
+
+  definition_legend:
+    id: 'definition_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Definitions'
+    plot_type: 'html'
+    data: |
+        <dl class="dl-horizontal">
+            <dt>Confidence</dt><dd><samp>It can be hard to interpret and compare confidence score of different complexes or different protein conformations, however, here a rough guideline that Corso et al. (2024) typically used is shown in the <a href="#confidence_legend">Confidence</a> legend. This is assuming the complex is similar to what DiffDock saw in the training set i.e. a not too large drug-like molecule bound to medium size protein (1 or 2 chains) in a conformation that is similar to the bound one (e.g. if it comes from an homologue crystal structure). If you are dealing with a large ligand, a large protein complex and/or an app/unbound protein conformation you should shift these intervals down.</samp></dd>
+        </dl>
+
+  reference_legend:
+    id: 'reference_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'References'
+    description: 'List of publications'
+    plot_type: 'html'
+    data: |
+            <ul>
+              <li>Corso et al., Deep Confident Steps to New Pockets: Strategies for Docking Generalization,  arXiv (2024), <a href="https://arxiv.org/abs/2402.18396">2402.18396</a></li>
+            </ul>
+
+sp:
+
+  scores_diffdock_table:
+    fn: 'scores_diffdock.csv'
+
+report_section_order:
+  scores_diffdock_table:
+    order: -1000
+  legend:
+    order: -1500
+  diffdock_legend:
+    order: -1490
+  definition_legend:
+    order: -1450
+  reference_legend:
+    order: -1440
+  software:
+    order: -2000
+  software_versions:
+    order: -1990
+  software_options:
+    order: -1980
+
