@@ -277,7 +277,6 @@ include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
-include { diffDock } from './nf-modules/local/process/diffDock'
 include { dynamicBind } from './nf-modules/local/process/dynamicBind'
 include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
@@ -292,6 +291,7 @@ include { alphaFillWkfl } from './nf-modules/local/subworkflow/alphaFillWkfl'
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
+include { diffDockWkfl } from './nf-modules/local/subworkflow/diffDockWkfl'
 include { multiqcProteinStructWkfl } from './nf-modules/local/subworkflow/multiqcProteinStructWkfl'
 include { multiqcMetricsMultimerWkfl } from './nf-modules/local/subworkflow/multiqcMetricsMultimerWkfl'
 include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
@@ -349,7 +349,7 @@ workflow {
 
   // Launch the molecular docking with DiffDock
   if (params.launchDiffDock){
-    diffDock(proteinLigandCh, params.diffDockDatabase, params.diffDockArgsYamlFile)
+    diffDockWkfl(proteinLigandCh, params.diffDockDatabase, params.diffDockArgsYamlFile)
   }
 
   // Launch the molecular docking with DynamicBind
