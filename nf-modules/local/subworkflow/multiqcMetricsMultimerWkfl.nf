@@ -30,7 +30,7 @@ workflow multiqcMetricsMultimerWkfl {
 
   main:
 
-  int maxPickleSize = 0
+  long maxPickleSize = 0
 
   // get max size of pickle file for adaptive memory calibration
   maxPickleSizeCh = predictionsCh
