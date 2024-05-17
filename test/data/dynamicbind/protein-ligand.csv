@@ -1,2 +1,5 @@
 protein,ligand
 test/data/dynamicbind/AF-P00519-F1-model_v4.pdb,test/data/dynamicbind/DB00619.sdf
+test/data/dynamicbind/PARP1.pdb,test/data/dynamicbind/olaparib.sdf
+test/data/dynamicbind/RAF-1.pdb,test/data/dynamicbind/sorafenib.sdf
+test/data/dynamicbind/1a0q.pdb,test/data/dynamicbind/1a0q_ligand.sdf
