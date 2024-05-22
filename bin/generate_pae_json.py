@@ -63,7 +63,7 @@ def main(argv):
         sys.exit(1)
 
     with open(os.path.join(f'{FLAGS.prediction_dir}/ranking_debug.json'),
-              'rb',
+              'r',
               encoding="utf-8") as json_file:
         best_model = json.load(json_file)['order'][0]
 
