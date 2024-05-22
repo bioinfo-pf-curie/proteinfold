@@ -83,7 +83,7 @@ if(params.launchDynamicBind || params.launchDiffDock) {
   }
 }
 
-// DynamicBinbd works only with GPU
+// DynamicBinb works only with GPU
 if(params.launchDynamicBind) {
   if (!params.useGpu && !isStubRun){
     exit 1, "DynamicBind works only using GPU. Launch the pipeline with the '--useGpu true' option."
@@ -292,6 +292,7 @@ include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { diffDockWkfl } from './nf-modules/local/subworkflow/diffDockWkfl'
+include { dynamicBindWkfl } from './nf-modules/local/subworkflow/dynamicBindWkfl'
 include { multiqcProteinStructWkfl } from './nf-modules/local/subworkflow/multiqcProteinStructWkfl'
 include { multiqcMetricsMultimerWkfl } from './nf-modules/local/subworkflow/multiqcMetricsMultimerWkfl'
 include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
@@ -354,7 +355,7 @@ workflow {
 
   // Launch the molecular docking with DynamicBind
   if (params.launchDynamicBind){
-    dynamicBind(proteinLigandCh, params.dynamicBindDatabase)
+    dynamicBindWkfl(proteinLigandCh, params.dynamicBindDatabase)
   }
 
   // Launch AlphaFill using existing predicted structure

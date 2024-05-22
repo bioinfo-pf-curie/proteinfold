@@ -30,11 +30,38 @@ process dynamicBind {
   path dynamicBindDatabase
 
   output:
-  path("${protein}/${ligand}", type: 'dir')
+  path("${protein}/${ligand}/*.csv", type: 'file', emit: scores)
+  path("${protein}/${ligand}/", type: 'dir')
+  path("${protein}/${ligand}/versions.txt"), emit: versions
+  path("${protein}/${ligand}/options.txt"), emit: options
 
   script:
   """
   launch_dynamicbind.sh ${proteinPdb} ${ligandSdf} ${params.dynamicBindOptions} --ligand_is_sdf --paper --results ${protein} --header ${ligand} --python /opt/conda/envs/dynamicbind/bin/python --relax_python /opt/conda/envs/relax/bin/python --num_workers ${task.cpus}
+  format_dynamicbind_scores.sh ${protein}/${ligand}/complete_affinity_prediction.csv ${protein} ${ligand} > ${protein}/${ligand}/complete_affinity_prediction.csv.tmp
+  rm ${protein}/${ligand}/complete_affinity_prediction.csv
+  mv ${protein}/${ligand}/complete_affinity_prediction.csv.tmp ${protein}/${ligand}/complete_affinity_prediction_${protein}-${ligand}.csv
+  format_dynamicbind_scores.sh ${protein}/${ligand}/affinity_prediction.csv ${protein} ${ligand} > ${protein}/${ligand}/affinity_prediction.csv.tmp
+  rm ${protein}/${ligand}/affinity_prediction.csv
+  mv ${protein}/${ligand}/affinity_prediction.csv.tmp ${protein}/${ligand}/affinity_prediction_${protein}-${ligand}.csv
+  echo "DynamicBind \$(get_version.sh)" > ${protein}/${ligand}/versions.txt
+  echo "DynamicBind options=${params.dynamicBindOptions}" > ${protein}/${ligand}/options.txt
   """
+
+  stub:
+  """
+  mkdir -p ${protein}/${ligand}/index0_idx_y
+  touch ${protein}/${ligand}/index0_idx_y/res.txt
+  cp -r ${projectDir}/test/data/dynamicbind/work/${protein}/${ligand}/* ${protein}/${ligand}
+  format_dynamicbind_scores.sh ${protein}/${ligand}/complete_affinity_prediction.csv ${protein} ${ligand} > ${protein}/${ligand}/complete_affinity_prediction.csv.tmp
+  rm ${protein}/${ligand}/complete_affinity_prediction.csv
+  mv ${protein}/${ligand}/complete_affinity_prediction.csv.tmp ${protein}/${ligand}/complete_affinity_prediction_${protein}-${ligand}.csv
+  format_dynamicbind_scores.sh ${protein}/${ligand}/affinity_prediction.csv ${protein} ${ligand} > ${protein}/${ligand}/affinity_prediction.csv.tmp
+  rm ${protein}/${ligand}/affinity_prediction.csv
+  mv ${protein}/${ligand}/affinity_prediction.csv.tmp ${protein}/${ligand}/affinity_prediction_${protein}-${ligand}.csv
+  echo "DynamicBind \$(get_version.sh)" > ${protein}/${ligand}/versions.txt
+  echo "DynamicBind options=${params.dynamicBindOptions}" > ${protein}/${ligand}/options.txt
+  """
+
 }
 

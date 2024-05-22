@@ -1,0 +1,75 @@
+custom_data:
+
+  affinity_dynamicbind_table:
+    id: 'affinity_dynamicbind_table'
+    parent_id: affinity_dynamicbind
+    parent_name: 'DynamicBind affinity (average)'
+    section_name: 'DynamicBind affinity (average)'
+    description: 'This is the affinity weighted average over the top ranked (by LDDT) models.'
+    plot_type: 'table'
+    pconfig:
+      id: 'affinity_dynamicbind_table'
+      format: '{:,.3f}'
+
+  complete_affinity_dynamicbind_table:
+    id: 'complete_affinity_dynamicbind_table'
+    parent_id: complete_affinity_dynamicbind
+    parent_name: 'DynamicBind affinity'
+    section_name: 'DynamicBind affinity'
+    description: 'This is the affinity computed for the top ranked (by LDDT) models.'
+    plot_type: 'table'
+    pconfig:
+      id: 'complete_affinity_dynamicbind_table'
+      format: '{:,.3f}'
+
+
+  definition_legend:
+    id: 'definition_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Definitions'
+    plot_type: 'html'
+    data: |
+        <dl class="dl-horizontal">
+            <dt>affinity</dt><dd><samp>The affinity can be viewed as -log10(IC50). For example, 9 means that the inhibition concentration is 1nM,  6 means 1μM. The larger is the affinity, the stronger is the inhibition.</samp></dd>
+            <dt>lDDT</dt><dd><samp>It corresponds to the contact-LDDT (cLDDT) scoring module developed by Lu et al. (2024), it is a a concept inspired by AlphaFold’s LDDT score. The Local Distance Difference Test (lDDT) is a superposition-free score that evaluates local distance differences of all atoms in a model.</samp></dd>
+        </dl>
+
+  reference_legend:
+    id: 'reference_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'References'
+    description: 'List of publications'
+    plot_type: 'html'
+    data: |
+            <ul>
+              <li>Lu, W., Zhang, J., Huang, W. et al. DynamicBind: predicting ligand-specific protein-ligand complex structure with a deep equivariant generative model. Nat Commun 15, 1071 (2024) <a href="https://doi.org/10.1038/s41467-024-45461-2">https://doi.org/10.1038/s41467-024-45461-2</a></li>
+            </ul>
+
+sp:
+
+  affinity_dynamicbind_table:
+    fn: 'affinity_dynamicbind.csv'
+
+  complete_affinity_dynamicbind_table:
+    fn: 'complete_affinity_dynamicbind.csv'
+
+report_section_order:
+  affinity_dynamicbind_table:
+    order: -1000
+  complete_affinity_dynamicbind_table:
+    order: -1100
+  legend:
+    order: -1500
+  definition_legend:
+    order: -1450
+  reference_legend:
+    order: -1440
+  software:
+    order: -2000
+  software_versions:
+    order: -1990
+  software_options:
+    order: -1980
+
