@@ -2,7 +2,7 @@
  * MultiQC for ProteinFold report
  */
 
-process multiqcProteinStruct {
+process mqcProteinStruct {
   tag "${protein}"
   label 'multiqc'
   label 'minCpu'
@@ -21,9 +21,9 @@ process multiqcProteinStruct {
 
   script:
   """
-  bash generate_yaml_4_plots.sh plots softwareVersions/software_versions_mqc.yaml > multiqcConfig.yaml
-  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
-  multiqc -c multiqcConfig.yaml -c multiqc-config-header.yaml . plots
+  bash generate_yaml_4_plots.sh plots softwareVersions/software_versions_mqc.yaml > mqcCfg.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > mqcCfgHeader.yaml
+  multiqc -n ProteinStruct_mqc_report.html -c mqcCfg.yaml -c mqcCfgHeader.yaml . plots
   """    
 
 }

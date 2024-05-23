@@ -16,9 +16,9 @@ of the license and that you accept its terms.
 
 // Processes
 include { metricsMultimer } from '../process/metricsMultimer'
-include { multiqcMetricsMultimer } from '../process/multiqcMetricsMultimer'
+include { mqcMetricsMultimer } from '../process/mqcMetricsMultimer'
 
-workflow multiqcMetricsMultimerWkfl {
+workflow mqcMetricsMultimerWkfl {
 
   take:
 
@@ -54,11 +54,11 @@ workflow multiqcMetricsMultimerWkfl {
   )
   
   // step - multiqc report with the metric table
-  multiqcMetricsMultimer(
+  mqcMetricsMultimer(
     metricsMultimer.out.metrics,
     optionsYamlCh,
     versionsYamlCh,
-    Channel.fromPath("${projectDir}/assets/multiqcConfigMetricsMultimer.yaml") 
+    Channel.fromPath("${projectDir}/assets/mqcCfgMetricsMultimer.yaml") 
   )
 
 }

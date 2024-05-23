@@ -23,7 +23,7 @@ of the license and that you accept its terms.
 // Processes
 include { alphaFill } from '../process/alphaFill'
 include { generateAlphaFillTsv } from '../process/generateAlphaFillTsv'
-include { multiqcScoresAlphaFill } from '../process/multiqcScoresAlphaFill'
+include { mqcAlphaFill } from '../process/mqcAlphaFill'
 
 /*
 =====================================
@@ -52,9 +52,9 @@ workflow alphaFillWkfl {
   )
 
   // step - generate multiqc for AlphaFill
-  multiqcScoresAlphaFill(
+  mqcAlphaFill(
     generateAlphaFillTsv.out.tsv
-      .combine(Channel.fromPath("${projectDir}/assets/multiqcConfigScoresAlphaFill.yaml"))
+      .combine(Channel.fromPath("${projectDir}/assets/mqcCfgAlphaFill.yaml"))
   )
 
 }

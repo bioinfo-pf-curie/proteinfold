@@ -32,12 +32,12 @@ include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptio
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 include { metricsMultimer } from '../process/metricsMultimer'
-include { multiqcMetricsMultimer } from '../process/multiqcMetricsMultimer'
+include { mqcMetricsMultimer } from '../process/mqcMetricsMultimer'
 
 // Subworkflows
 include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
-include { multiqcMetricsMultimerWkfl } from '../subworkflow/multiqcMetricsMultimerWkfl'
-include { multiqcProteinStructWkfl } from '../subworkflow/multiqcProteinStructWkfl'
+include { mqcMetricsMultimerWkfl } from '../subworkflow/mqcMetricsMultimerWkfl'
+include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 
 // Functions
 include { createAfModelsCh } from '../../../lib/functions'
@@ -161,7 +161,7 @@ workflow afMassiveWkfl {
   //////////////////////////////////
   // multiqc by protein structure //
   //////////////////////////////////
-  multiqcProteinStructWkfl(
+  mqcProteinStructWkfl(
     optionsYamlCh,
     versionsYamlCh,
     plotsCh,
@@ -173,7 +173,7 @@ workflow afMassiveWkfl {
   // metrics for the multimer prediction //
   /////////////////////////////////////////
   if(params.alphaFoldOptions.contains('multimer')){
-    multiqcMetricsMultimerWkfl(
+    mqcMetricsMultimerWkfl(
       optionsYamlCh,
       versionsYamlCh,
       afMassiveGather.out.predictions,

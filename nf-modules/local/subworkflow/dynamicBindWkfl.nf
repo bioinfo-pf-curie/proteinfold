@@ -66,7 +66,7 @@ workflow dynamicBindWkfl {
   /////////////
   mqcDynamicBind(
     dynamicBind.out.scores.collect(),
-    "${projectDir}/assets/multiqcConfigDynamicBind.yaml",
+    "${projectDir}/assets/mqcCfgDynamicBind.yaml",
     optionsYamlCh,
     versionsYamlCh
   )

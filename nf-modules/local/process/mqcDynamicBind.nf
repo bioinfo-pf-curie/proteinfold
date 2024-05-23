@@ -11,7 +11,7 @@ process mqcDynamicBind {
 
   input:
   path(scores)
-  path(multiqcConfigDynamicBind)
+  path(mqcCfgDynamicBind)
   path ('softwareOptions/*')
   path ('softwareVersions/*')
             
@@ -22,14 +22,14 @@ process mqcDynamicBind {
   script:
   """
   ls -al
-  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Confidence scores for DynamicBind" > multiqc-config-header.yaml
-  cat $multiqcConfigDynamicBind >> multiqc-config-header.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Affinity predicted by DynamicBind" > mqcCfgHeader.yaml
+  cat $mqcCfgDynamicBind >> mqcCfgHeader.yaml
   echo "name,protein,ligand,affinity" > header_affinity.csv
   cat affinity_*  | grep -v "name,protein,ligand,affinity" > affinity.csv
   cat header_affinity.csv affinity.csv > affinity_dynamicbind.csv 
   echo "name,protein,ligand,rank,lddt,affinity" > header_complete_affinity.csv
   cat complete_affinity_* | grep -v "name,protein,ligand,rank,lddt,affinity" > complete_affinity.csv
   cat header_complete_affinity.csv complete_affinity.csv > complete_affinity_dynamicbind.csv 
-  multiqc -c multiqc-config-header.yaml .
+  multiqc -n DynamicBind_mqc_report.html -c mqcCfgHeader.yaml .
   """    
 }

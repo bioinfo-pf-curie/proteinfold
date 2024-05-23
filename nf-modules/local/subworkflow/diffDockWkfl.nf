@@ -67,7 +67,7 @@ workflow diffDockWkfl {
   /////////////
   mqcDiffDock(
     diffDock.out.scores.collect(),
-    "${projectDir}/assets/multiqcConfigDiffDock.yaml",
+    "${projectDir}/assets/mqcCfgDiffDock.yaml",
     optionsYamlCh,
     versionsYamlCh
   )

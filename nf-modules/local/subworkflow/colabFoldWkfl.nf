@@ -29,7 +29,7 @@ include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVers
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 
 // Subworkflows
-include { multiqcProteinStructWkfl } from '../subworkflow/multiqcProteinStructWkfl'
+include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 
 /*
 =====================================
@@ -94,7 +94,7 @@ workflow colabFoldWkfl {
   //////////////////////////////////
   // multiqc by protein structure //
   //////////////////////////////////
-  multiqcProteinStructWkfl(
+  mqcProteinStructWkfl(
     optionsYamlCh,
     versionsYamlCh,
     plotsCh,

@@ -11,7 +11,7 @@ process mqcDiffDock {
 
   input:
   path(scores)
-  path(multiqcConfigDiffDock)
+  path(mqcCfgDiffDock)
   path ('softwareOptions/*')
   path ('softwareVersions/*')
             
@@ -22,11 +22,11 @@ process mqcDiffDock {
   script:
   """
   ls -al
-  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Confidence scores for DiffDock" > multiqc-config-header.yaml
-  cat $multiqcConfigDiffDock >> multiqc-config-header.yaml
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Confidence scores for DiffDock" > mqcCfgHeader.yaml
+  cat $mqcCfgDiffDock >> mqcCfgHeader.yaml
   echo "Name,Protein,Ligand,Rank,Confidence" > header.csv
   cat scores_* > scores.csv
   cat header.csv scores.csv > scores_diffdock.csv 
-  multiqc -c multiqc-config-header.yaml .
+  multiqc -n DiffDock_mqc_report.html -c mqcCfgHeader.yaml .
   """    
 }

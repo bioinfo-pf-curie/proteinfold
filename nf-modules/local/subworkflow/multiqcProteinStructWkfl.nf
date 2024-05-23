@@ -15,9 +15,9 @@ of the license and that you accept its terms.
 */
 
 // Processes
-include { multiqcProteinStruct } from '../process/multiqcProteinStruct'
+include { mqcProteinStruct } from '../process/mqcProteinStruct'
 
-workflow multiqcProteinStructWkfl {
+workflow mqcProteinStructWkfl {
 
   take:
 
@@ -32,7 +32,7 @@ workflow multiqcProteinStructWkfl {
   
   
   // Perform multiqc by protein structure
-  multiqcProteinStruct(
+  mqcProteinStruct(
     plotsCh
       .join(rankingCh)
       .combine(versionsYamlCh),

@@ -2,7 +2,7 @@
  * MultiQC for nanoBERT scores
  */
 
-process multiqcScoresNanoBert {
+process mqcNanoBert {
   tag "${protein}"
   label 'multiqc'
   label 'minCpu'
@@ -10,7 +10,7 @@ process multiqcScoresNanoBert {
   publishDir "${params.outDir}/multiqc/scoresNanoBert/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
-  tuple val(protein), path("nanobert"), path(multiqcConfigScoresNanoBert)
+  tuple val(protein), path("nanobert"), path(mqcCfgNanoBert)
             
 
   output:
@@ -50,8 +50,8 @@ process multiqcScoresNanoBert {
   EOF
   cat nanobert/human_heavy_scores.yaml >> scores_human_heavy_plot_mqc.yaml
 
-  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > multiqc-config-header.yaml
-  cat $multiqcConfigScoresNanoBert >> multiqc-config-header.yaml
-  multiqc -c multiqc-config-header.yaml .
+  ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > mqcCfgHeader.yaml
+  cat $mqcCfgNanoBert >> mqcCfgHeader.yaml
+  multiqc -n NanoBert_mqc_report.html -c mqcCfgHeader.yaml .
   """    
 }
