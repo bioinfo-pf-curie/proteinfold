@@ -13,7 +13,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Singularity launch script for Alphafold Singularity image."""
+
+"""
+set the options required by AlphaFold such as paths to the database
+source: adapted from https://github.com/prehensilecode/alphafold_singularity
+"""
 
 import os
 from typing import Tuple

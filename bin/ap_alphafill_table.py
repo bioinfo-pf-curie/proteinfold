@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright Institut Curie 202GG4
+# Copyright Institut Curie 2024
 #
 # This software is a computer program whose purpose is to
 # predict 3D structure of proteins.

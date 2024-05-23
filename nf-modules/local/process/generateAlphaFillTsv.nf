@@ -31,14 +31,14 @@ process generateAlphaFillTsv {
   script:
   """
   for file in ${json}; do
-  	alphafill_table.py --input_file=\${file} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=\${file%%json}tsv
+  	ap_alphafill_table.py --input_file=\${file} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=\${file%%json}tsv
   done
   """
 
   stub:
   """
   for file in ${json}; do
-  	alphafill_table.py --input_file=\${file} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=\${file%%json}tsv
+  	ap_alphafill_table.py --input_file=\${file} --ligand_file=${alphaFillDatabase}/ligands/af-ligands.cif --output_file=\${file%%json}tsv
   done
   """
 }

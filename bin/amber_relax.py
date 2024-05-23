@@ -13,7 +13,12 @@
 # The fact that you are presently reading this means that you have had knowledge
 # of the license and that you accept its terms.
 
-"""Compute amber relaxation from a PDB file"""
+"""
+Compute amber relaxation from a PDB file
+- code inspired from: https://github.com/google-deepmind/alphafold/issues/721
+"""
+
+
 import os
 import sys
 
@@ -22,8 +27,6 @@ from absl import flags
 from alphafold.common import protein
 from alphafold.relax import relax
 
-### code inspired from:
-### https://github.com/google-deepmind/alphafold/issues/721
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string('pdb_file', None,
@@ -69,7 +72,7 @@ def main(argv):
     Compute amber relaxation from a PDB file
 
     Example:
-     {argv[0]} --model_name=my_file.pdf --relaxed_pdb_file=relaxed_my_file.pdb --use_gpu_relax
+     {argv[0]} --pdb_file=my_file.pdb --relaxed_pdb_file=relaxed_my_file.pdb --use_gpu_relax
 
     Output:
      It will generate the file 'relaxed_my_file.pdb'

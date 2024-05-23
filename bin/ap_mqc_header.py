@@ -15,7 +15,8 @@
 # The fact that you are presently reading this means that                                   #
 # you have had knowledge of the license and that you accept its terms.                      #
 #############################################################################################
-""" Generate head information for multiqc report """
+
+""" Generate header information for multiqc report """
 
 import os
 import re
