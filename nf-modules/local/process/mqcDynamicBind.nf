@@ -7,7 +7,7 @@ process mqcDynamicBind {
   label 'multiqc'
   label 'minCpu'
   label 'lowMem'
-  publishDir "${params.outDir}/multiqc/dynamicBind/", mode: 'copy'
+  publishDir "${params.outDir}/multiqc/DynamicBind/", mode: 'copy'
 
   input:
   path(scores)
@@ -29,6 +29,6 @@ process mqcDynamicBind {
   echo "name,protein,ligand,rank,lddt,affinity" > header_complete_affinity.csv
   cat complete_affinity_* | grep -v "name,protein,ligand,rank,lddt,affinity" > complete_affinity.csv
   cat header_complete_affinity.csv complete_affinity.csv > complete_affinity_dynamicbind.csv 
-  multiqc -n DynamicBind_mqc_report.html -c mqcCfgHeader.yaml .
+  multiqc -n dynamicbind_mqc_report.html -c mqcCfgHeader.yaml .
   """    
 }

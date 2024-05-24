@@ -245,6 +245,7 @@ summary = [
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'DiffDock Database' : params.launchDiffDock ? params.diffDockDatabase : null,
+  'DiffDock Options' : params.launchDiffDock ? params.diffDockArgsYamlFile : null,
   'DynamicBind Database' : params.launchDynamicBind ? params.dynamicBindDatabase : null,
   'DynamicBind Options' : params.launchDynamicBind ? params.dynamicBindOptions : null,
   'Use existing msas' : params.fromMsas != null ? params.fromMsas : null,
@@ -350,7 +351,7 @@ workflow {
 
   // Launch the molecular docking with DiffDock
   if (params.launchDiffDock){
-    diffDockWkfl(proteinLigandCh, params.diffDockDatabase, Channel.fromPath(params.diffDockArgsYamlFile))
+    diffDockWkfl(proteinLigandCh, params.diffDockDatabase, params.diffDockArgsYamlFile)
   }
 
   // Launch the molecular docking with DynamicBind

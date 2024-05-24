@@ -48,7 +48,7 @@ workflow diffDockWkfl {
   optionsCh = Channel.empty()
   versionsCh = Channel.empty()
   
-  diffDock(proteinLigandCh, diffDockDatabase, diffDockArgsYamlFile)
+  diffDock(proteinLigandCh, diffDockDatabase, file(diffDockArgsYamlFile))
 
   versionsCh = versionsCh.mix(diffDock.out.versions)
   optionsCh = optionsCh.mix(diffDock.out.options)
