@@ -21,11 +21,10 @@ process mqcDynamicBind {
 
   script:
   """
-  ls -al
   ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition "Affinity predicted by DynamicBind" > mqcCfgHeader.yaml
   cat $mqcCfgDynamicBind >> mqcCfgHeader.yaml
   echo "name,protein,ligand,affinity" > header_affinity.csv
-  cat affinity_*  | grep -v "name,protein,ligand,affinity" > affinity.csv
+  cat affinity_* | grep -v "name,protein,ligand,affinity" > affinity.csv
   cat header_affinity.csv affinity.csv > affinity_dynamicbind.csv 
   echo "name,protein,ligand,rank,lddt,affinity" > header_complete_affinity.csv
   cat complete_affinity_* | grep -v "name,protein,ligand,rank,lddt,affinity" > complete_affinity.csv
