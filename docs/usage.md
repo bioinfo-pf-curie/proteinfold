@@ -18,6 +18,7 @@
 **Molecular docking:**
 
 - [AlphaFill](#alphafill)
+- [DiffDock](#diffdock)
 - [DynamicBind](#dynamicbind)
 
 **Nanobody mutational space**
@@ -146,8 +147,8 @@ Define the options in a JSON file, for example:
 
 ```json
 {
-	"launchAfMassive": "true",
-  "afMassiveOptions": "--dropout --dropout_structure_module",
+    "launchAfMassive": "true",
+    "afMassiveOptions": "--dropout --dropout_structure_module",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
 	"fastaPath": "test/data/fasta/monomer2"
 }
@@ -165,8 +166,8 @@ Define the options in a JSON file, for example:
 
 ```json
 {
-	"launchAfMassive": "true",
-  "afMassiveOptions": "--dropout --dropout_structure_module",
+    "launchAfMassive": "true",
+    "afMassiveOptions": "--dropout --dropout_structure_module",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
 	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
@@ -298,6 +299,40 @@ Define the options in a JSON file, for example:
 }
 ```
 
+## DiffDock
+
+Visit the [DiffDock](https://github.com/gcorso/DiffDock) GitHub repository for more details about the prediction model.
+
+Launch the nextflow pipeline using GPU:
+
+```bash
+nextflow run main.nf -profile singularity --useGpu --proteinLigandFile test/data/diffdock/protein-ligand.csv
+```
+
+The `protein-ligand.csv` is a CSV file which must contain at least the two following columns:
+- `protein`: provides the path to the `pdb` 3D structure file
+- `ligand`: provided the path to the `sdf` file
+
+Therefore, each row in this file corresponds to a protein/ligand pair. This file must not contain any space.
+
+
+The options to launch the pipeline can also be defined in a JSON file, for example:
+
+```json
+{
+	"diffDockArgsYamlFile": "assets/diffdock_default_inference_args.yaml",
+	"launchDiffDock": "true",
+	"proteinLigandFile": "test/data/diffdock/protein-ligand.csv"
+}
+```
+
+Launch the pipleine with the `-params-file` option to take into account the JSON file:
+
+```bash
+nextflow run main.nf -params-file test/params-file/diffdock.json -profile singularity --useGpu
+```
+
+The `assets/diffdock_default_inference_args.yaml` makes it possible to tune the DiffDock options.
 
 ## DynamicBind
 
@@ -309,7 +344,6 @@ List of DynamicBind options:
 nextflow run main.nf --dynamicBindHelp -profile singularity
 ```
 
-
 Launch the nextflow pipeline using GPU:
 
 ```bash
@@ -320,7 +354,7 @@ The `protein-ligand.csv` is a CSV file which must contain at least the two follo
 - `protein`: provides the path to the `pdb` 3D structure file
 - `ligand`: provided the path to the `sdf` file
 
-Therefore, each row in this file corresponds to a pair protein/ligand to assess their affinity. This file must not contain any space.
+Therefore, each row in this file corresponds to a protein/ligand pair. This file must not contain any space.
 
 
 ## MultiQC

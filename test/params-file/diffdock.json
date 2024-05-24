@@ -1,4 +1,5 @@
 {
+	"diffDockArgsYamlFile": "assets/diffdock_default_inference_args.yaml",
 	"launchDiffDock": "true",
-	"proteinLigandFile": "test/data/diffdock/protein_ligand_example.csv"
+	"proteinLigandFile": "test/data/diffdock/protein-ligand.csv"
 }

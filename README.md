@@ -21,6 +21,7 @@ This pipeline allows:
   - [ColabFold](https://github.com/sokrypton/ColabFold),
   - [MassiveFold](https://github.com/GBLille/MassiveFold).
 * molecular docking of protein/ligand using:
+  - [DiffDock](https://github.com/gcorso/DiffDock)
   - [DynamicBind](https://github.com/luwei0917/DynamicBind/)
   - [AlphaFill](https://github.com/PDB-REDO/alphafill)
 * the navigation of the nanobody mutational space

@@ -35,6 +35,13 @@ rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-multimer-alphafill.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-multimer-alphafill.json -profile singularity
 
+# AlphaFill from predictions
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
+nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
+
+
 # alphaFold
 
 rm -r work results/ .nextflow*
@@ -79,17 +86,17 @@ rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/frommsas/colabfold-multimer.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/frommsas/colabfold-multimer.json -profile singularity
 
+
+# DiffDock 
+rm -r work/ results .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/diffdock.json -profile singularity 
+nextflow run main.nf -resume -stub-run -params-file test/params-file/diffdock.json -profile singularity
+
 # nanoBERT
 
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/nanobert.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/nanobert.json -profile singularity
-
-# AlphaFill from predictions
-
-rm -r work results/ .nextflow*
-nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
-nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
 
 # HTML report ProteinStruct
 
