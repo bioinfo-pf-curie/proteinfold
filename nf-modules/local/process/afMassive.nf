@@ -41,7 +41,7 @@ process afMassive {
   ln -s \$(realpath msas/) predictions/${protein}/msas
   alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|num_multimer_predictions_per_model|end_prediction|g' -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
   launch_alphafold.sh \${alphafold_options} ${params.afMassiveOptions} --start_prediction ${predNumber} --end_prediction ${predNumber} --models_to_use=${modelsToUse} --random_seed=${randomSeed} --fasta_paths=${fastaFile}
-  bash rename_json_by_model.sh predictions/${protein} _${modelsToUse}_pred_${predNumber}
+  bash ap_rename_json_by_model.sh predictions/${protein} _${modelsToUse}_pred_${predNumber}
   mv predictions/${protein}/features.pkl predictions/${protein}/features_${modelsToUse}_pred_${predNumber}.pkl
   mv predictions/${protein}/ranked_0.pdb predictions/${protein}/ranked_0_${modelsToUse}_pred_${predNumber}.pdb
   echo "AFmassive \$(get_version.sh)" > versions.txt

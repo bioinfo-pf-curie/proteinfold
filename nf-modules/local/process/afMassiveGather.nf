@@ -36,7 +36,7 @@ process afMassiveGather {
   """
   mkdir -p predictions/${protein}
   cd predictions_parallel
-  gather_predictions.py --predictions_path=.
+  ap_gather_predictions.py --predictions_path=.
   cp \$(ls features*.pkl | head -1) ../predictions/${protein}/features.pkl
   cp ranking_debug.json ../predictions/${protein}/
   cp ranking_debug.tsv ../predictions/${protein}/

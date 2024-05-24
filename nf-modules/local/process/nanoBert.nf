@@ -35,15 +35,15 @@ process nanoBert {
   script:
   """
   mkdir nanobert
-  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=nanobert
-  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=human_heavy
+  ap_nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=nanobert
+  ap_nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=human_heavy
   """
 
   stub:
   """
   mkdir nanobert
-  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=nanobert
-  nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=human_heavy
+  ap_nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=nanobert
+  ap_nanobert.py --fasta_file=${fastaFile} --model_dir=models/nanoBERT --output_dir=nanobert --model_name=human_heavy
   """
 
 }

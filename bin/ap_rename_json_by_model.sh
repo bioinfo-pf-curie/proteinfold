@@ -21,8 +21,8 @@ fi
 
 # Search for json files and populate the array
 while IFS= read -r -d '' file; do
-    # Use basename to extract the filename
-    filename=$(basename "$file" | sed -e "s/\.json//g")
+  # Use basename to extract the filename
+  filename=$(basename "$file" | sed -e "s/\.json//g")
 	echo $file
 	echo $filename
     json_files+=("$filename")

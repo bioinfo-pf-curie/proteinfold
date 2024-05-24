@@ -75,12 +75,12 @@ def format_output(residue_probability: list, residue: int = None):
         score_info['residue'] = residue
         score_info[f'score{rank}'] = hit['score']
         score_info[f'aa{rank}'] = hit['token_str']
-        # Dict are store in memory, actions below will be
+        # Dict are stored in memory, actions below will be
         # seen outside the function
         hit.pop('sequence')
         hit.pop('token')
         hit['residue'] = residue
-        # This below just helps to have the resideu / score / aa order in the dict
+        # This icode below just helps to have the residue / score / aa ordered in the Dict
         hit['score1'] = hit.pop('score')
         hit['score'] = hit.pop('score1')
         hit['aa'] = hit.pop('token_str')

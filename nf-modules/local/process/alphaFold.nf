@@ -45,7 +45,7 @@ process alphaFold {
   ln -s \$(realpath msas/) predictions/${protein}/msas
   alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
   launch_alphafold.sh \${alphafold_options} --fasta_paths=${fastaFile}
-  ranking_debug_tsv.py --predictions_path=predictions/${protein}
+  ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """
@@ -62,7 +62,7 @@ process alphaFold {
     folder="monomer2"
   fi
   cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
-  ranking_debug_tsv.py --predictions_path=predictions/${protein}
+  ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """

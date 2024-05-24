@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright Institut Curie 202GG4
+# Copyright Institut Curie 2024
 #
 # This software is a computer program whose purpose is to
 # predict 3D structure of proteins.
@@ -13,7 +13,7 @@
 # The fact that you are presently reading this means that you have had knowledge
 # of the license and that you accept its terms.
 
-"""Gather the rankig_debug.json file into a single one"""
+"""Gather the ranking_debug.json file into a single one"""
 
 import csv
 import os

@@ -1,6 +1,19 @@
 #!/usr/bin/env python
 
-"""Gather the rankig_debug.json file into a single one"""
+# Copyright Institut Curie 2024
+#
+# This software is a computer program whose purpose is to
+# predict 3D structure of proteins.
+# You can use, modify and/ or redistribute the software under the terms
+# of license (see the LICENSE file for more details).
+# The software is distributed in the hope that it will be useful,
+# but "AS IS" WITHOUT ANY WARRANTY OF ANY KIND.
+# Users are therefore encouraged to test the software's suitability as regards
+# their requirements in conditions enabling the security of their systems and/or data.
+# The fact that you are presently reading this means that you have had knowledge
+# of the license and that you accept its terms.
+
+"""Gather the ranking_debug.json file into a single one"""
 
 import csv
 import os
@@ -57,7 +70,7 @@ def create_ranking_global(predictions_path):
 
 
 def main(argv):
-    """Gather the rankig_debug.json file into a single one"""
+    """Gather the ranking_debug.json file into a single one"""
     FLAGS.predictions_path = os.path.abspath(FLAGS.predictions_path)
     create_ranking_global(FLAGS.predictions_path)
 

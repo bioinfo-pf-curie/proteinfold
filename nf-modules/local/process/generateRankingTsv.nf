@@ -29,12 +29,12 @@ process generateRankingTsv {
 
   script:
   """
-  ranking_debug_tsv.py --predictions_path=.
+  ap_ranking_debug_tsv.py --predictions_path=.
   """
 
   stub:
   """
-  ranking_debug_tsv.py --predictions_path=.
+  ap_ranking_debug_tsv.py --predictions_path=.
   """
 }
 

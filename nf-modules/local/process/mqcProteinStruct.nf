@@ -21,7 +21,7 @@ process mqcProteinStruct {
 
   script:
   """
-  bash generate_yaml_4_plots.sh plots softwareVersions/software_versions_mqc.yaml > mqcCfg.yaml
+  bash ap_generate_yaml_4_plots.sh plots softwareVersions/software_versions_mqc.yaml > mqcCfg.yaml
   ap_mqc_header.py --name "ProteinFold" --version "${workflow.manifest.version}" --condition ${protein} > mqcCfgHeader.yaml
   multiqc -n ProteinStruct_mqc_report.html -c mqcCfg.yaml -c mqcCfgHeader.yaml . plots
   """    
