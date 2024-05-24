@@ -118,3 +118,33 @@ For example:
 │       └── diffdock_mqc_report.html
 
 ```
+
+## DynamicBind
+
+Two directories will be created:
+
+* the `DymaMic` directory contains on folder/subfolder per protein/ligand with:
+  - the protein+ligand 3D structure in SDF and PDB format.
+  - the affinity prediction scores in CSV format. The file staring by *affinity_prediction_* corresponded to the averaged vales, while the file starting by *completed_affinity_prediction_* provide all the values for eah rank. These scores can be viewed in the multiqc report which also provides the legend and definition.
+  - the options and versions of the tool used by the DynamicBind analysis.
+
+* the `multiqc/DynamicBind` directory contains the multiqc report in HTML format with all the aggregated confidence scores over all the protein+ligand's.
+
+
+For example:
+
+
+```
+├── DiffDock
+│   └── PARP1
+│       └── olaparib
+│           ├── affinity_prediction_PARP1-olaparib.csv
+│           ├── completed_affinity_prediction_PARP1-olaparib.csv
+│           ├── options.txt 
+│           └── versions.txt
+│           ...
+├── multiqc
+│   └── DynamicBind
+│       └── dynamicbind_mqc_report.html
+
+```
