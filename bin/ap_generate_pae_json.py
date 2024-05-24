@@ -92,12 +92,16 @@ def main(argv):
               'rb') as pkl_file:
         data = pickle.load(pkl_file)
 
-    pae = data['predicted_aligned_error']
-    max_pae = data['max_predicted_aligned_error']
-    pae_data = pae_json(pae=pae, max_pae=max_pae.item())
+    try:
+        pae = data['predicted_aligned_error']
+        max_pae = data['max_predicted_aligned_error']
+        pae_data = pae_json(pae=pae, max_pae=max_pae.item())
 
-    with open(f'{FLAGS.output_file}', 'w', encoding="utf-8") as json_file:
-        json_file.write(pae_data)
+        with open(f'{FLAGS.output_file}', 'w', encoding="utf-8") as json_file:
+            json_file.write(pae_data)
+
+    except KeyError:
+        return None
 
 
 if __name__ == "__main__":

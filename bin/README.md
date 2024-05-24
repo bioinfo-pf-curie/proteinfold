@@ -40,6 +40,9 @@ Put here the tools that are avalaible as binary or executable script.
 * [ap_gather_predictions.py](ap_gather_predictions.py)
   - Gather the ranking_debug.json file into a single one when the model are assessed in parallel with AFMassive
 
+* [ap_generate_pae_json.py](ap_generate_pae_json.py)
+  - Generate the PAE matrix in JSON format (only if the pedicted_aligned_error is available in the pkl file)
+
 * [ap_generate_yaml_4_plots.sh](ap_generate_yaml_4_plots.sh)
   - Generate yaml file to organize plots and legend in multiqc reports
 

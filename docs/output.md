@@ -80,6 +80,14 @@ For example:
         └── MRLN.html
 ```
 
+## AFMassive
+
+ranked0_pae.json with the APE matrix in JSON format (whenever the model generate the predicted_aligned_error)
+
+## AlphaFold
+
+ranked0_pae.json with the APE matrix in JSON format (whenever the model generate the predicted_aligned_error)
+
 ## DiffDock
 
 Two directories will be created:
