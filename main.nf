@@ -350,7 +350,7 @@ workflow {
 
   // Launch the molecular docking with DiffDock
   if (params.launchDiffDock){
-    diffDockWkfl(proteinLigandCh, params.diffDockDatabase, params.diffDockArgsYamlFile)
+    diffDockWkfl(proteinLigandCh, params.diffDockDatabase, Channel.fromPath(params.diffDockArgsYamlFile))
   }
 
   // Launch the molecular docking with DynamicBind
