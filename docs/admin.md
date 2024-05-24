@@ -87,10 +87,15 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/frommsas/co
 nextflow run main.nf -resume -stub-run -params-file test/params-file/frommsas/colabfold-multimer.json -profile singularity
 
 
-# DiffDock 
+# DiffDock
 rm -r work/ results .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/diffdock.json -profile singularity 
 nextflow run main.nf -resume -stub-run -params-file test/params-file/diffdock.json -profile singularity
+
+# DynamicBind
+rm -r work/ results .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/dynamicbind.json -profile singularity 
+nextflow run main.nf -resume -stub-run -params-file test/params-file/dynamicbind.json -profile singularity
 
 # nanoBERT
 
