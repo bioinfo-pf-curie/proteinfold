@@ -1,5 +1,5 @@
 table_cond_formatting_rules:
-  Confidence:
+  confidence:
     confidence_low:
       - lt: -1.5
     confidence_moderate:
