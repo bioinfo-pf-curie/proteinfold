@@ -68,13 +68,10 @@ Then, set the correct values the the parameter `params.genones.diffdock.database
 
 ```
 params {
-
   genomes {
-
     diffdock {
       database = "${params.genomeAnnotationPath}/proteinfold/diffdock/v1.1.2"
     }
   }
-
 }
 ```

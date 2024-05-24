@@ -144,9 +144,8 @@ sbatch launcher.sh
 ## Full Documentation
 
 1. [Installation](docs/installation.md)
-2. [Reference annotations](docs/referenceGenomes.md)
-3. [Running the pipeline](docs/usage.md)
-4. [Output of the pipelines](docs/output.md)
+2. [Running the pipeline](docs/usage.md)
+3. [Output of the pipelines](docs/output.md)
 
 ## Credits
 
