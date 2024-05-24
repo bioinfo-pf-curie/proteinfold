@@ -21,7 +21,7 @@ process alphaFill {
   label 'alphaFill'
   label 'medMem'
   label 'minCpu'
-  publishDir path: "${params.outDir}/alphaFill/${protein}", mode: 'copy'
+  publishDir path: "${params.outDir}/AlphaFill/${protein}", mode: 'copy'
 
   input:
   tuple val(protein), val(toolFold), path("predictions/*")
