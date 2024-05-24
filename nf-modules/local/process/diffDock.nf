@@ -16,12 +16,13 @@ of the license and that you accept its terms.
 
 // This process launches DiffDock
 //   - https://github.com/luwei0917/DiffDock/
+
 process diffDock {
   tag "${protein}-${ligand}"
   label 'diffDock'
   label 'medMem'
   label 'medCpu'
-  publishDir path: "${params.outDir}/diffDock/${protein}/${ligand}", mode: 'copy', saveAs: { it.replaceAll("${protein}-${ligand}/", '') }
+  publishDir path: "${params.outDir}/DiffDock/${protein}/${ligand}", mode: 'copy', saveAs: { it.replaceAll("${protein}-${ligand}/", '') }
   containerOptions { (params.useGpu) ? "--nv --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp -B ${params.diffDockDatabase}/.p.npy:\$PWD/.p.npy -B ${params.diffDockDatabase}/.score.npy:\$PWD/.score.npy -B ${params.diffDockDatabase}/.so3_cdf_vals4.npy:\$PWD/.so3_cdf_vals4.npy -B ${params.diffDockDatabase}/.so3_exp_score_norms4.npy:\$PWD/.so3_exp_score_norms4.npy -B ${params.diffDockDatabase}/.so3_omegas_array4.npy:\$PWD/.so3_omegas_array4.npy -B ${params.diffDockDatabase}/.so3_score_norms4.npy:\$PWD/.so3_score_norms4.npy -B ${params.diffDockDatabase}/workdir:/app/diffdock/workdir -B ${params.diffDockDatabase}/torch_home:/app/diffdock/torch_home" : "-B \$PWD:/tmp -B ${params.diffDockDatabase}/.p.npy:\$PWD/.p.npy -B ${params.diffDockDatabase}/.score.npy:\$PWD/.score.npy -B ${params.diffDockDatabase}/.so3_cdf_vals4.npy:\$PWD/.so3_cdf_vals4.npy -B ${params.diffDockDatabase}/.so3_exp_score_norms4.npy:\$PWD/.so3_exp_score_norms4.npy -B ${params.diffDockDatabase}/.so3_omegas_array4.npy:\$PWD/.so3_omegas_array4.npy -B ${params.diffDockDatabase}/.so3_score_norms4.npy:\$PWD/.so3_score_norms4.npy -B ${params.diffDockDatabase}/workdir:/app/diffdock/workdir -B ${params.diffDockDatabase}/torch_home:/app/diffdock/torch_home" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
@@ -39,7 +40,7 @@ process diffDock {
   script:
   """
   launch_diffdock.sh --config ${diffDockArgsYamlFile} --complex_name ${protein}-${ligand} --protein_path ${proteinPdb} --ligand_description ${ligandSdf} --out_dir \$PWD
-  format_diffdock_scores.sh ${protein}-${ligand} ${protein} ${ligand} > ${protein}-${ligand}/scores_${protein}-${ligand}.csv
+  ap_format_diffdock_scores.sh ${protein}-${ligand} ${protein} ${ligand} > ${protein}-${ligand}/scores_${protein}-${ligand}.csv
   echo "DiffDock \$(get_version.sh)" > versions.txt
   echo "DiffDock options=\$(tr '\\n' '; ' < ${diffDockArgsYamlFile})" > options.txt
   """
@@ -50,7 +51,7 @@ process diffDock {
   echo launch_diffdock.sh --config ${diffDockArgsYamlFile} --complex_name ${protein}-${ligand} --protein_path ${proteinPdb} --ligand_description ${ligandSdf} --out_dir \$PWD
   mkdir -p ${protein}-${ligand}
   cp $projectDir/test/data/diffdock/results/${protein}/${ligand}/* ${protein}-${ligand}
-  format_diffdock_scores.sh ${protein}-${ligand} ${protein} ${ligand} > ${protein}-${ligand}/scores_${protein}-${ligand}.csv
+  ap_format_diffdock_scores.sh ${protein}-${ligand} ${protein} ${ligand} > ${protein}-${ligand}/scores_${protein}-${ligand}.csv
   echo "DiffDock \$(get_version.sh)" > versions.txt
   echo "DiffDock options=\$(tr '\\n' '; ' < ${diffDockArgsYamlFile})" > options.txt
   """
