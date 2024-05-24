@@ -3,7 +3,7 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/diffdock:v1.1.2-base
 
 %environment
   export LC_ALL=C
-  export PATH="/usr/local/conda/bin:$PATH"
+  export PATH="/opt/conda/bin:$PATH"
   export PATH="$PATH:/app"
   source /opt/etc/bashrc
 
