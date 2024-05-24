@@ -18,6 +18,10 @@ if [ ! -d "$folder" ]; then
     exit 1
 fi
 
+# File header
+echo "name,protein,ligand,rank,confidence"
+
+# Parse value for each rank
 for sdf in $(find ${folder} -type f -regextype egrep -regex '.*/rank[0-9]{1,}_.*\.sdf' -printf "%f\n"); do
 	rank=$(echo ${sdf} | sed -e 's/rank//g' | sed -e 's/_.*//g')
 	confidence=$(echo ${sdf} | sed -e 's/.*confidence//g' | sed -e 's/\.sdf*//g')

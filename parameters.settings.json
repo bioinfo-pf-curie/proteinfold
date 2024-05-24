@@ -276,6 +276,45 @@
       "group": "Other options"
     },
     {
+      "name": "diffDockDatabase",
+      "label": "diffDock database",
+      "usage": "Path to the database required by DiffDock.",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "diffDockArgsYamlFile",
+      "label": "diffDock options provided as a YAML file",
+      "usage": "Path to the YAML file with the DiffDock options. ",
+      "type": "YAML",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "$projectDir/assets/diffdock_default_inference_args.yaml",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "launchDiffDock",
+      "label": "launch DiffDock",
+      "usage": "Launch DiffDock.",
+      "type": "boolean",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
       "name": "dynamicBindDatabase",
       "label": "dynamicBind database",
       "usage": "Path to the database required by DynamicBind.",

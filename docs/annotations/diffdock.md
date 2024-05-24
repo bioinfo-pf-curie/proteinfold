@@ -64,7 +64,7 @@ mkdir -p /data/annotations/proteinfold/diffdock/
 mv $HOME/tmp/diffdock /data/annotations/proteinfold/diffdock/v1.1.2
 ```
 
-Then, set the correct values the the parameter `params.genones.diffdock.database` in the `conf/process.config` file accordingly, for example:
+Then, set the correct values the the parameter `params.genomes.diffdock.database` in the `conf/genomes.config` file accordingly, for example:
 
 ```
 params {

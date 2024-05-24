@@ -16,11 +16,13 @@
 **Molecular docking:**
 
 - [AlphaFill](#alphafill)
+- [DiffDock](#diffdock)
 - [DynamicBind](#dynamicbind)
 
 **Nanobody mutational space**
   
 - [nanoBERT](#nanobert)
+
 Assume that the pipeline has been installed in `${HOME}/tmp/myPipeline/install`. When you run the pipeline, it will create inside the `${HOME}/tmp/myPipeline/install/results` folder  which contains the following subfolders:
 
 * alphaFold, colabFold and massiveFold folders: they contain one folder for each protein
@@ -37,7 +39,7 @@ Two directories will be created:
 
 * the `alphaFill` directory contains on folder per protein with:
   - the predicted 3D protein structure from the `ranked_0.pdb` file in which the compounds predicted by AlphaFill have been added. The files are in CIF format.
-  - the list of coumpounds in JSOn format
+  - the list of coumpounds in JSON format
   - the predictions are run with several values of `--min-hsp-identity=value` (i.e. the minimal identity for a high scoring pair which ranges bwteen 0 and 1). Theresults with the values 0.25, 0.30, 0.40, 0.50, 0.60 and 0.70 are provided.
 
 * the `multiqc/scoresAlphaFill` contain on multiqc report in HTML format for each of the protein.
@@ -76,4 +78,43 @@ For example:
     └── scoresAlphaFill
         ├── MISFA.html
         └── MRLN.html
+```
+
+## DiffDock
+
+Two directories will be created:
+
+* the `DiffDock` directory contains on folder/subfolder per protein/ligand with:
+  - the protein+ligand 3D structure in SDF format.
+  - the confidence scores in CSV format. These scores can be viewed in the multiqc report which also provides the legend and definition.
+  - the options and versions of the tool used by the DiffDock analysis.
+
+* the `multiqc/DiffDock` directory contains the multiqc report in HTML format with all the aggregated confidence scores over all the protein+ligand's.
+
+
+For example:
+
+
+```
+├── DiffDock
+│   └── PARP1
+│       └── olaparib
+│           ├── options.txt
+│           ├── rank10_confidence-2.20.sdf
+│           ├── rank1_confidence-0.32.sdf
+│           ├── rank1.sdf
+│           ├── rank2_confidence-0.51.sdf
+│           ├── rank3_confidence-0.54.sdf
+│           ├── rank4_confidence-0.54.sdf
+│           ├── rank5_confidence-0.54.sdf
+│           ├── rank6_confidence-0.64.sdf
+│           ├── rank7_confidence-0.66.sdf
+│           ├── rank8_confidence-0.74.sdf
+│           ├── rank9_confidence-0.81.sdf
+│           ├── scores_PARP1-olaparib.csv
+│           └── versions.txt
+├── multiqc
+│   └── DiffDock
+│       └── diffdock_mqc_report.html
+
 ```
