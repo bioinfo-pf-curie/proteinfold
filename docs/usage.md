@@ -285,7 +285,7 @@ Then, provide the option `--fromMsas`, for example:
 
 
 ```bash
-nextflow run main.nf -params-file test/params-file/frommsas/alphafold-multimer.json -profile singularity --useGpu
+nextflow run main.nf -params-file test/params-file/alphafold-multimer-frommsas.json -profile singularity --useGpu
 ```
 
 Define the options in a JSON file, for example:
@@ -298,6 +298,12 @@ Define the options in a JSON file, for example:
 	"fromMsas": "test/data/msas/multimer/alphafold"
 }
 ```
+
+The option `--fromMsas` can be used with:
+
+- AFMassive
+- AlphaFold
+- ColabFold
 
 ## DiffDock
 
@@ -360,12 +366,17 @@ Therefore, each row in this file corresponds to a protein/ligand pair. This file
 ## MultiQC
 
 
-Two options are available:
+Two options are available
+
+### ProteinStruct report
 
 ```bash
 nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/multimer --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
-
-nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/multimer --htmlMetricsMultimer --fastaPath test/data/fasta/multimer/alphafold
 ```
 
+### MetricsMultimer report
+
+```bash
+nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/multimer --htmlMetricsMultimer --fastaPath test/data/fasta/multimer/alphafold
+```
 

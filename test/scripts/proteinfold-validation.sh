@@ -8,7 +8,7 @@ export PATH=/mnt/beegfs/common/apps/nextflow/nextflow-22.10.6:$PATH
 PIPELINE_DIR="$HOME/proteinfold/pipeline"
 PARAMS_FILE="$( ls ${PIPELINE_DIR}/test/params-file/*.json | sed -n ${SLURM_ARRAY_TASK_ID}p)"
 PARAMS_FILE=$(basename ${PARAMS_FILE})
-OUT_DIR="$HOME/empt/test/proteinfold/$(basename ${PARAMS_FILE})"
+OUT_DIR="$HOME/tmp/test/proteinfold/$(basename ${PARAMS_FILE})"
 
 mkdir -p $OUT_DIR
 cd $OUT_DIR
