@@ -7,3 +7,10 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/diffdock:v1.1.2-base
   export PATH="$PATH:/app"
   source /opt/etc/bashrc
 
+%files
+  diffDock/diffDock.patch /app/diffdock/diffDock.patch
+
+%post
+  cd /app/diffdock \
+  && patch -p1 < diffDock.patch
+

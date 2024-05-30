@@ -1,0 +1,62 @@
+diff --git a/utils/so3.py b/utils/so3.py
+index daf17ee..fd05f5d 100644
+--- a/utils/so3.py
++++ b/utils/so3.py
+@@ -42,11 +42,11 @@ def _score(exp, omega, eps, L=2000):  # score of density over SO(3)
+     return dSigma / exp
+ 
+ 
+-if os.path.exists('.so3_omegas_array4.npy'):
+-    _omegas_array = np.load('.so3_omegas_array4.npy')
+-    _cdf_vals = np.load('.so3_cdf_vals4.npy')
+-    _score_norms = np.load('.so3_score_norms4.npy')
+-    _exp_score_norms = np.load('.so3_exp_score_norms4.npy')
++if os.path.exists(os.getenv('NPY_DIR', '') + '.so3_omegas_array4.npy'):
++    _omegas_array = np.load(os.getenv('NPY_DIR', '') + '.so3_omegas_array4.npy')
++    _cdf_vals = np.load(os.getenv('NPY_DIR', '') + '.so3_cdf_vals4.npy')
++    _score_norms = np.load(os.getenv('NPY_DIR', '') + '.so3_score_norms4.npy')
++    _exp_score_norms = np.load(os.getenv('NPY_DIR', '') + '.so3_exp_score_norms4.npy')
+ else:
+     _eps_array = 10 ** np.linspace(np.log10(MIN_EPS), np.log10(MAX_EPS), N_EPS)
+     _omegas_array = np.linspace(0, np.pi, X_N + 1)[1:]
+@@ -58,10 +58,10 @@ else:
+ 
+     _exp_score_norms = np.sqrt(np.sum(_score_norms**2 * _pdf_vals, axis=1) / np.sum(_pdf_vals, axis=1) / np.pi)
+ 
+-    np.save('.so3_omegas_array4.npy', _omegas_array)
+-    np.save('.so3_cdf_vals4.npy', _cdf_vals)
+-    np.save('.so3_score_norms4.npy', _score_norms)
+-    np.save('.so3_exp_score_norms4.npy', _exp_score_norms)
++    np.save(os.getenv('NPY_DIR', '') + '.so3_omegas_array4.npy', _omegas_array)
++    np.save(os.getenv('NPY_DIR', '') + '.so3_cdf_vals4.npy', _cdf_vals)
++    np.save(os.getenv('NPY_DIR', '') + '.so3_score_norms4.npy', _score_norms)
++    np.save(os.getenv('NPY_DIR', '') + '.so3_exp_score_norms4.npy', _exp_score_norms)
+ 
+ 
+ def sample(eps):
+diff --git a/utils/torus.py b/utils/torus.py
+index 6d0c4bf..527f0a2 100644
+--- a/utils/torus.py
++++ b/utils/torus.py
+@@ -28,16 +28,16 @@ SIGMA_MIN, SIGMA_MAX, SIGMA_N = 3e-3, 2, 5000  # relative to pi
+ x = 10 ** np.linspace(np.log10(X_MIN), 0, X_N + 1) * np.pi
+ sigma = 10 ** np.linspace(np.log10(SIGMA_MIN), np.log10(SIGMA_MAX), SIGMA_N + 1) * np.pi
+ 
+-if os.path.exists('.p.npy'):
+-    p_ = np.load('.p.npy')
+-    score_ = np.load('.score.npy')
++if os.path.exists(os.getenv('NPY_DIR', '') + '.p.npy'):
++    p_ = np.load(os.getenv('NPY_DIR', '') + '.p.npy')
++    score_ = np.load(os.getenv('NPY_DIR', '') + '.score.npy')
+ else:
+     p_ = p(x, sigma[:, None], N=100)
+-    np.save('.p.npy', p_)
++    np.save(os.getenv('NPY_DIR', '') + '.p.npy', p_)
+ 
+     eps = np.finfo(p_.dtype).eps
+     score_ = grad(x, sigma[:, None], N=100) / (p_ + eps)
+-    np.save('.score.npy', score_)
++    np.save(os.getenv('NPY_DIR', '') + '.score.npy', score_)
+ 
+ 
+ def score(x, sigma):
