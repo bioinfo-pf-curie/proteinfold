@@ -46,7 +46,8 @@ process alphaFold {
   alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
   launch_alphafold.sh \${alphafold_options} --fasta_paths=${fastaFile}
   ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
-  generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked0_pae.json
+  # the code below will produce the json file only if the pkl file contains the 'predicted_aligned_error' (which is not always the case) 
+  ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked0_pae.json
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """
@@ -64,7 +65,8 @@ process alphaFold {
   fi
   cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
   ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
-  generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked0_pae.json
+  # the code below will produce the json file only if the pkl file contains the 'predicted_aligned_error' (which is not always the case) 
+  ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked0_pae.json
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """

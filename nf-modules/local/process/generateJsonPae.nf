@@ -29,12 +29,12 @@ process generateJsonPae {
 
   script:
   """
-  generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=${protein}_pae.json
+  ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=${protein}_pae.json
   """
 
   stub:
   """
-  generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=${protein}_pae.json
+  ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=${protein}_pae.json
   """
 }
 
