@@ -11,6 +11,8 @@ From: registrygitlab.curie.fr/cubic-registry/proteinfold/diffdock:v1.1.2-base
   diffDock/diffDock.patch /app/diffdock/diffDock.patch
 
 %post
+  apt update \
+  && apt install -y patch
   cd /app/diffdock \
   && patch -p1 < diffDock.patch
 
