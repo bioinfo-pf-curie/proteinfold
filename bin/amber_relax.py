@@ -52,7 +52,7 @@ def relax_with_amber(model_name: str, relaxed_pdb_file: str, use_gpu_relax: bool
     relax_energy_tolerance = 2.39
     relax_stiffness = 10.0
     relax_exclude_residues = []
-    relax_max_outer_iterations = 20
+    relax_max_outer_iterations = 3 
     amber_relax = relax.AmberRelaxation(
         max_iterations=relax_max_iterations,
         tolerance=relax_energy_tolerance,
