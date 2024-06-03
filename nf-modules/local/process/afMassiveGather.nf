@@ -41,7 +41,7 @@ process afMassiveGather {
   cp ranking_debug.json ../predictions/${protein}/
   cp ranking_debug.tsv ../predictions/${protein}/
   cp ranking_best.txt ../predictions/${protein}/
-  for pdb in \$(ls *.pdb); do ln -s \$(realpath \${pdb}) ../predictions/${protein}/\${pdb}; done
+  for pdb in \$(ls *.pdb | grep -v ranked_0_); do ln -s \$(realpath \${pdb}) ../predictions/${protein}/\${pdb}; done
   for pkl in \$(ls result*.pkl); do ln -s \$(realpath \${pkl}) ../predictions/${protein}/\${pkl}; done
   # the code below will produce the json file only if the pkl file contains the 'predicted_aligned_error' (which is not always the case) 
   ap_generate_pae_json.py --prediction_dir=../predictions/${protein} --output_file=../predictions/${protein}/ranked_0_pae.json
