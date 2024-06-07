@@ -60,6 +60,7 @@ def checkMultimerVersions(String version) {
 
 def createAfModelsCh(String alphaFoldOptions,
                      int predictionsPerModel = 5,
+                     int numberOfModels = 5,
                      String multimerVersions = "v1,v2,v3") {
   // Set variables
   List afModels
@@ -78,7 +79,7 @@ def createAfModelsCh(String alphaFoldOptions,
     afModels = []
     for (version in multimerVersionsList) {
       checkMultimerVersions(version)
-      for (int model = 1; model < 6; model++) {
+      for (int model = 1; model <= numberOfModels; model++) {
         modelNumber++
         afModels.add("model_" + model + "_multimer_" + version)
       }
@@ -89,7 +90,7 @@ def createAfModelsCh(String alphaFoldOptions,
   if(!alphaFoldOptions.contains('model_preset=monomer_ptm') 
      && (alphaFoldOptions.contains('model_preset=monomer') || !alphaFoldOptions.contains('model_preset'))) {
     afModels = []
-    for (int model = 1; model < 6; model++) {
+    for (int model = 1; model <= numberOfModels; model++) {
       modelNumber++
       afModels.add("model_" + model)
     }
@@ -98,7 +99,7 @@ def createAfModelsCh(String alphaFoldOptions,
   // Monomer pTM
   if(alphaFoldOptions.contains('model_preset=monomer_ptm')){
     afModels = []
-    for (int model = 1; model < 6; model++) {
+    for (int model = 1; model < numberOfModels; model++) {
       modelNumber++
       afModels.add("model_" + model + "_ptm")
     }
@@ -139,12 +140,6 @@ def createAfModelsCh(String alphaFoldOptions,
   afModelsCh = Channel.fromList(afModelsList)
   
   }
-
-  //afModelsCh = Channel.of(1..predictionsPerModel)
-  //               .combine(Channel.fromList(afModels))
-  //               .merge(Channel.of(1..(modelNumber*predictionsPerModel))
-  //                        .map { it + randomSeed }
-  //                      )
 
   afModelsInfo['alphaFoldOptionsParallel'] = alphaFoldOptionsParallel
   afModelsInfo['channel'] = afModelsCh

@@ -83,7 +83,7 @@ if(params.launchDynamicBind || params.launchDiffDock) {
   }
 }
 
-// DynamicBinb works only with GPU
+// DynamicBind works only with GPU
 if(params.launchDynamicBind) {
   if (!params.useGpu && !isStubRun){
     exit 1, "DynamicBind works only using GPU. Launch the pipeline with the '--useGpu true' option."
@@ -127,6 +127,10 @@ if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-
 if (params.launchAfMassive){
   File afMassiveDB = new File(params.genomes.afmassive.database)
   params.afMassiveDatabase = afMassiveDB.getCanonicalPath()
+
+  if(params.numberOfModels > 5) {
+    exit 1, "the option numberOfModels must not be greater than 5."
+  }
 }
 
 if (params.launchAlphaFill){

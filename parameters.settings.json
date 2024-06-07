@@ -120,6 +120,19 @@
       "group": "Other options"
     },
     {
+      "name": "numberOfModels",
+      "label": "number of models",
+      "usage": "Number of models that will be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true.",
+      "type": "int",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "5",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
       "name": "multimerVersions",
       "label": "Multimer versions",
       "usage": "AlphaFold multimer model versions (v1, v2, v3) which be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true. The list of the versions to be evaluated must be provided with a comma separated string, e.g. 'v1,v2', Default is 'v1,v2,v3'.",

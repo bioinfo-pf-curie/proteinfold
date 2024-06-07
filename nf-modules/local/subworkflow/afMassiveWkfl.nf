@@ -72,6 +72,7 @@ workflow afMassiveWkfl {
   // afMassive options for parallelization
   afModelsInfo = createAfModelsCh(params.alphaFoldOptions,
                                   params.predictionsPerModel,
+                                  params.numberOfModels,
                                   params.multimerVersions)
 
   afModelsCh = afModelsInfo.channel
