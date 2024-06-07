@@ -31,6 +31,7 @@ process afMassiveGather {
   tuple val(protein), val("afMassive"), path("predictions/*", type: 'dir'), emit: predictions
   tuple val(protein), path("predictions/${protein}/ranking_best.txt"), emit: best
   tuple val(protein), path("predictions/${protein}/ranking_debug.tsv"), emit: ranking
+  tuple val(protein), path("predictions/${protein}/ranked_*.pdb"), emit: pdb
 
   script:
   """

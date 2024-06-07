@@ -33,6 +33,7 @@ include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVers
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 include { metricsMultimer } from '../process/metricsMultimer'
 include { mqcMetricsMultimer } from '../process/mqcMetricsMultimer'
+include { pymolPng } from '../process/pymolPng'
 
 // Subworkflows
 include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
@@ -126,6 +127,9 @@ workflow afMassiveWkfl {
                             it
                           }
     afMassiveGather(afMassiveGatherCh)
+
+    // step - plot 3D structure
+    pymolPng(afMassiveGather.out.pdb)
 
     // step - amber relaxation
     modelsToRelaxCh = afMassiveGather.out.best
