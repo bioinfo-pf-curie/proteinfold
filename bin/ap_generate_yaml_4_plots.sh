@@ -164,6 +164,18 @@ fi
 
 echo "custom_data:"
 
+# test that mosaic.png exists
+if [[ -f pymolPng/mosaic.png ]]; then
+cat << EOF
+  pymol_mosaic:
+    id: 'pymol_mosaic'
+    parent_id: prediction_structure_plots
+    parent_name: 'Plots'
+    section_name: '3D structure'
+    description: '3D stucture ordered by rank. See the table in the Model ranking section.'
+EOF
+fi
+
 # test that ranking_debug.tsv file contains data,
 # since colabFold process generates empty file
 if [[ -s ranking_debug.tsv ]]; then
@@ -375,6 +387,10 @@ for file in "${png_files[@]}"; do
     echo "    fn: \"${file}.png\""
 done
 
+# Mosaic with all png plot with 3D structure
+echo ""
+echo "  pymol_mosaic:"
+echo "    fn: \"mosaic.png\""
 
 # test that ranking_debug.tsv file contains data,
 # since colabFold process generates empty file
@@ -391,13 +407,15 @@ echo "report_section_order:"
 echo "  prediction_structure_plots:"
 echo "    order: -1000"
 
-
 counter=-1000
 for file in "${png_files[@]}"; do
     counter=$((counter - 10))
     echo "  ${file}:"
     echo "    order: ${counter}"
 done
+
+echo "  pymol_mosaic:"
+echo "    order: $((counter - 10))"
 
 # test that ranking_debug.tsv file contains data,
 # since colabFold process generates empty file

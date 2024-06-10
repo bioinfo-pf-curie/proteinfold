@@ -10,8 +10,7 @@ process mqcProteinStruct {
   publishDir "${params.outDir}/multiqc/proteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
-  //tuple val(protein), path('plots/*'), path ('softwareVersions/*')
-  tuple val(protein), path('plots/*'), path('ranking_debug.tsv'), path ('softwareVersions/*')
+  tuple val(protein), path('plots/*'), path('ranking_debug.tsv'), path('pymolPng/*'), path ('softwareVersions/*')
   tuple val(protein), path ('softwareOptions/*')
   tuple val(protein), path ('workflowSummary/*')
             

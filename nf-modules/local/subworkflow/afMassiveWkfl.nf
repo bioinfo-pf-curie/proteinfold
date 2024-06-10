@@ -171,6 +171,7 @@ workflow afMassiveWkfl {
     versionsYamlCh,
     plotsCh,
     afMassiveGather.out.ranking,
+    pymolPng.out.png,
     workflowSummaryCh
   )
 

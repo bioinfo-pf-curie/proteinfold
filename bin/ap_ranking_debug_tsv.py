@@ -46,8 +46,10 @@ def create_ranking_global(predictions_path):
                                 reverse=True)
 
     scores_csv = []
+    ranked_value = 0
     for model, score in sorted_predictions:
-        scores_csv.append({'model': model, s_type: score})
+        scores_csv.append({'rank': ranked_value, 'model': model, s_type: score})
+        ranked_value = ranked_value + 1
 
     with open(f"{FLAGS.predictions_path}/ranking_best.txt",
               'w',

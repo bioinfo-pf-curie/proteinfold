@@ -25,6 +25,7 @@ workflow mqcProteinStructWkfl {
   versionsYamlCh
   plotsCh
   rankingCh
+  pymolPngCh
   workflowSummaryCh
 
 
@@ -35,6 +36,7 @@ workflow mqcProteinStructWkfl {
   mqcProteinStruct(
     plotsCh
       .join(rankingCh)
+      .join(pymolPngCh)
       .combine(versionsYamlCh),
     plotsCh
       .map {
