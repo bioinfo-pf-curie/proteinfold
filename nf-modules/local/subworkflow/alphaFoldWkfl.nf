@@ -30,6 +30,7 @@ include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVers
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 include { metricsMultimer } from '../process/metricsMultimer'
 include { mqcMetricsMultimer } from '../process/mqcMetricsMultimer'
+include { pymolPng } from '../process/pymolPng'
 
 // Subworkflows
 include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
@@ -102,6 +103,10 @@ workflow alphaFoldWkfl {
     plotsCh = massiveFoldPlots.out.plots
   }
  
+  ///////////////////////
+  // plot 3D structure //
+  ///////////////////////
+  pymolPng(alphaFold.out.pdb)
    
   ////////////////////
   // Software infos //
@@ -120,6 +125,7 @@ workflow alphaFoldWkfl {
     versionsYamlCh,
     plotsCh,
     alphaFold.out.ranking,
+    pymolPng.out.png,
     workflowSummaryCh
   )
 

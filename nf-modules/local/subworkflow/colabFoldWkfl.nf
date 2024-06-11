@@ -27,6 +27,7 @@ include { fastaChecker } from '../process/fastaChecker'
 include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
+include { pymolPng } from '../process/pymolPng'
 
 // Subworkflows
 include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
@@ -82,6 +83,10 @@ workflow colabFoldWkfl {
     plotsCh = colabFold.out.plots
   }
  
+  ///////////////////////
+  // plot 3D structure //
+  ///////////////////////
+  pymolPng(colabFold.out.pdb)
    
   ////////////////////
   // Software infos //
@@ -99,6 +104,7 @@ workflow colabFoldWkfl {
     versionsYamlCh,
     plotsCh,
     colabFold.out.ranking,
+    pymolPng.out.png,
     workflowSummaryCh
   )
 

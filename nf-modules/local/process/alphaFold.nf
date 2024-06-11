@@ -36,6 +36,7 @@ process alphaFold {
   output:
   tuple val(protein), val("alphaFold"), path("predictions/*", type: 'dir'), emit: predictions
   tuple val(protein), path("predictions/${protein}/ranking_debug.tsv"), emit: ranking
+  tuple val(protein), path("predictions/${protein}/ranked_*.pdb"), emit: pdb
   path("versions.txt"), emit: versions
   path("options.txt"), emit: options
 
@@ -64,6 +65,7 @@ process alphaFold {
     folder="monomer2"
   fi
   cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
+  for i in \$(seq 24); do cp predictions/${protein}/ranked_0.pdb predictions/${protein}/ranked_\${i}.pdb; done
   ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
   # the code below will produce the json file only if the pkl file contains the 'predicted_aligned_error' (which is not always the case) 
   ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked_0_pae.json
