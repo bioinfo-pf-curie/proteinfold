@@ -252,9 +252,9 @@ def plot_plddts(plddts, pos_s=None, dpi=100, fig=True):
     plt.legend()
     plt.ylim(0, 100)
     plt.axhline(y=100, color='grey', linestyle='-', linewidth=1)
-    plt.axhline(y=90, color='green', linestyle='--', linewidth=1)
-    plt.axhline(y=70, color='orange', linestyle='--', linewidth=1)
-    plt.axhline(y=50, color='red', linestyle='--', linewidth=1)
+    plt.axhline(y=90, color='#0d57d3', linestyle='--', linewidth=1)
+    plt.axhline(y=70, color='#6acbf1', linestyle='--', linewidth=1)
+    plt.axhline(y=50, color='#fed936', linestyle='--', linewidth=1)
     plt.ylabel("Predicted lDDT")
     plt.xlabel("Residue")
     return plt

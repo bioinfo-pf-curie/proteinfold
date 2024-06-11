@@ -55,7 +55,7 @@ function section_info {
   if [[ "$1" == *"models_scores_iptm+ptm"* ]]; then
 	  echo "    section_name: \"Model scores\""
 	  echo "    description: \"Scores of the models based on the 0.80*ipTM + 0.2*pTM criteria.\""
-    echo has_iptm=1 >> "${params_file}"
+	  echo has_iptm=1 >> "${params_file}"
 	  return 0
   fi
   if [[ "$1" == *"score_distribution_plddts"* ]]; then
@@ -67,7 +67,7 @@ function section_info {
   if [[ "$1" == *"score_distribution_iptm+ptm"* ]]; then
 	  echo "    section_name: \"Score histogram\""
 	  echo "    description: \"Scores of the models based on the 0.80*ipTM + 0.2*pTM criteria.\""
-    echo has_iptm=1 >> "${params_file}"
+	  echo has_iptm=1 >> "${params_file}"
 	  return 0
   fi
   if [[ "$1" == *"plddt_PAE"* ]]; then
@@ -82,19 +82,19 @@ function section_info {
   if [[ "$1" == *"top_5_plddt"* || "$1" =~ "0_plddt" ]]; then
 	  echo "    section_name: \"plDDT: top 5 models\""
 	  echo "    description: \"The predicted local Distance Difference Test of the top 5 models.\""
-	  has_plddt=1 >> "${params_file}"
+	  echo has_plddt=1 >> "${params_file}"
 	  return 0
   fi
   if [[ "$1" == *"top_5_PAE"* || "$1" =~ "0_pae"  ]]; then
 	  echo "    section_name: \"PAE: top 5 models\""
 	  echo "    description: \"The Predicted Aligned Error of the top 5 models.\""
-	  has_pae=1 >> "${params_file}"
+	  echo has_pae=1 >> "${params_file}"
 	  return 0
   fi
   if [[ "$1" == *"versions_density"* ]]; then
 	  echo "    section_name: \"Score density by AlphaFold model\""
 	  echo "    description: \"Different versions of AlphaFold multimer have been released (v1, v2, v3). This plots de density of the scores for each version. The scores of the models are based on the 0.80*ipTM + 0.2*pTM criteria.\""
-    echo has_iptm=1 >> "${params_file}"
+	  echo has_iptm=1 >> "${params_file}"
 	  return 0
   fi
 
@@ -147,17 +147,24 @@ table_cond_formatting_rules:
     tm_high:
       - gt: 0.80
   plddts:
-    tm_wrong:
-      - lt: 70
-    tm_intermediate:
+    plddt_very_low:
+      - lt: 50
+    plddt_low:
+      - gt: 50
+    plddt_high:
       - gt: 70
-    tm_high:
+    plddt_very_high:
       - gt: 90
 
 table_cond_formatting_colours:
   - tm_wrong: "#d9534f"
   - tm_intermediate: "#f0ad4e"
   - tm_high: "#5cb85c"
+  - plddt_very_low: "#fd7d4d"
+  - plddt_low: "#fed936"
+  - plddt_high: "#6acbf1"
+  - plddt_very_high: "#0d57d3"
+
 
 EOF
 fi
@@ -172,7 +179,7 @@ cat << EOF
     parent_id: prediction_structure_plots
     parent_name: 'Plots'
     section_name: '3D structure'
-    description: '3D stucture ordered by rank. See the table in the Model ranking section.'
+    description: '3D stucture ordered by rank and colored according to plDDT score using same colors as in the AlphaFold Protein Structure Database (see Legend).'
 EOF
 fi
 
@@ -332,7 +339,7 @@ cat << EOF
     parent_id: legend
     parent_name: 'Legend'
     section_name: 'plDDTs'
-    description: 'This score is the predicted local distance difference test (pLDDT)'
+    description: 'This score is the predicted local distance difference test (pLDDT). The colors are the same as the ones used in the AlphaFold Protein Structure Database.'
     plot_type: 'html'
     data: |
             <style type="text/css">
@@ -343,6 +350,10 @@ cat << EOF
             table td#tm_high {padding:0 15px; background-color:#5cb85c;}
             table td#tm_intermediate {padding:0 15px; background-color:#f0ad4e;}
             table td#tm_wrong {padding:0 15px; background-color:#d9534f;}
+            table td#plddt_very_high {padding:0 15px; background-color:#0d57d3;}
+            table td#plddt_high {padding:0 15px; background-color:#6acbf1;}
+            table td#plddt_low {padding:0 15px; background-color:#fed936;}
+            table td#plddt_very_low {padding:0 15px; background-color:#fd7d4d;}
             table td#range {padding:0 15px;}
             table th#range {padding:0 15px;}
             </style>
@@ -352,16 +363,19 @@ cat << EOF
                 <th id="range">Range</th>
               </tr>
               <tr>
-                <td id="tm_high">High accuracy</td>
+                <td id="plddt_very_high">Very high</td>
                 <td id="range"> plDDTs  > 90 </td>
               </tr>
               <tr>
-                <td id="tm_intermediate">Well modelled</td>
+                <td id="plddt_high">High</td>
                 <td id="range"> 70 < plDDTs < 90 </td>
               </tr>
               <tr>
-                <td id="tm_wrong">Low confidence</td>
-                <td id="range"> plDDTs < 70  </td>
+                <td id="plddt_low">Low</td>
+                <td id="range"> 50 < plDDTs < 70  </td>
+              <tr>
+                <td id="plddt_very_low">Very low</td>
+                <td id="range"> plDDTs < 50  </td>
               </tr>
             </table>
 EOF
