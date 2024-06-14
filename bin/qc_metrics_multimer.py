@@ -20,6 +20,7 @@ flags.DEFINE_string('output_dir', None,
 flags.DEFINE_float(
     'cutoff', 5.0, 'cutoff value of PAE. i.e. only pae<cutoff is counted good')
 flags.DEFINE_integer('surface_thres', 2, 'surface threshold. must be integer')
+flags.DEFINE_integer('rank', 0, 'rank of the model to be assessed. Nothe that the best model corresponds to rank 0.')
 FLAGS = flags.FLAGS
 
 
@@ -38,7 +39,7 @@ def examine_inter_pae(pae_mtx, seqs, cutoff):
 
 def obtain_mpdockq(work_dir):
     """Returns mpDockQ if more than two chains otherwise return pDockQ"""
-    pdb_path = os.path.join(work_dir, 'ranked_0.pdb')
+    pdb_path = os.path.join(work_dir, f"ranked_{FLAGS.rank}.pdb")
     pdb_chains, chain_coords, chain_CA_inds, chain_CB_inds = read_pdb(pdb_path)
     best_plddt = get_best_plddt(work_dir)
     plddt_per_chain = read_plddt(best_plddt, chain_CA_inds)
@@ -66,11 +67,11 @@ def run_and_summarise_pi_score(workd_dir, jobs, surface_thres):
     pi_score_outputs = os.path.join(workd_dir, "pi_score_outputs")
     for job in jobs:
         subdir = os.path.join(workd_dir, job)
-        if not os.path.isfile(os.path.join(subdir, "ranked_0.pdb")):
-            print(f"{job} failed. Cannot find ranked_0.pdb in {subdir}")
+        if not os.path.isfile(os.path.join(subdir, f"ranked_{FLAGS.rank}.pdb")):
+            print(f"{job} failed. Cannot find ranked_{FLAGS.rank}.pdb in {subdir}")
             sys.exit()
         else:
-            pdb_path = os.path.join(subdir, "ranked_0.pdb")
+            pdb_path = os.path.join(subdir, f"ranked_{FLAGS.rank}.pdb")
             output_dir = os.path.join(pi_score_outputs, f"{job}")
             logging.info(
                 f"pi_score output for {job} will be stored at {output_dir}")
@@ -194,18 +195,18 @@ def main(argv):
             json_path = os.path.join(result_subdir, "ranking_debug.json")
             with open(json_path, 'r', encoding="utf-8") as json_file:
                 data = json.load(json_file)
-                best_model = data['order'][0]
+                rank_model = data['order'][FLAGS.rank]
             if "iptm" in data.keys() or "iptm+ptm" in data.keys():
-                iptm_ptm_score = data['iptm+ptm'][best_model]
+                iptm_ptm_score = data['iptm+ptm'][rank_model]
                 try:
-                    pickle_path = os.path.join(result_subdir, f"result_{best_model}.pkl")
+                    pickle_path = os.path.join(result_subdir, f"result_{rank_model}.pkl")
                     with open(pickle_path, 'rb') as pickle_file:
                         check_dict = pickle.load(pickle_file)
                 except FileNotFoundError:
                     print(
-                        os.path.join(result_subdir, f"result_{best_model}.pkl")
+                        os.path.join(result_subdir, f"result_{rank_model}.pkl")
                         + " does not exist. Will search for pkl.gz")
-                    pickle_path = os.path.join(result_subdir, f"result_{best_model}.pkl.gz")
+                    pickle_path = os.path.join(result_subdir, f"result_{rank_model}.pkl.gz")
                     check_dict = pickle.load(gzip.open(pickle_path))
                 finally:
                     print(
@@ -222,8 +223,8 @@ def main(argv):
                 mpDockq_score = obtain_mpdockq(
                     os.path.join(FLAGS.output_dir, job))
                 ipae_score = calculate_iPAE(
-                    os.path.join(result_subdir, f"result_{best_model}.pkl"),
-                    os.path.join(FLAGS.output_dir, job, 'ranked_0.pdb'))
+                    os.path.join(result_subdir, f"result_{rank_model}.pkl"),
+                    os.path.join(FLAGS.output_dir, job, f"ranked_{FLAGS.rank}.pdb"))
                 if check:
                     good_jobs.append(str(job))
                     iptm_ptm.append(iptm_ptm_score)
@@ -234,6 +235,8 @@ def main(argv):
                 f"done for {job} {count} out of {len(jobs)} finished.")
     other_measurements_df = pd.DataFrame.from_dict({
         "jobs": good_jobs,
+        "rank": FLAGS.rank,
+        "model": rank_model,
         "iptm_ptm": iptm_ptm,
         "iptm": iptm,
         "mpDockQ/pDockQ": mpDockq_scores,
@@ -253,7 +256,7 @@ def main(argv):
         sys.exit(1)
 
     pi_score_df.to_csv(os.path.join(FLAGS.output_dir,
-                                    "qc_metrics_multimer.csv"),
+                                    f"qc_metrics_multimer_rank{FLAGS.rank}.csv"),
                        index=False)
 
 

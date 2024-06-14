@@ -31,7 +31,6 @@ workflow mqcProteinStructWkfl {
 
   main:
   
-  
   // Perform multiqc by protein structure
   mqcProteinStruct(
     plotsCh

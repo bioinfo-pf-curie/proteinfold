@@ -65,8 +65,13 @@ process alphaFold {
     folder="monomer2"
   fi
   cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
-  for i in \$(seq 24); do cp predictions/${protein}/ranked_0.pdb predictions/${protein}/ranked_\${i}.pdb; done
   ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
+  nb_model=\$(wc -l predictions/${protein}/ranking_debug.tsv | awk '{print \$1}')
+  nb_model=\$(( \$nb_model - 1 ))
+  best_model=\$(sed -n '2p' predictions/${protein}/ranking_debug.tsv | awk -F'\\t' '{print \$2}')
+  echo "\${best_model}"
+  for i in \$(seq \$(( \$nb_model - 1 )) ); do cp predictions/${protein}/ranked_0.pdb predictions/${protein}/ranked_\${i}.pdb; done
+  for i in \$(seq 3 \$(( \$nb_model + 1 )) ); do current_model=\$(sed -n ''"\$i"'p' predictions/${protein}/ranking_debug.tsv | awk -F'\\t' '{print \$2}'); cp predictions/${protein}/result_\${best_model}.pkl predictions/${protein}/result_\${current_model}.pkl; done
   # the code below will produce the json file only if the pkl file contains the 'predicted_aligned_error' (which is not always the case) 
   ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked_0_pae.json
   echo "AlphaFold \$(get_version.sh)" > versions.txt

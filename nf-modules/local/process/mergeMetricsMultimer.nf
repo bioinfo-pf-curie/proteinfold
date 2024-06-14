@@ -14,31 +14,26 @@ of the license and that you accept its terms.
 
 */
 
-// Processes
-include { metricsMultimer } from '../process/metricsMultimer'
-include { mqcMetricsMultimer } from '../process/mqcMetricsMultimer'
+// This process merge all the multimer metrics into a single file
+process mergeMetricsMultimer {
+  tag "${protein}" 
+  label 'onlyLinux'
+  label 'minMem'
+  label 'minCpu'
+  publishDir path: "${params.outDir}/multimerMetrics/${protein}",
+             mode: 'copy'
 
-workflow mqcMetricsMultimerWkfl {
+  input:
+  tuple val(protein), path(multimerMetrics)
 
-  take:
+  output:
+  tuple val("${protein}"), path("ranking_debug.tsv"), emit: ranking
 
-  optionsYamlCh
-  versionsYamlCh
-  rankModelCh
-  workflowSummaryCh
-
-
-  main:
-
-  // step - compute the metrics 
-  metricsMultimer(rankModelCh)
-  
-  // step - multiqc report with the metric table
-  //mqcMetricsMultimer(
-  //  metricsMultimer.out.metrics,
-  //  optionsYamlCh,
-  //  versionsYamlCh,
-  //  Channel.fromPath("${projectDir}/assets/mqcCfgMetricsMultimer.yaml") 
-  //)
+  script:
+  """
+  sed -n '1p' \$(ls *csv | head -1) >  ranking_debug.tsv
+  for file in \$(ls -v *.csv); do sed '1d' \$file >> ranking_debug.tsv; done  
+  """
 
 }
+
