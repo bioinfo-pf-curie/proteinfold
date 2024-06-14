@@ -29,7 +29,7 @@ process metricsMultimer {
   tuple val(protein), val(rank), val(model), val(toolName), path(predictions)
 
   output:
-  tuple val(protein), path("qc_metrics_multimer*.csv"), emit: metrics
+  tuple val(protein), path("qc_metrics_multimer*.tsv"), emit: metrics
 
   script:
   """

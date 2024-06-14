@@ -251,12 +251,14 @@ def main(argv):
     columns.pop(columns.index('jobs'))
     pi_score_df = pi_score_df[['jobs'] + columns]
     pi_score_df = pi_score_df.sort_values(by='iptm', ascending=False)
+    pi_score_df = pi_score_df.drop(columns=['jobs'])
     if pi_score_df.size == 0:
         logging.error("ERROR: No data available to compute the scores")
         sys.exit(1)
 
     pi_score_df.to_csv(os.path.join(FLAGS.output_dir,
-                                    f"qc_metrics_multimer_rank{FLAGS.rank}.csv"),
+                                    f"qc_metrics_multimer_rank{FLAGS.rank}.tsv"),
+                       sep='\t',
                        index=False)
 
 

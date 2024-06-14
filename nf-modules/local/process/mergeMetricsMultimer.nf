@@ -31,8 +31,8 @@ process mergeMetricsMultimer {
 
   script:
   """
-  sed -n '1p' \$(ls *csv | head -1) >  ranking_debug.tsv
-  for file in \$(ls -v *.csv); do sed '1d' \$file >> ranking_debug.tsv; done  
+  sed -n '1p' \$(ls qc_metrics*tsv | head -1) >  ranking_debug.tsv
+  for file in \$(ls -v qc_metrics*.tsv); do sed '1d' \$file >> ranking_debug.tsv; done
   """
 
 }

@@ -37,6 +37,7 @@ has_iptm=0
 has_colabfold=0
 has_alphafold=0
 has_afmassive=0
+has_metrics_multimer=0
 params_file="params.txt"
 
 function section_info {
@@ -107,16 +108,15 @@ function section_info {
 
 software_versions=$(tr -s '\n' ' ' < "$2")
 if [[ "${software_versions}" =~ "colabfold" ]]; then
-	has_colabfold=1
+	echo has_colabfold=1 >> "${params_file}"
 fi
-if [[ "${software_versions}" =~ "AFMassive" ]]; then
-	has_afmassive=1
-	has_alphafold=1
+if [[ "${software_versions}" =~ "AFmassive" ]]; then
+	echo has_afmassive=1 >> "${params_file}"
+	echo has_alphafold=1 >> "${params_file}"
 fi
 if [[ "${software_versions}" =~ "AlphaFold" ]]; then
-	has_alphafold=1
+	echo has_alphafold=1 >> "${params_file}"
 fi
-
 
 
 ########################################
@@ -126,9 +126,17 @@ for file in "${png_files[@]}"; do
 	var=$(section_info "${file}" "${params_file}")
 done
 
+if [[ -s ranking_debug.tsv ]]; then
+	header=$(sed -n '1p' ranking_debug.tsv)
+	if [[ ${header} =~ "Dock" ]]; then
+		echo has_metrics_multimer=1 >> "${params_file}"
+	fi
+fi
+
 if [[ -f ${params_file} ]]; then
 	source "${params_file}"
 fi
+
 
 ##########################
 # generate the yaml file #
@@ -211,6 +219,14 @@ cat << EOF
         <dl class="dl-horizontal">
 EOF
 
+if [[ ${has_metrics_multimer} -eq 1 ]]; then
+cat << EOF
+            <dt>DockQ</dt><dd><samp>This is a quality measure for protein-protein docking models (Basu et al. 2016).</samp></dd>
+            <dt>pDockQ</dt><dd><samp>This is the prediction of the DockQ value (Bryant et al. 2022).</samp></dd>
+            <dt>iPAE</dt><dd><samp>This is the median predicted aligned error at the interface. The distance threshold to define contact is set at 0.35nm (3.5A) between CA atoms. Lower score means better (Teufel et al., 2023).</samp></dd>
+EOF
+fi
+
 if [[ ${has_pae} -eq 1 ]]; then
 cat << EOF
             <dt>PAE</dt><dd><samp>Predicted aligned error (PAE) is a measure of how confident AlphaFold2 is in the relative position of two residues within the predicted structure. PAE is defined as the expected positional error at residue X, measured in Ångströms (Å), if the predicted and actual structures were aligned on residue Y.</samp></dd>
@@ -263,6 +279,7 @@ fi
 if [[ ${has_afmassive} -eq 1 ]]; then
 cat << EOF
               <li>Björn Wallner, AFsample: improving multimer prediction with AlphaFold using massive sampling, Bioinformatics, Volume 39, Issue 9, September 2023, btad573, <a href="https://doi.org/10.1093/bioinformatics/btad573">https://doi.org/10.1093/bioinformatics/btad573</a></li>
+              <li>AFmassive <a href="https://github.com/GBLille/AFmassive">https://github.com/GBLille/AFmassive</a></li>
 EOF
 fi
 
@@ -281,6 +298,14 @@ fi
 if [[ ${has_iptm} -eq 1 ]]; then
 cat << EOF
               <li>EMBL-EBI Training: <a href="https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/confidence-scores-in-alphafold-multimer/">Confidence scores in AlphaFold-Multimer</a></li>
+EOF
+fi
+
+if [[ ${has_metrics_multimer} -eq 1 ]]; then
+cat << EOF
+              <li>Basu S, Wallner B. DockQ: A Quality Measure for Protein-Protein Docking Models. PLoS ONE 11(8): e0161879. (2016) <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0161879">https://doi.org/10.1371/journal.pone.0161879</a></li>
+              <li>Bryant, P., Pozzati, G. & Elofsson, A. Improved prediction of protein-protein interactions using AlphaFold2. Nat Commun 13, 1265 (2022). <a href="https://www.nature.com/articles/s41467-022-28865-w">https://doi.org/10.1038/</a></li>
+              <li>Teufel F, Refsgaard J.C., Kasimova M.A., Deibler K., Madsen C.T., Stahlhut C., Grønborg M., Winther O., and Madsen D.. Deorphanizing Peptides Using Structure Prediction. Journal of Chemical Information and Modeling. 2023.<a href="https://pubs.acs.org/doi/10.1021/acs.jcim.3c00378">DOI:10.1021/acs.jcim.3c00378</a></li>
 EOF
 fi
 
@@ -380,6 +405,54 @@ cat << EOF
             </table>
 EOF
 fi
+
+
+
+if [[ ${has_metrics_multimer} -eq 1 ]]; then
+cat << EOF
+  pdockq_legend:
+    id: 'pdockq_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'pDockQ'
+    description: 'This is the prediction of the DockQ value '
+    plot_type: 'html'
+    data: |
+            <table>
+              <tr>
+                <th>Status</th>
+                <th id="range">Range</th>
+              </tr>
+              <tr>
+                <td id="dockq_high">High</td>
+                <td id="range">  pDockQ  > 0.80 </td>
+              </tr>
+              <tr>
+                <td id="dockq_medium">Medium</td>
+                <td id="range"> 0.49 < pDockQ < 0.8 </td>
+              </tr>
+              <tr>
+                <td id="dockq_acceptable">Acceptable</td>
+                <td id="range"> 0.23 < pDockQ < 0.49  </td>
+              </tr>
+              <tr>
+                <td id="dockq_incorrect">Incorrect</td>
+                <td id="range"> pDockQ < 0.23  </td>
+              </tr>
+            </table>
+
+  ipae_legend:
+    id: 'ipae_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'iPAE'
+    description: 'This is the median predicted aligned error at the interface in Å.'
+    plot_type: 'html'
+    data: |
+            The distance threshold to define contact is set at 0.35nm (3.5Å) between CA atoms. Lower score means better. 
+
+EOF
+fi
 # Print the array elements
 for file in "${png_files[@]}"; do
     echo ""
@@ -445,6 +518,10 @@ echo "  iptm_ptm_legend:"
 echo "    order: -1490"
 echo "  plddts_legend:"
 echo "    order: -1480"
+echo "  pdockq_legend:"
+echo "    order: -1470"
+echo "  ipae_legend:"
+echo "    order: -1460"
 echo "  definition_legend:"
 echo "    order: -1450"
 echo "  reference_legend:"

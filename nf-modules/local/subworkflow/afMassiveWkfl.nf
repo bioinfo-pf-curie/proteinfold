@@ -31,6 +31,7 @@ include { fastaChecker } from '../process/fastaChecker'
 include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
+include { mergeMetricsMultimer } from '../process/mergeMetricsMultimer'
 include { metricsMultimer } from '../process/metricsMultimer'
 include { mqcMetricsMultimer } from '../process/mqcMetricsMultimer'
 include { pymolPng } from '../process/pymolPng'
@@ -163,6 +164,39 @@ workflow afMassiveWkfl {
   optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
   versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
+  // rankModelCh contains:
+  // [protein, rank, model, tool, pathToprediction]
+  // for example:
+  // [BTB-domain, 67, model_1_multimer_v3_pred_5, alphaFold, /path/to/work/70/fb3e7/predictions/BTB-domain]
+  rankModelCh = afMassiveGather.out.ranking
+    .map {
+      File rankingTsv = new File(it[1].toString())
+      int lineNumber = 0 
+      List rankModel = [] 
+      for(line in rankingTsv.readLines()) {
+        if (lineNumber != 0) {
+          def (rank, model, score) = line.tokenize('\t')
+          rankModel.add(tuple (it[0], rank, model))
+        }
+        lineNumber = lineNumber + 1 
+      }
+      rankModel
+    }
+    .flatten()
+    .collate(3)
+    .combine(afMassiveGather.out.predictions, by: 0)
+
+  /////////////////////////////////////////
+  // metrics for the multimer prediction //
+  /////////////////////////////////////////
+  if(params.alphaFoldOptions.contains('multimer')){
+    metricsMultimer(rankModelCh)
+    mergeMetricsMultimer(metricsMultimer.out.metrics.groupTuple())
+    rankingCh = mergeMetricsMultimer.out.ranking
+  } else {
+    rankingCh = afMassiveGather.out.ranking
+  }
+
   //////////////////////////////////
   // multiqc by protein structure //
   //////////////////////////////////
@@ -170,22 +204,11 @@ workflow afMassiveWkfl {
     optionsYamlCh,
     versionsYamlCh,
     plotsCh,
-    afMassiveGather.out.ranking,
+    rankingCh,
     pymolPng.out.png,
     workflowSummaryCh
   )
 
-  /////////////////////////////////////////
-  // metrics for the multimer prediction //
-  /////////////////////////////////////////
-  if(params.alphaFoldOptions.contains('multimer')){
-    mqcMetricsMultimerWkfl(
-      optionsYamlCh,
-      versionsYamlCh,
-      afMassiveGather.out.predictions,
-      workflowSummaryCh
-    )
-  }
 
   ///////////////
   // AlphaFill //
