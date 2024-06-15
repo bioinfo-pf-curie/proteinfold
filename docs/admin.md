@@ -113,8 +113,5 @@ rm -r work results/ .nextflow*
 nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/multimer --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
 nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/multimer --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
 
-rm -r work results/ .nextflow*
-nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/multimer --htmlMetricsMultimer --fastaPath test/data/fasta/multimer/alphafold
-nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/multimer --htmlMetricsMultimer --fastaPath test/data/fasta/multimer/alphafold
 
 ```

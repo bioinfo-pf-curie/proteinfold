@@ -298,8 +298,6 @@ include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { diffDockWkfl } from './nf-modules/local/subworkflow/diffDockWkfl'
 include { dynamicBindWkfl } from './nf-modules/local/subworkflow/dynamicBindWkfl'
-include { mqcProteinStructWkfl } from './nf-modules/local/subworkflow/mqcProteinStructWkfl'
-include { mqcMetricsMultimerWkfl } from './nf-modules/local/subworkflow/mqcMetricsMultimerWkfl'
 include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
 
 /*
@@ -391,18 +389,6 @@ workflow {
       Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
       massiveFoldPlots.out.plots,
       generateRankingTsv.out.ranking,
-      Channel.of('').collectFile(name: 'empty.txt')
-    )
-  }
-
-  // Launch the generation of multiqc MetricsMultimer HTML reports
-  // using existing predicted structure
-  // yaml files for multiqc are set to empty
-  if (params.htmlMetricsMultimer && params.fromPredictions != null ){
-    mqcMetricsMultimerWkfl(
-      Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
-      Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
-      predictionsCh,
       Channel.of('').collectFile(name: 'empty.txt')
     )
   }

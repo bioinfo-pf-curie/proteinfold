@@ -30,12 +30,10 @@ include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVers
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 include { mergeMetricsMultimer } from '../process/mergeMetricsMultimer'
 include { metricsMultimer } from '../process/metricsMultimer'
-include { mqcMetricsMultimer } from '../process/mqcMetricsMultimer'
 include { pymolPng } from '../process/pymolPng'
 
 // Subworkflows
 include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
-include { mqcMetricsMultimerWkfl } from '../subworkflow/mqcMetricsMultimerWkfl'
 include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 
 /*
