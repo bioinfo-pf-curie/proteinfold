@@ -147,6 +147,13 @@ fi
 if [[ -s ranking_debug.tsv ]]; then
 cat << EOF
 table_cond_formatting_rules:
+  iptm:
+    tm_wrong:
+      - lt: 0.60
+    tm_intermediate:
+      - gt: 0.60
+    tm_high:
+      - gt: 0.80
   iptm_ptm:
     tm_wrong:
       - lt: 0.60
@@ -154,6 +161,15 @@ table_cond_formatting_rules:
       - gt: 0.60
     tm_high:
       - gt: 0.80
+  mpDockQ_pDockQ:
+    dockq_incorrect:
+      - lt: 0.23
+    dockq_acceptable:
+      - gt: 0.23
+    dockq_medium:
+      - gt: 0.49
+    dockq_high:
+      - gt: 0.8
   plddts:
     plddt_very_low:
       - lt: 50
@@ -165,13 +181,17 @@ table_cond_formatting_rules:
       - gt: 90
 
 table_cond_formatting_colours:
-  - tm_wrong: "#d9534f"
-  - tm_intermediate: "#f0ad4e"
-  - tm_high: "#5cb85c"
+  - dockq_incorrect: "#d9534f"
+  - dockq_acceptable: "#f0ad4e"
+  - dockq_medium: "#a1e3a1"
+  - dockq_high: "#5cb85c"
   - plddt_very_low: "#fd7d4d"
   - plddt_low: "#fed936"
   - plddt_high: "#6acbf1"
   - plddt_very_high: "#0d57d3"
+  - tm_wrong: "#d9534f"
+  - tm_intermediate: "#f0ad4e"
+  - tm_high: "#5cb85c"
 
 
 EOF
