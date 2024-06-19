@@ -49,6 +49,7 @@ include { elementsNotPresent } from './lib/functions'
 include { createFromCh as createMsasCh } from './lib/functions'
 include { createFromCh as createPredictionsCh } from './lib/functions'
 include { createFromCh as createRankingCh } from './lib/functions'
+include { createFromCh as createPdbFileCh } from './lib/functions'
 
 /*
 ===================================
@@ -226,7 +227,16 @@ if(params.fromPredictions != null){
                        }
  										   tuple(it[0], file(rankingJson[0]))
                      }
-
+  pdbFileCh = createPdbFileCh('fromPredictions', fastaFilesCh)
+                .map { def pdbFile = it[1]
+                                           .findAll { fileName ->
+                                                      fileName.toString().matches(/.*ranked_.*\.pdb$/)
+																										}
+                       if (!pdbFile) {
+                         error("ERROR: there is no pdb files file for protein: " + it[0])
+                       }
+ 										   tuple(it[0], pdbFile)
+                     }
 }
 
 /*
@@ -290,6 +300,7 @@ include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftw
 include { generateRankingTsv } from './nf-modules/local/process/generateRankingTsv'
 include { massiveFoldPlots } from './nf-modules/local/process/massiveFoldPlots'
 include { metricsMultimer } from './nf-modules/local/process/metricsMultimer'
+include { pymolPng } from './nf-modules/local/process/pymolPng'
 
 // Subworkflows
 include { alphaFillWkfl } from './nf-modules/local/subworkflow/alphaFillWkfl'
@@ -298,7 +309,9 @@ include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { diffDockWkfl } from './nf-modules/local/subworkflow/diffDockWkfl'
 include { dynamicBindWkfl } from './nf-modules/local/subworkflow/dynamicBindWkfl'
+include { mqcProteinStructWkfl } from './nf-modules/local/subworkflow/mqcProteinStructWkfl'
 include { nanoBertWkfl } from './nf-modules/local/subworkflow/nanoBertWkfl'
+
 
 /*
 =====================================
@@ -384,11 +397,13 @@ workflow {
   if (params.htmlProteinStruct && params.fromPredictions != null ){
     massiveFoldPlots(predictionsCh)
     generateRankingTsv(rankingCh)
+    pymolPng(pdbFileCh)
     mqcProteinStructWkfl(
       Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
       Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
       massiveFoldPlots.out.plots,
       generateRankingTsv.out.ranking,
+      pymolPng.out.png,
       Channel.of('').collectFile(name: 'empty.txt')
     )
   }
