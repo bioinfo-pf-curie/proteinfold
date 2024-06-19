@@ -20,19 +20,19 @@ process mergeMetricsMultimer {
   label 'onlyLinux'
   label 'minMem'
   label 'minCpu'
-  publishDir path: "${params.outDir}/multimerMetrics/${protein}",
+  publishDir path: "${params.outDir}/${toolName}/${protein}",
              mode: 'copy'
 
   input:
-  tuple val(protein), path(multimerMetrics)
+  tuple val(protein), path(multimerMetrics), val(toolName)
 
   output:
-  tuple val("${protein}"), path("ranking_debug.tsv"), emit: ranking
+  tuple val("${protein}"), path("ranking_debug_multimer.tsv"), emit: ranking
 
   script:
   """
-  sed -n '1p' \$(ls qc_metrics*tsv | head -1) >  ranking_debug.tsv
-  for file in \$(ls -v qc_metrics*.tsv); do sed '1d' \$file >> ranking_debug.tsv; done
+  sed -n '1p' \$(ls qc_metrics*tsv | head -1) >  ranking_debug_multimer.tsv
+  for file in \$(ls -v qc_metrics*.tsv); do sed '1d' \$file >> ranking_debug_multimer.tsv; done
   """
 
 }

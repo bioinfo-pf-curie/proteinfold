@@ -189,7 +189,10 @@ workflow afMassiveWkfl {
   /////////////////////////////////////////
   if(params.alphaFoldOptions.contains('multimer')){
     metricsMultimer(rankModelCh)
-    mergeMetricsMultimer(metricsMultimer.out.metrics.groupTuple())
+    mergeMetricsMultimer(metricsMultimer.out.metrics
+                          .groupTuple()
+                          .map { tuple(it[0], it[1], it[2][0])}
+                        )
     rankingCh = mergeMetricsMultimer.out.ranking
   } else {
     rankingCh = afMassiveGather.out.ranking

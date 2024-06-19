@@ -217,16 +217,30 @@ predictionsCh = Channel.empty()
 if(params.fromPredictions != null){
   predictionsCh = createPredictionsCh('fromPredictions', fastaFilesCh)
                     .map { tuple(it[0], '', file(file(it[1][0]).getParent())) }
+
+  //if(params.alphaFoldOptions.contains('multimer')){
   rankingCh = createRankingCh('fromPredictions', fastaFilesCh)
-                .map { def rankingJson = it[1]
-                                           .findAll { fileName ->
-                                                      fileName.toString().endsWith('ranking_debug.json')
-																										}
-                       if (!rankingJson) {
-                         error("ERROR: there is no ranking_debug.json file for protein: " + it[0])
+                .map {
+                       def rankingTsvMonomer = it[1]
+                                                 .findAll { fileName ->
+                                                            fileName.toString().endsWith('ranking_debug.tsv')
+																					      					}
+                       def rankingTsvMultimer = it[1]
+                                                 .findAll { fileName ->
+                                                            fileName.toString().endsWith('ranking_debug_multimer.tsv')
+																					      					}
+                       def rankingTsv
+                       if (rankingTsvMultimer) {
+                         rankingTsv = rankingTsvMultimer
+                       } else if (rankingTsvMonomer) {
+                         rankingTsv = rankingTsvMonomer
+                       } else {
+                         error("ERROR: there is no 'ranking_debug.tsv' nor 'ranking_debug_multimer.tsv' file for protein: " + it[0])
                        }
- 										   tuple(it[0], file(rankingJson[0]))
+
+ 										   tuple(it[0], file(rankingTsv[0]))
                      }
+
   pdbFileCh = createPdbFileCh('fromPredictions', fastaFilesCh)
                 .map { def pdbFile = it[1]
                                            .findAll { fileName ->
@@ -396,13 +410,12 @@ workflow {
   // yaml files for multiqc are set to empty
   if (params.htmlProteinStruct && params.fromPredictions != null ){
     massiveFoldPlots(predictionsCh)
-    generateRankingTsv(rankingCh)
     pymolPng(pdbFileCh)
     mqcProteinStructWkfl(
       Channel.of('').collectFile(name: 'software_options_mqc.yaml'),
       Channel.of('').collectFile(name: 'software_versions_mqc.yaml'),
       massiveFoldPlots.out.plots,
-      generateRankingTsv.out.ranking,
+      rankingCh,
       pymolPng.out.png,
       Channel.of('').collectFile(name: 'empty.txt')
     )
