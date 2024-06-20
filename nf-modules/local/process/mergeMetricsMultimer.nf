@@ -24,7 +24,7 @@ process mergeMetricsMultimer {
              mode: 'copy'
 
   input:
-  tuple val(protein), path(multimerMetrics), val(toolName)
+  tuple val(protein), path(metricsMultimer), val(toolName)
 
   output:
   tuple val("${protein}"), path("ranking_debug_multimer.tsv"), emit: ranking
