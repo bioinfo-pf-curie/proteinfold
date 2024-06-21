@@ -54,22 +54,25 @@ def extract_hits(ligand_description):
 
     transplants = []
     for hit in range(len(scores['hits'])):
-        transplant = {}
-        pdb_id = scores['hits'][hit]['pdb_id']
-        pdb_asym_id = scores['hits'][hit]['pdb_asym_id']
-        global_rmsd = scores['hits'][hit]['global_rmsd']
-        analogue_id = scores['hits'][hit]['transplants'][0]['analogue_id']
-        asym_id = scores['hits'][hit]['transplants'][0]['asym_id']
-        local_rmsd = scores['hits'][hit]['transplants'][0]['local_rmsd']
-        transplant['Hit'] = 'hit' + f'{hit}'
-        transplant['Compound'] = analogue_id
-        transplant['Description'] = ligand_description[analogue_id][
-            'Description']
-        transplant['PDBID'] = pdb_id + "." + pdb_asym_id
-        transplant['g-RMSd'] = global_rmsd
-        transplant['asym_id'] = asym_id
-        transplant['l-RMSd'] = local_rmsd
-        transplants.append(transplant)
+        for subhit in range(len(scores['hits'][hit]['transplants'])):
+            transplant = {}
+            pdb_id = scores['hits'][hit]['pdb_id']
+            pdb_asym_id = scores['hits'][hit]['pdb_asym_id']
+            global_rmsd = scores['hits'][hit]['global_rmsd']
+            transplant['Hit'] = 'hit' + f'{hit}.{subhit}'
+            transplant['PDBID'] = pdb_id + "." + pdb_asym_id
+            transplant['g-RMSd'] = global_rmsd
+
+            if len(scores['hits'][hit]['transplants']) > 0:
+                analogue_id = scores['hits'][hit]['transplants'][subhit]['analogue_id']
+                asym_id = scores['hits'][hit]['transplants'][subhit]['asym_id']
+                local_rmsd = scores['hits'][hit]['transplants'][subhit]['local_rmsd']
+                transplant['Compound'] = analogue_id
+                transplant['Description'] = ligand_description[analogue_id][
+                'Description']
+                transplant['asym_id'] = asym_id
+                transplant['l-RMSd'] = local_rmsd
+                transplants.append(transplant)
 
     if len(scores['hits']) == 0:
         transplant = {
@@ -132,7 +135,7 @@ def main(argv):
     """
     Main function to format the AlphaFill results in tsv format.
     """
-
+    
     if not os.path.exists(f'{FLAGS.ligand_file}'):
         print(f'{FLAGS.ligand_file} does not exist.')
         sys.exit(1)
