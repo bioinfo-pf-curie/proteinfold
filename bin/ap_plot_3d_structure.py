@@ -56,6 +56,8 @@ def main():
             cmd.color("n1", "b < 90")
             cmd.color("n2", "b < 70")
             cmd.color("n3", "b < 50")
+            # Best fit the view to the entire structure
+            cmd.zoom()
             # Save the image
             cmd.png(args.output_dir + '/' + pdb_files[pdb].replace('.pdb', '.png'))
         else:
@@ -70,6 +72,8 @@ def main():
             cmd.color("n3", "b < 50")
             # Ensure only test protein is active
             cmd.disable("ref")
+            # Best fit the view to the entire structure
+            cmd.zoom()
             # Save the image
             cmd.png(args.output_dir + '/' + pdb_files[pdb].replace('.pdb', '.png'))
             cmd.delete('test')
