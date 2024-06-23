@@ -31,7 +31,12 @@ process pymolPng {
 
   script:
   """
-  for pdb in ${pdbFile}; do ap_plot_3d_structure.sh \$pdb; done  
+  # Generate the png image and the best oriented visualization of the reference protein
+  # Align the other proteins on the reference and generate the png image
+  ap_plot_3d_structure.py --pdb_list \$(echo "${pdbFile}" | tr ' ' ',' | sort) --output_dir \$PWD
+
+  # Add the name of the pdb file on the png image 
+  for pdb in ${pdbFile}; do ap_plot_3d_structure.sh \${pdb}; done
   ap_mosaic_3d_structure.sh . mosaic.png
   """
 
