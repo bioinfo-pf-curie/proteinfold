@@ -416,6 +416,7 @@ workflow {
       massiveFoldPlots.out.plots,
       rankingCh,
       pymolPng.out.png,
+      fastaFilesCh,
       Channel.of('').collectFile(name: 'empty.txt')
     )
   }

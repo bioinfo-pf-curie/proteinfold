@@ -199,6 +199,23 @@ fi
 
 echo "custom_data:"
 
+if [[ -s protein.fasta ]]; then
+cat << EOF
+  fasta_file:
+    id: 'fasta_file'
+    parent_id: fasta_file
+    parent_name: 'Fasta file'
+    section_name: 'Fasta file'
+    plot_type: 'html'
+    data: |
+        <pre>
+EOF
+
+cat protein.fasta | sed -e 's/^/        /g' 
+echo "        </pre>"
+
+fi
+
 # test that mosaic.png exists
 if [[ -f pymolPng/mosaic.png ]]; then
 cat << EOF
