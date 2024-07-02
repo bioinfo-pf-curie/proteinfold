@@ -40,6 +40,41 @@ has_afmassive=0
 has_metrics_multimer=0
 params_file="params.txt"
 
+function format_fasta {
+
+	input_file=$1
+
+  # Initialize a variable to hold the sequence data
+  sequence=""
+  
+  # Read through the input file
+  while IFS= read -r line; do
+      if [[ $line == \>* ]]; then
+          # If it's a header line, write the accumulated sequence to the output file (if not empty)
+          if [[ -n $sequence ]]; then
+              echo "$sequence" | fold -w 60
+              sequence=""
+          fi
+          # Write the header line to the output file
+          echo "$line"
+			elif [[ $line =~ :$ ]]; then # manage the case of ColabFold format
+				sequence+="$line"
+          echo "$sequence" | fold -w 60
+          sequence=""
+      else
+          # If it's a sequence line, concatenate it to the sequence variable
+          sequence+="$line"
+      fi
+  done < "$input_file"
+  
+  # Handle the last sequence in the file (if there is one)
+  if [[ -n $sequence ]]; then
+      echo "$sequence" | fold -w 60
+  fi
+
+}
+
+
 function section_info {
 	params_file="$2"
   if [[ "$1" =~ "coverage" ]]; then
@@ -211,7 +246,7 @@ cat << EOF
         <pre>
 EOF
 
-cat protein.fasta | sed -e 's/^/        /g' 
+format_fasta protein.fasta | sed -e 's/^/        /g' 
 echo "        </pre>"
 
 fi
