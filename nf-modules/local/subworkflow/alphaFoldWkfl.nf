@@ -163,6 +163,7 @@ workflow alphaFoldWkfl {
     plotsCh,
     rankingCh,
     pymolPng.out.png,
+    fastaFilesCh,
     workflowSummaryCh
   )
 

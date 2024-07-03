@@ -105,6 +105,7 @@ workflow colabFoldWkfl {
     plotsCh,
     colabFold.out.ranking,
     pymolPng.out.png,
+    fastaFilesCh,
     workflowSummaryCh
   )
 

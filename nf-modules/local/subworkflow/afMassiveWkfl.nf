@@ -207,6 +207,7 @@ workflow afMassiveWkfl {
     plotsCh,
     rankingCh,
     pymolPng.out.png,
+    fastaFilesCh,
     workflowSummaryCh
   )
 
