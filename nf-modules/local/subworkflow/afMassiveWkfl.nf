@@ -183,6 +183,15 @@ workflow afMassiveWkfl {
     .flatten()
     .collate(3)
     .combine(afMassiveGather.out.predictions, by: 0)
+    // The map is needed for adaptive memory resource
+    .map {
+      // size in Bytes of the pickle file
+      long pickleSize = 0
+      def pickle = new File(it[4].toString() + "/result_" + it[2] + ".pkl")
+      pickleSize = pickle.length()
+      it.add(pickleSize)
+      it
+    }
 
   /////////////////////////////////////////
   // metrics for the multimer prediction //

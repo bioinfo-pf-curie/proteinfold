@@ -9,15 +9,12 @@ process metricsMultimer {
   label 'python'
   label 'minCpu'
   memory {
-    // size in Bytes of the pickle file
-    long maxPickleSize = 0
-    def pickle = new File("result_" + model + ".pkl")
-    maxPickleSize = pickle.length()
-    def memValue = 0.64*Math.log((float)maxPickleSize)/Math.log(2.0)
+    def memValue = 0.64*Math.log((float)pickleSize)/Math.log(2.0)
     memValue = 14.0 + memValue
     memValue = Math.pow(2, memValue)
     memValue = memValue / Math.pow(10, 9)
     memValue = 4 + memValue
+    memValue = memValue * task.attempt
     memValue = memValue.toString() + ' GB'
     return memValue
   }
@@ -26,7 +23,7 @@ process metricsMultimer {
   publishDir "${params.outDir}/metricsMultimer/${protein}", mode: 'copy'
 
   input:
-  tuple val(protein), val(rank), val(model), val(toolName), path(predictions)
+  tuple val(protein), val(rank), val(model), val(toolName), path(predictions), val(pickleSize)
 
   output:
   tuple val(protein), path("qc_metrics_multimer*.tsv"), val(toolName), emit: metrics
