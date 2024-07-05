@@ -65,6 +65,8 @@ process alphaFold {
     folder="monomer2"
   fi
   cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
+  if [[ -f predictions/${protein}/ranking_debug.tsv ]]; then rm predictions/${protein}/ranking_debug.tsv; fi
+  if [[ -f predictions/${protein}/ranking_debug_multimer.tsv ]]; then rm predictions/${protein}/ranking_debug_multimer.tsv; fi
   ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
   nb_model=\$(wc -l predictions/${protein}/ranking_debug.tsv | awk '{print \$1}')
   nb_model=\$(( \$nb_model - 1 ))

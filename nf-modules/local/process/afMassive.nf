@@ -60,6 +60,8 @@ process afMassive {
     folder="monomer2"
   fi
   cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
+  if [[ -f predictions/${protein}/ranking_debug.tsv ]]; then rm predictions/${protein}/ranking_debug.tsv; fi
+  if [[ -f predictions/${protein}/ranking_debug_multimer.tsv ]]; then rm predictions/${protein}/ranking_debug_multimer.tsv; fi
   echo "AFmassive \$(get_version.sh)" > versions.txt
   echo "AFmassive (prediction) options=\${alphafold_options} ${params.afMassiveOptions}" > options.txt
   cd predictions/${protein}

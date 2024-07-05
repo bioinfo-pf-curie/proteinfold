@@ -218,35 +218,37 @@ if(params.fromPredictions != null){
   predictionsCh = createPredictionsCh('fromPredictions', fastaFilesCh)
                     .map { tuple(it[0], '', file(file(it[1][0]).getParent())) }
 
-  //if(params.alphaFoldOptions.contains('multimer')){
-  rankingCh = createRankingCh('fromPredictions', fastaFilesCh)
-                .map {
-                       def rankingTsvMonomer = it[1]
-                                                 .findAll { fileName ->
-                                                            fileName.toString().endsWith('ranking_debug.tsv')
-																					      					}
-                       def rankingTsvMultimer = it[1]
-                                                 .findAll { fileName ->
-                                                            fileName.toString().endsWith('ranking_debug_multimer.tsv')
-																					      					}
-                       def rankingTsv
-                       if (rankingTsvMultimer) {
-                         rankingTsv = rankingTsvMultimer
-                       } else if (rankingTsvMonomer) {
-                         rankingTsv = rankingTsvMonomer
-                       } else {
-                         error("ERROR: there is no 'ranking_debug.tsv' nor 'ranking_debug_multimer.tsv' file for protein: " + it[0])
-                       }
+  // rankingCh is not needed if we launch only AlphaFill
+  if (!params.launchAlphaFill){
+    rankingCh = createRankingCh('fromPredictions', fastaFilesCh)
+                  .map {
+                         def rankingTsvMonomer = it[1]
+                                                   .findAll { fileName ->
+                                                              fileName.toString().endsWith('ranking_debug.tsv')
+	  																				      					}
+                         def rankingTsvMultimer = it[1]
+                                                   .findAll { fileName ->
+                                                              fileName.toString().endsWith('ranking_debug_multimer.tsv')
+	  																				      					}
+                         def rankingTsv
+                         if (rankingTsvMultimer) {
+                           rankingTsv = rankingTsvMultimer
+                         } else if (rankingTsvMonomer) {
+                           rankingTsv = rankingTsvMonomer
+                         } else {
+                           error("ERROR: there is no 'ranking_debug.tsv' nor 'ranking_debug_multimer.tsv' file for protein: " + it[0])
+                         }
 
- 										   tuple(it[0], file(rankingTsv[0]))
-                     }
+ 	  									   tuple(it[0], file(rankingTsv[0]))
+                       }
+  }
 
   pdbFileCh = createPdbFileCh('fromPredictions', fastaFilesCh)
                 .map { def pdbFile = it[1]
-                                           .findAll { fileName ->
-                                                      fileName.toString().matches(/.*ranked_.*\.pdb$/)
-																										}
-                       if (!pdbFile) {
+                                       .findAll { fileName ->
+                                                  fileName.toString().matches(/.*ranked_.*\.pdb$/)
+																								}
+                   if (!pdbFile) {
                          error("ERROR: there is no pdb files file for protein: " + it[0])
                        }
  										   tuple(it[0], pdbFile)
