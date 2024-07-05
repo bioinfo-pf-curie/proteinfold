@@ -1,13 +1,37 @@
 NEW FEATURES
+  - AFMassive:
+    * All the models are computed in parallel
+    * A process has been added to compute relaxation
   - AlphaFill:
     * tool to predict the binding of missing compounds to predicted 3D protein structure
     * multiqc report with the predictions
-  - multiqc reports
-    * Legends and references have been added in the reports
-    * proteinStruct includes the ranking_debug.json table
-    * new options to geenerate reports from existing results:
+    * take into account that the json output can include different value for the same transplant, or some transplant may have missing information
+  - DynamicBind:
+    * Add test data
+  - New tools:
+    * nanoBERT: predict the nanobody mutational space
+    * DiffDock: molecular docking
+  - Result folder:
+    * organize publishDir for AlphaFold and AfMassive in order to avoid three folder levels.
+  - Structure prediction with multimer:
+    * compute metrics pDockQ and iPAE
+  - Process:
+    * Generate PAE matrix in JSON format for the best model
+  - multiqc reports:
+    * legends and references have been added in the reports
+    * proteinStruct includes the ranking_debug.json table and multimer metrics (when available) for all models
+    * new option to generate reports from existing results:
       --htmlProteinStruct
-      --htmlMetricsMultimer
+    * PAE plots: max value set to 31.75
+    * fasta sequence is displayed at the beginning of the report
+    * Mosaic plot with all 3D structures
+  - code refactoring:
+    * implementation of nextflow subworkflows
+    * ensure that the pipeline can resume
+    * adaptive memory for metricsMultimer process
+    * pylint / shellcheck scripts, rename in-house script with ap_ prefix
+    * set PATH in container recipes
+    * process and files related to multiqc hhave been renamed with mqc
 
 v1.2.0
 03/08/2024
