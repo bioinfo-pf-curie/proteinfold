@@ -5,7 +5,7 @@
 import java.lang.Math
 
 process metricsMultimer {
-  tag "QC"
+  tag "${protein}"
   label 'python'
   label 'minCpu'
   memory {
