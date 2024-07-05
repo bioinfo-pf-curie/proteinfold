@@ -31,6 +31,11 @@ workflow mqcProteinStructWkfl {
 
 
   main:
+
+  //plotsCh.view()
+  //rankingCh.view()
+  //pymolPngCh.view()
+  //fastaFileCh.view()
   
   // Perform multiqc by protein structure
   mqcProteinStruct(
@@ -38,16 +43,8 @@ workflow mqcProteinStructWkfl {
       .join(rankingCh)
       .join(pymolPngCh)
       .join(fastaFileCh)
-      .combine(versionsYamlCh),
-    plotsCh
-      .map {
-        it[0]
-      }
-      .combine(optionsYamlCh),
-    plotsCh
-      .map {
-        it[0]
-      }
+      .combine(versionsYamlCh)
+      .combine(optionsYamlCh)
       .combine(workflowSummaryCh)
   )
 
