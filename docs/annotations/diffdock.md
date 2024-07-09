@@ -31,7 +31,7 @@ cd $HOME/tmp/diffdock
 export TORCH_HOME=torch_home
 ```
 
-Inside the python console:
+Launch a `python` console, then type:
 ```python
 from esm import pretrained
 model_location = "esm2_t33_650M_UR50D"

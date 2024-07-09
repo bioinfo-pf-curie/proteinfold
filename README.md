@@ -17,9 +17,9 @@ It comes with singularity/apptainer containers making installation easier and re
 This pipeline allows:
 
 * the prediction of protein 3D structure using various tools:
+  - [AFMassive](https://github.com/GBLille/AFMassive).
   - [AlphaFold](https://github.com/google-deepmind/alphafold/),
   - [ColabFold](https://github.com/sokrypton/ColabFold),
-  - [MassiveFold](https://github.com/GBLille/MassiveFold).
 * molecular docking of protein/ligand using:
   - [DiffDock](https://github.com/gcorso/DiffDock)
   - [DynamicBind](https://github.com/luwei0917/DynamicBind/)
