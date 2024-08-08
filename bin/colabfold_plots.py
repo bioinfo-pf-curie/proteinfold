@@ -239,7 +239,7 @@ def plot_plddts(plddts, pos_s=None, dpi=100, fig=True):
         plt.figure(figsize=(8, 5), dpi=dpi)
     plt.title("Predicted lDDT per position")
     for n, plddt in enumerate(plddts):
-        plt.plot(plddt, label=f"rank_{n+1}")
+        plt.plot(plddt, label=f"rank_{n}")
     if pos_s is not None:
         pos_prev = 0
         for pos_i in pos_s[:-1]:
@@ -267,7 +267,7 @@ def plot_paes(paes, pos_s=None, dpi=100, fig=True):
         plt.figure(figsize=(3 * num_models, 2), dpi=dpi)
     for n, pae in enumerate(paes):
         axes = plt.subplot(1, num_models, n + 1)
-        plot_pae(pae, axes, caption=f"rank_{n+1}", pos_s=pos_s)
+        plot_pae(pae, axes, caption=f"rank_{n}", pos_s=pos_s)
     return plt
 
 
@@ -297,7 +297,7 @@ def plot_adjs(adjs, pos_s=None, dpi=100, fig=True):
         plt.figure(figsize=(3 * num_models, 2), dpi=dpi)
     for n, adj in enumerate(adjs):
         plt.subplot(1, num_models, n + 1)
-        plt.title(f"rank_{n+1}")
+        plt.title(f"rank_{n}")
         pos_n = adj.shape[0]
         plt.imshow(adj, cmap="binary", vmin=0, vmax=1, extent=(0, pos_n, pos_n, 0))
         if pos_s is not None and len(pos_s) > 1:
@@ -330,7 +330,7 @@ def plot_dists(dists, pos_s=None, dpi=100, fig=True):
         plt.figure(figsize=(3 * num_models, 2), dpi=dpi)
     for n, dist in enumerate(dists):
         plt.subplot(1, num_models, n + 1)
-        plt.title(f"rank_{n+1}")
+        plt.title(f"rank_{n}")
         pos_n = dist.shape[0]
         plt.imshow(dist, extent=(0, pos_n, pos_n, 0))
         if pos_s is not None and len(pos_s) > 1:
