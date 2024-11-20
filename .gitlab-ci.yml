@@ -121,9 +121,10 @@ geniac_artifacts:
   script:
     - echo "Geniac recipes & configs"
     - geniac --version
-    - rm -rf ../geniac_init/ # remove possibly already existing folder
-    - geniac init -w  ../geniac_init/ ${CI_PROJECT_DIR}
-    - cd ../geniac_init/
+    - mkdir -p ${DIR_TMP_GENIAC_INIT}
+    - rm -rf ${DIR_TMP_GENIAC_INIT} # remove possibly already existing folder
+    - geniac init -w  ${DIR_TMP_GENIAC_INIT} ${CI_PROJECT_DIR}
+    - cd ${DIR_TMP_GENIAC_INIT}
     - geniac recipes -v
     - geniac configs -v
     - mkdir geniac-artifacts
@@ -134,6 +135,8 @@ geniac_artifacts:
       - geniac-artifacts.tar
   rules:
     - if: '$IS_NF_CORE == ""'
+  variables:
+    DIR_TMP_GENIAC_INIT: " ${CI_BUILDS_DIR}/${CI_PROJECT_PATH_SLUG}/${CI_COMMIT_REF_SLUG}/build_4_gitlab_geniac_init"
 
 
 #########################################################
@@ -172,7 +175,7 @@ signature_deffiles:
   # This job computes a signature of the singularity recipes and their dependencies.
   # This is needed to figure out whether we have to rebuild the singularity images
   # (even if the commit id of the submodule changed it migth not be necessary to rebuild the containers).
-  stage: set_env
+  stage: check
   script:
     - |
       echo "Build signature of the singularity recipes and their dependencies"
@@ -192,20 +195,19 @@ signature_deffiles:
       if [[ ${IS_NF_CORE} == "" ]]; then
       cmake ${CI_PROJECT_DIR}/${DIR_ANALYSIS_PIPELINE_MODULE}/geniac -DCMAKE_INSTALL_PREFIX=${DIR_INSTALL} -Dap_check_config_file_from_source=OFF -Dap_install_singularity_recipes=ON -Dap_install_singularity_images=OFF -Dap_docker_registry=registrygitlab.curie.fr/bioinfo-containers/geniac/
       make
-      cd ${CI_PROJECT_DIR}
-      bash ${DIR_DEPLOY_PACKAGE}/utils/signature-deffiles.sh ${DIR_TMP_IN_RUNNER}/workDir/results/singularity/deffiles ${CI_PROJECT_DIR}/${DIR_ANALYSIS_PIPELINE_MODULE} > ${CI_PROJECT_DIR}/sha256-deffiles.env
+      cp ${DIR_TMP_IN_RUNNER}/workDir/results/singularity/deffiles/sha256sum ${CI_PROJECT_DIR}
       else
       cd ${CI_PROJECT_DIR}
-      echo "SHA256_DEFFILES=${CI_COMMIT_ID}" > ${CI_PROJECT_DIR}/sha256-deffiles.env
+      AP_SUBMODULE_COMMIT=$(git submodule status ${DIR_ANALYSIS_PIPELINE_MODULE}/ | awk '{print $1}')
+      echo "${AP_SUBMODULE_COMMIT} ${PIPELINE_NAME}" > ${CI_PROJECT_DIR}/sha256sum
       fi
-    - cat ${CI_PROJECT_DIR}/sha256-deffiles.env
+    - cat ${CI_PROJECT_DIR}/sha256sum
   needs:
     - job: export_var
       artifacts: true
   artifacts:
-    reports:
-      dotenv: sha256-deffiles.env
-
+    paths:
+      - sha256sum
 
 ###############################################################
 # Detect if the singularity images have already been deployed #
@@ -274,7 +276,7 @@ ci_4_sif:
       if [[ ${BUILD_SIF} == "true" ]]; then
       echo "singularity images must be built"
       cp ${DIR_DEPLOY_PACKAGE}/templates/gitlab-ci_build_sif${IS_NF_CORE}.yml gitlab-ci_singularity.yml
-      sed -i -e "s/%SHA256_DEFFILES%/${SHA256_DEFFILES}/g" gitlab-ci_singularity.yml
+      CONTAINER_LIST=$(echo $(<build-sif.txt) | sed 's/ /,/g')
       sed -i -e "s/%CLUSTER_NAME%/${CLUSTER_NAME}/g" gitlab-ci_singularity.yml
       sed -i -e "s/%DEPLOY_ENV%/${DEPLOY_ENV}/g" gitlab-ci_singularity.yml
       sed -i -e "s|%DIR_TMP_IN_RUNNER%|${DIR_TMP_IN_RUNNER}|g" gitlab-ci_singularity.yml
