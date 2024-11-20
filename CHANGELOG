@@ -25,6 +25,7 @@ NEW FEATURES
     * PAE plots: max value set to 31.75
     * fasta sequence is displayed at the beginning of the report
     * Mosaic plot with all 3D structures
+    * In the plots, model name legend which contains rank start from 0 (instead of 1) to be consistent with the naming produced by AlphaFold
   - code refactoring:
     * implementation of nextflow subworkflows
     * ensure that the pipeline can resume
