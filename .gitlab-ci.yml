@@ -38,6 +38,7 @@ stages:
   - post            # clean directories
 
 before_script:
+  - source /opt/etc/bashrc # needed to activate the geniac conda env
   - set -euo pipefail
 
 
@@ -105,7 +106,6 @@ geniac_lint:
   stage: lint
   script:
     - echo "Geniac lint"
-    - source /opt/etc/bashrc # needed to activate the geniac conda env
     - geniac --version
     - geniac lint ${CI_PROJECT_DIR}
   rules:
@@ -120,7 +120,6 @@ geniac_artifacts:
   stage: artifacts
   script:
     - echo "Geniac recipes & configs"
-    - source /opt/etc/bashrc # needed to activate the geniac conda env
     - geniac --version
     - rm -rf ../geniac_init/ # remove possibly already existing folder
     - geniac init -w  ../geniac_init/ ${CI_PROJECT_DIR}
@@ -233,10 +232,17 @@ check_sif_version:
       bash ${DIR_DEPLOY_PACKAGE}/utils/set-vault-token-4-gitlab-ci.sh # set the vault token
       source variables.sh
     - ssh -p ${SSH_PORT} ${USERSSH}@${SERVER_NAME} "mkdir -p ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}"
-    - scp -P ${SSH_PORT} ${DIR_DEPLOY_PACKAGE}/utils/test-sif-exist.bash ${USERSSH}@${SERVER_NAME}:${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}
-    - ssh -p ${SSH_PORT} ${USERSSH}@${SERVER_NAME} "bash ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/test-sif-exist.bash ${DEPLOY_HOME}/singularity/images ${SHA256_DEFFILES} ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/test-sif-exist-${SHA256_DEFFILES}.log" 
-    - scp -P ${SSH_PORT} ${USERSSH}@${SERVER_NAME}:${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/test-sif-exist-${SHA256_DEFFILES}.log ${CI_PROJECT_DIR}/build-sif.env
+    - scp -P ${SSH_PORT} ${DIR_DEPLOY_PACKAGE}/utils/test-sif-exist.bash sha256sum ${USERSSH}@${SERVER_NAME}:${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}
+    - ssh -p ${SSH_PORT} ${USERSSH}@${SERVER_NAME} "mkdir -p ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}"
+    - echo "bash ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/test-sif-exist.bash ${DEPLOY_HOME}/singularity/images ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/sha256sum $(apptainer version) ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/build-sif.txt ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/remove-sif.txt"
+    - ssh -p ${SSH_PORT} ${USERSSH}@${SERVER_NAME} "bash ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/test-sif-exist.bash ${DEPLOY_HOME}/singularity/images ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/sha256sum $(apptainer version) ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/build-sif.txt ${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/remove-sif.txt"
+    - scp -P ${SSH_PORT} ${USERSSH}@${SERVER_NAME}:${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/build-sif.txt ${CI_PROJECT_DIR}/build-sif.txt
+    - scp -P ${SSH_PORT} ${USERSSH}@${SERVER_NAME}:${DEPLOY_HOME}/${DIR_TMP_ON_CLUSTER}/remove-sif.txt ${CI_PROJECT_DIR}/remove-sif.txt
+    - if [[ -s ${CI_PROJECT_DIR}/build-sif.txt ]]; then echo "BUILD_SIF=true"; else echo "BUILD_SIF=false"; fi > ${CI_PROJECT_DIR}/build-sif.env
+    - if [[ -s ${CI_PROJECT_DIR}/remove-sif.txt ]]; then echo "The following sif files has been remove as they are not needed anymore:"; cat ${CI_PROJECT_DIR}/remove-sif.txt; fi
     - cat ${CI_PROJECT_DIR}/build-sif.env
+    - cat ${CI_PROJECT_DIR}/remove-sif.txt
+    - cat ${CI_PROJECT_DIR}/build-sif.txt
   needs:
     - job: export_var
       artifacts: true
@@ -245,6 +251,9 @@ check_sif_version:
   artifacts:
     reports:
       dotenv: build-sif.env
+    paths:
+      - build-sif.txt
+      - remove-sif.txt
   variables:
     DEPLOY_HOME: "${DIR_BIOINFO_PIPELINE}/${PIPELINE_NAME}/${DEPLOY_ENV}/${CUBIC_PIPE}"
     DIR_TMP_ON_CLUSTER: "dir_tmp_4_deploy" # This will be a folder created in the HOME of the user app on the cluster
@@ -271,11 +280,14 @@ ci_4_sif:
       sed -i -e "s|%DIR_TMP_IN_RUNNER%|${DIR_TMP_IN_RUNNER}|g" gitlab-ci_singularity.yml
       sed -i -e "s|%DIR_BIOINFO_PIPELINE%|${DIR_BIOINFO_PIPELINE}|g" gitlab-ci_singularity.yml
       sed -i -e "s/%PIPELINE_NAME%/${PIPELINE_NAME}/g" gitlab-ci_singularity.yml
+      sed -i -e "s/%CONTAINER_LIST%/${CONTAINER_LIST}/g" gitlab-ci_singularity.yml
       sed -i -e "s|DEPLOY_HOME:.*|DEPLOY_HOME: ${DEPLOY_HOME}|g" gitlab-ci_singularity.yml
       else
       echo "singularity images already exist"
       cp ${DIR_DEPLOY_PACKAGE}/templates/gitlab-ci_sif_ok.yml gitlab-ci_singularity.yml
       fi
+    - echo "The following container will be build"
+    - cat build-sif.txt
   artifacts:
     paths:
       - gitlab-ci_singularity.yml
