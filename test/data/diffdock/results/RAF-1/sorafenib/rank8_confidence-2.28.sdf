@@ -1,0 +1,195 @@
+398
+     RDKit          3D
+
+ 32 34  0  0  0  0  0  0  0  0999 V2000
+  -11.3433    7.0001   10.8996 Cl  0  0  0  0  0  0  0  0  0  0  0  0
+  -12.3308    6.2157    8.5901 F   0  0  0  0  0  0  0  0  0  0  0  0
+  -14.2275    5.0857    8.3223 F   0  0  0  0  0  0  0  0  0  0  0  0
+  -14.1418    6.9071    9.6981 F   0  0  0  0  0  0  0  0  0  0  0  0
+  -17.9060   -4.3384    8.5695 O   0  0  0  0  0  0  0  0  0  0  0  0
+  -14.4311    1.1660    9.6828 O   0  0  0  0  0  0  0  0  0  0  0  0
+  -20.7709   -7.3169    5.6816 O   0  0  0  0  0  0  0  0  0  0  0  0
+  -13.8362    1.6655   11.8271 N   0  0  0  0  0  0  0  0  0  0  0  0
+  -15.6629    0.0933   11.2670 N   0  0  0  0  0  0  0  0  0  0  0  0
+  -20.7395   -3.7283    5.6078 N   0  0  0  0  0  0  0  0  0  0  0  0
+  -22.0957   -5.9862    4.3849 N   0  0  0  0  0  0  0  0  0  0  0  0
+  -13.2122    2.9064   11.6641 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -13.0468    4.9332   10.3754 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -13.6248    3.7063   10.5832 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -16.1655   -1.0104   10.5506 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -12.2285    3.4068   12.4751 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -17.3363   -3.2516    9.2154 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -12.0572    5.4311   11.1954 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -15.5698   -1.6095    9.4714 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -17.3892   -1.5847   10.9427 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -11.6508    4.6607   12.2473 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -16.1410   -2.7121    8.8107 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -17.9413   -2.6564   10.2981 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -14.6356    0.9820   10.8867 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -13.4803    5.7946    9.2244 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -18.8489   -4.0868    7.5815 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -19.4966   -5.1630    6.9624 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -20.4317   -4.9804    5.9859 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -19.1928   -2.8273    7.1656 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -20.1372   -2.6509    6.1798 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -21.0801   -6.1389    5.3700 C   0  0  0  0  0  0  0  0  0  0  0  0
+  -22.7616   -7.1688    3.8192 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1 18  1  0
+  2 25  1  0
+  3 25  1  0
+  4 25  1  0
+  5 17  1  0
+  5 26  1  0
+  6 24  2  0
+  7 31  2  0
+  8 12  1  0
+  8 24  1  0
+  9 15  1  0
+  9 24  1  0
+ 10 28  2  0
+ 10 30  1  0
+ 11 31  1  0
+ 11 32  1  0
+ 12 14  1  0
+ 12 16  2  0
+ 13 14  2  0
+ 13 18  1  0
+ 13 25  1  0
+ 15 19  2  0
+ 15 20  1  0
+ 16 21  1  0
+ 17 22  2  0
+ 17 23  1  0
+ 18 21  2  0
+ 19 22  1  0
+ 20 23  2  0
+ 26 27  2  0
+ 26 29  1  0
+ 27 28  1  0
+ 28 31  1  0
+ 29 30  2  0
+M  END
+>  <DATABASE_ID>  (1) 
+DB00398
+
+>  <DATABASE_NAME>  (1) 
+drugbank
+
+>  <SMILES>  (1) 
+CNC(=O)C1=NC=CC(OC2=CC=C(NC(=O)NC3=CC(=C(Cl)C=C3)C(F)(F)F)C=C2)=C1
+
+>  <INCHI_IDENTIFIER>  (1) 
+InChI=1S/C21H16ClF3N4O3/c1-26-19(30)18-11-15(8-9-27-18)32-14-5-2-12(3-6-14)28-20(31)29-13-4-7-17(22)16(10-13)21(23,24)25/h2-11H,1H3,(H,26,30)(H2,28,29,31)
+
+>  <INCHI_KEY>  (1) 
+MLDQJTXFUGDVEO-UHFFFAOYSA-N
+
+>  <FORMULA>  (1) 
+C21H16ClF3N4O3
+
+>  <MOLECULAR_WEIGHT>  (1) 
+464.825
+
+>  <EXACT_MASS>  (1) 
+464.08630272
+
+>  <JCHEM_ACCEPTOR_COUNT>  (1) 
+3
+
+>  <JCHEM_ATOM_COUNT>  (1) 
+48
+
+>  <JCHEM_AVERAGE_NEUTRAL_MICROSPECIES_CHARGE>  (1) 
+0.0010418670567845607
+
+>  <JCHEM_AVERAGE_POLARIZABILITY>  (1) 
+41.3340061519023
+
+>  <JCHEM_BIOAVAILABILITY>  (1) 
+1
+
+>  <JCHEM_DONOR_COUNT>  (1) 
+3
+
+>  <JCHEM_FORMAL_CHARGE>  (1) 
+0
+
+>  <JCHEM_GHOSE_FILTER>  (1) 
+1
+
+>  <JCHEM_IUPAC>  (1) 
+4-[4-({[4-chloro-3-(trifluoromethyl)phenyl]carbamoyl}amino)phenoxy]-N-methylpyridine-2-carboxamide
+
+>  <ALOGPS_LOGP>  (1) 
+4.12
+
+>  <JCHEM_LOGP>  (1) 
+4.343329760666666
+
+>  <ALOGPS_LOGS>  (1) 
+-5.43
+
+>  <JCHEM_MDDR_LIKE_RULE>  (1) 
+1
+
+>  <JCHEM_NEUTRAL_CHARGE>  (1) 
+0
+
+>  <JCHEM_NUMBER_OF_RINGS>  (1) 
+3
+
+>  <JCHEM_PHYSIOLOGICAL_CHARGE>  (1) 
+0
+
+>  <JCHEM_PKA>  (1) 
+13.997061093666286
+
+>  <JCHEM_PKA_STRONGEST_ACIDIC>  (1) 
+11.549797587623363
+
+>  <JCHEM_PKA_STRONGEST_BASIC>  (1) 
+3.029916234990676
+
+>  <JCHEM_POLAR_SURFACE_AREA>  (1) 
+92.35000000000001
+
+>  <JCHEM_REFRACTIVITY>  (1) 
+114.51830000000001
+
+>  <JCHEM_ROTATABLE_BOND_COUNT>  (1) 
+6
+
+>  <JCHEM_RULE_OF_FIVE>  (1) 
+1
+
+>  <ALOGPS_SOLUBILITY>  (1) 
+1.71e-03 g/l
+
+>  <JCHEM_TRADITIONAL_IUPAC>  (1) 
+biotin
+
+>  <JCHEM_VEBER_RULE>  (1) 
+0
+
+>  <DRUGBANK_ID>  (1) 
+DB00398
+
+>  <SECONDARY_ACCESSION_NUMBERS>  (1) 
+APRD01304; DB07438
+
+>  <DRUG_GROUPS>  (1) 
+approved; investigational
+
+>  <GENERIC_NAME>  (1) 
+Sorafenib
+
+>  <SYNONYMS>  (1) 
+4-(4-((((4-Chloro-3-(trifluoromethyl)phenyl)amino)carbonyl)amino)phenoxy)-N-methyl-2-pyridinecarboxamide; N-(4-Chloro-3-(trifluoromethyl)phenyl)-N'-(4-(2-(N-methylcarbamoyl)-4-pyridyloxy)phenyl)urea; Sorafenib; Sorafénib; Sorafenibum
+
+>  <PRODUCTS>  (1) 
+Apo-sorafenib; Nexavar; Sorafenib; Sorafenib Accord; Sorafenib Tosylate
+
+>  <SALTS>  (1) 
+Sorafenib tosylate
+
+$$$$

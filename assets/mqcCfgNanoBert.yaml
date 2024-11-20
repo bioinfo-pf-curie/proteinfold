@@ -1,0 +1,92 @@
+custom_data:
+
+  scores_nanobert_table:
+    id: 'scores_nanobert_table'
+    parent_id: scores_nanobert
+    parent_name: 'nanoBERT'
+    section_name: 'Table'
+    description: 'nanoBERT scores'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_nanobert_table'
+      format: '{:,.3f}'
+
+  scores_human_heavy_table:
+    id: 'scores_human_heavy_table'
+    parent_id: scores_human_heavy
+    parent_name: 'Human heavy'
+    section_name: 'Table'
+    description: 'human_heavy scores'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_human_heavy_table'
+      format: '{:,.3f}'
+
+  nanobert_legend:
+    id: 'nanobert_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Scores'
+    description: 'Colour legend for the confidence of the l-RMSd score'
+    plot_type: 'html'
+    data: |
+      <dl class="dl-horizontal">
+          <dt>residue</dt><dd><samp>This is the position in the protein sequence.</samp></dd>
+          <dt>score</dt><dd><samp>nanoBERT allows the identification of possible positional substitutions based on sequence context. The scores provides the probability (highest means better). In the table, the scores are ranked (score1 being the best).</samp></dd>
+          <dt>aa</dt><dd><samp>This the amino acid substitution predicted by the model, aa1 corresponds to the best score (score1), etc.</samp></dd>
+          <dt>r6 -> Q</dt><dd><samp>In the plot, this means that the substitution predicted by the model a position 6 is the amino acid Q.</samp></dd>
+      </dl>
+
+  definition_legend:
+    id: 'definition_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Definitions'
+    plot_type: 'html'
+    data: |
+      <dl class="dl-horizontal">
+          <dt>nanoBERT</dt><dd><samp>It corresponds to the nanoBERT_small model described in Hadsund et al. (2024). It was trained on of 10 millions of nanobody sequences from INDI.</samp></dd>
+          <dt>human heavy</dt><dd><samp>It corresponds to the human_320 model described in Hadsund et al. (2024). The human_320 model resembles nanoBERT_small in terms of its architecture but is trained on 25 million human heavy chains.</samp></dd>
+      </dl>
+
+  reference_legend:
+    id: 'reference_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'References'
+    description: 'List of publications'
+    plot_type: 'html'
+    data: |
+      <ul>
+        <li>Johannes Thorling Hadsund, Tadeusz Satława, Bartosz Janusz, Lu Shan, Li Zhou, Richard Röttger, Konrad Krawczyk, nanoBERT: a deep learning model for gene agnostic navigation of the nanobody mutational space, Bioinformatics Advances, Volume 4, Issue 1, 2024, vbae033, <a href="https://doi.org/10.1093/bioadv/vbae033">https://doi.org/10.1093/bioadv/vbae033</a></li>
+      </ul>
+
+sp:
+
+  scores_nanobert_table:
+    fn: 'nanobert_matrix_scores.tsv'
+
+  scores_human_heavy_table:
+    fn: 'human_heavy_matrix_scores.tsv'
+
+report_section_order:
+  scores_nanobert:
+    order: -1000
+  scores_nanobert_table:
+    order: -990
+  scores_nanobert_plot:
+    order: -980
+  scores_human_heavy:
+    order: -1100
+  scores_human_heavy_table:
+    order: -1090
+  scores_human_heavy_plot:
+    order: -1080
+  legend:
+    order: -1500
+  nanobert_legend:
+    order: -1490
+  definition_legend:
+    order: -1480
+  reference_legend:
+    order: -1470

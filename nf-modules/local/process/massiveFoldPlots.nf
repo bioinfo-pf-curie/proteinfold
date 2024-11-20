@@ -18,8 +18,8 @@ of the license and that you accept its terms.
 // It uses the code from https://github.com/GBLille/AfMassive with a minor patch to
 // check whether PAEs are available within the picle data
 process massiveFoldPlots {
-  tag "${protein}-${toolFold}" 
-  label 'massiveFoldPlots'
+  tag { ("${toolFold}".isEmpty()) ? "${protein}" : "${protein}-${toolFold}" }
+  label 'python'
   label 'lowMem'
   label 'lowCpu'
   publishDir path: "${params.outDir}/${toolFold}Plots/${protein}", mode: 'copy'
@@ -37,8 +37,7 @@ process massiveFoldPlots {
 
   stub:
   """
-  echo "plots"
-  cp -r ${projectDir}/test/data/plots/alphafold/monomer2/${protein}/* .
+  massivefold_plots.py --input_path predictions/${protein} --output_path .  --chosen_plots coverage,CF_PAEs,CF_plddts,score_distribution,DM_plddt_PAE --top_n_predictions 1
   """
 }
 

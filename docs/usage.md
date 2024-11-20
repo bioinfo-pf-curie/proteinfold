@@ -17,8 +17,17 @@
 
 **Molecular docking:**
 
+- [AlphaFill](#alphafill)
+- [DiffDock](#diffdock)
 - [DynamicBind](#dynamicbind)
 
+**Nanobody mutational space**
+  
+- [nanoBERT](#nanobert)
+
+**MultiQC HTML report from existing results**
+
+- [MultiQC](#multiqc)
 
 ## Quick help
 
@@ -51,34 +60,46 @@ OTHER OPTIONS, NEXTFLOW:
                          are not appreciated by nextflow.
 
 OTHER OPTIONS:
-    --afMassiveDatabase   PATH      Path to the database required by AFMassive.
-    --afMassiveHelp                 Display all the options available to run AFMassive. Use this option in combination with -profile singularity.
-    afMassiveOptions      JSON      Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed 
-                                    using the --alphaFoldOptions option.
-    --alphaFoldDatabase   PATH      Path to the database required by AlphaFold.
-    --alphaFoldHelp                 Display all the options available to run AlphaFold. Use this option in combination with -profile singularity.
-    alphaFoldOptions      JSON      Prediction model options passed to AlphaFold or AFMassive.
-    --colabFoldDatabase   PATH      Path to the database required by ColabFold.
-    --colabFoldHelp                 Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
-    colabFoldOptions      JSON      Prediction model options passed to ColabFold.
-    --dynamicBindDatabase PATH      Path to the database required by DynamicBind.
-    --dynamicBindHelp               Display all the options available to run DynamicBind. Use this option in combination with -profile 
-                                    singularity.
-    dynamicBindOptions    JSON      Prediction model options passed to DynamicBind.
-    --fastaPath           PATH      Path to the input directory which contains the fasta files.
-    --fromMsas            PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction. 
-                                    Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
-    --launchAfMassive               Launch AFMassive
-    --launchAlphaFold               Launch AlphaFold.
-    --launchColabFold               Launch ColabFold.
-    --launchDynamicBind             Launch DynamicBind.
-    --onlyMsas                      When true, the pipeline will only generate the multiple sequence alignments (msas).
-    --outDir              PATH      The output directory where the results will be saved
-    --proteinLigandFile   PATH      Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 
-                                    'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 
-                                    'sdf' file.
-    --useGpu                        Run the prediction model on GPU. AlphaFold and AFMassive can run either on CPU or GPU. ColabFold and 
-                                    DynamicBind require GPU only.
+    --afMassiveDatabase    PATH      Path to the database required by AFMassive.
+    --afMassiveHelp                  Display all the options available to run AFMassive. Use this option in combination with -profile singularity.
+    afMassiveOptions       JSON      Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed 
+                                     using the --alphaFoldOptions option.
+    --alphaFillHelp                  Display all the options available to run AlphaFill. Use this option in combination with -profile singularity.
+    --alphaFoldDatabase    PATH      Path to the database required by AlphaFold.
+    --alphaFoldHelp                  Display all the options available to run AlphaFold. Use this option in combination with -profile singularity.
+    alphaFoldOptions       JSON      Prediction model options passed to AlphaFold or AFMassive.
+    --colabFoldDatabase    PATH      Path to the database required by ColabFold.
+    --colabFoldHelp                  Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
+    colabFoldOptions       JSON      Prediction model options passed to ColabFold.
+    --diffDockArgsYamlFile YAML      Path to the YAML file with the DiffDock options. 
+    --diffDockDatabase     PATH      Path to the database required by DiffDock.
+    --dynamicBindDatabase  PATH      Path to the database required by DynamicBind.
+    --dynamicBindHelp                Display all the options available to run DynamicBind. Use this option in combination with -profile 
+                                     singularity.
+    dynamicBindOptions     JSON      Prediction model options passed to DynamicBind.
+    --fastaPath            PATH      Path to the input directory which contains the fasta files.
+    --fromMsas             PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction. 
+                                     Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
+    --launchAfMassive                Launch AFMassive
+    --launchAlphaFill                Launch AlphaFill.
+    --launchAlphaFold                Launch AlphaFold.
+    --launchColabFold                Launch ColabFold.
+    --launchDiffDock                 Launch DiffDock.
+    --launchDynamicBind              Launch DynamicBind.
+    --multimerVersions     INT       AlphaFold multimer model versions (v1, v2, v3) which be evaluated by AFMassive. This parameter is taken into 
+                                     account when --launchAfMassive is true. The list of the versions to be evaluated must be provided with a 
+                                     comma separated string, e.g. 'v1,v2', Default is 'v1,v2,v3'.
+    --numberOfModels       INT       Number of models that will be evaluated by AFMassive. This parameter is taken into account when 
+                                     --launchAfMassive is true.
+    --onlyMsas                       When true, the pipeline will only generate the multiple sequence alignments (msas).
+    --outDir               PATH      The output directory where the results will be saved
+    --predictionsPerModel  INT       Number of predictions per model which be evaluated by AFMassive. This parameter is taken into account when 
+                                     --launchAfMassive is true.
+    --proteinLigandFile    PATH      Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 
+                                     'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 
+                                     'sdf' file.
+    --useGpu                         Run the prediction model on GPU. AlphaFold and AFMassive can run either on CPU or GPU. ColabFold and 
+                                     DynamicBind require GPU only.
 
 REFERENCES:
     --genomeAnnotationPath PATH   Path to genome/proteome annotations folder used to predict the protein 3D structure.
@@ -90,6 +111,31 @@ Available Profiles
    -profile cluster                     Run the workflow on the cluster, instead of locally
 
 ```
+## AlphaFill
+
+Visit the [AlphaFill](https://github.com/PDB-REDO/alphafill) GitHub repository for more details about the prediction model.
+
+AlphaFill is launched whenener the option `--launchAlphaFill` is set. It can predict the binding of missing compounds from *best* 3D predicted protein structure provided as PDB files. The PDB file used for the prediction must be always named `ranked_0.pdb`.
+
+```bash
+nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
+```
+
+The option `--fromPredictions` takes as imput a directory in which tehre is on folder per protein, each folder container the `ranked_0.pdb` file, for example:
+
+```bash
+├── MISFA
+│   ├── ranked_0.pdb
+└── MRLN
+    ├── ranked_0.pdb
+```
+
+AlphaFill be also launched in used in combination with the following options:
+
+* `--launchAlphaFold`
+* `--launchAfMassive`
+
+In that case, the **best** 3D predicted protein structure obtained by either AlphaFold or AFMassive will be used.
 
 ## AFMassive
 
@@ -113,8 +159,8 @@ Define the options in a JSON file, for example:
 
 ```json
 {
-	"launchAfMassive": "true",
-  "afMassiveOptions": "--dropout --dropout_structure_module",
+    "launchAfMassive": "true",
+    "afMassiveOptions": "--dropout --dropout_structure_module",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456",
 	"fastaPath": "test/data/fasta/monomer2"
 }
@@ -132,8 +178,8 @@ Define the options in a JSON file, for example:
 
 ```json
 {
-	"launchAfMassive": "true",
-  "afMassiveOptions": "--dropout --dropout_structure_module",
+    "launchAfMassive": "true",
+    "afMassiveOptions": "--dropout --dropout_structure_module",
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
 	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
@@ -251,7 +297,7 @@ Then, provide the option `--fromMsas`, for example:
 
 
 ```bash
-nextflow run main.nf -params-file test/params-file/frommsas/alphafold-multimer.json -profile singularity --useGpu
+nextflow run main.nf -params-file test/params-file/alphafold-multimer-frommsas.json -profile singularity --useGpu
 ```
 
 Define the options in a JSON file, for example:
@@ -265,6 +311,46 @@ Define the options in a JSON file, for example:
 }
 ```
 
+The option `--fromMsas` can be used with:
+
+- AFMassive
+- AlphaFold
+- ColabFold
+
+## DiffDock
+
+Visit the [DiffDock](https://github.com/gcorso/DiffDock) GitHub repository for more details about the prediction model.
+
+Launch the nextflow pipeline using GPU:
+
+```bash
+nextflow run main.nf -profile singularity --useGpu --proteinLigandFile test/data/diffdock/protein-ligand.csv
+```
+
+The `protein-ligand.csv` is a CSV file which must contain at least the two following columns:
+- `protein`: provides the path to the `pdb` 3D structure file
+- `ligand`: provided the path to the `sdf` file
+
+Therefore, each row in this file corresponds to a protein/ligand pair. This file must not contain any space.
+
+
+The options to launch the pipeline can also be defined in a JSON file, for example:
+
+```json
+{
+	"diffDockArgsYamlFile": "assets/diffdock_default_inference_args.yaml",
+	"launchDiffDock": "true",
+	"proteinLigandFile": "test/data/diffdock/protein-ligand.csv"
+}
+```
+
+Launch the pipleine with the `-params-file` option to take into account the JSON file:
+
+```bash
+nextflow run main.nf -params-file test/params-file/diffdock.json -profile singularity --useGpu
+```
+
+The `assets/diffdock_default_inference_args.yaml` makes it possible to tune the DiffDock options.
 
 ## DynamicBind
 
@@ -276,7 +362,6 @@ List of DynamicBind options:
 nextflow run main.nf --dynamicBindHelp -profile singularity
 ```
 
-
 Launch the nextflow pipeline using GPU:
 
 ```bash
@@ -287,5 +372,23 @@ The `protein-ligand.csv` is a CSV file which must contain at least the two follo
 - `protein`: provides the path to the `pdb` 3D structure file
 - `ligand`: provided the path to the `sdf` file
 
-Therefore, each row in this file corresponds to a pair protein/ligand to assess their affinity. This file must not contain any space.
+Therefore, each row in this file corresponds to a protein/ligand pair. This file must not contain any space.
+
+
+## MultiQC
+
+
+Two options are available
+
+### ProteinStruct report
+
+```bash
+nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/multimer --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
+```
+
+### MetricsMultimer report
+
+```bash
+nextflow run main.nf -profile singularity --fromPredictions test/data/afmassive/multimer --htmlMetricsMultimer --fastaPath test/data/fasta/multimer/alphafold
+```
 

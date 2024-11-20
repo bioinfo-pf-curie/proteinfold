@@ -1,0 +1,220 @@
+table_cond_formatting_rules:
+  #scores_alphafill_table-l_RMSd:
+  l_RMSd:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-1:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-2:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-3:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-4:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+  l_RMSd-5:
+    correct:
+      - lt: 0.92
+    suspect:
+      - gt: 0.92 
+    unreliable:
+      - gt: 3.10
+
+table_cond_formatting_colours:
+  - correct: "#5cb85c"
+  - suspect: "#f0ad4e"
+  - unreliable: "#d9534f"
+
+custom_data:
+
+  scores_alphafill_identity25_table:
+    id: 'scores_alphafill_identity25_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 25%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 25% (i.e. --min-hsp-identity 0.25)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity25_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity30_table:
+    id: 'scores_alphafill_identity30_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 30%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 30% (i.e. --min-hsp-identity 0.30)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity30_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity40_table:
+    id: 'scores_alphafill_identity40_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 40%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 40% (i.e. --min-hsp-identity 0.40)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity40_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity50_table:
+    id: 'scores_alphafill_identity50_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 50%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 50% (i.e. --min-hsp-identity 0.50)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity50_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity60_table:
+    id: 'scores_alphafill_identity60_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 60%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 60% (i.e. --min-hsp-identity 0.60)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity60_table'
+      format: '{:,.3f}'
+
+  scores_alphafill_identity70_table:
+    id: 'scores_alphafill_identity70_table'
+    parent_id: scores_alphafill
+    parent_name: 'AlphaFill scores'
+    section_name: 'Identity 70%'
+    description: 'AlphaFill scores using a minimal identity for a high scoring pair of 70% (i.e. --min-hsp-identity 0.70)'
+    plot_type: 'table'
+    pconfig:
+      id: 'scores_alphafill_identity70_table'
+      format: '{:,.3f}'
+
+  alphafill_legend:
+    id: 'alphafill_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'AlphaFill scores'
+    description: 'Colour legend for the confidence of the l-RMSd score'
+    plot_type: 'html'
+    data: |
+      <style type="text/css">
+      table td#correct {padding:0 15px; background-color:#5cb85c;}
+      table td#suspect {padding:0 15px; background-color:#f0ad4e;}
+      table td#unreliable {padding:0 15px; background-color:#d9534f;}
+      table td#range {padding:0 15px;}
+      table th#range {padding:0 15px;}
+      </style>
+      <table>
+        <tr>
+          <th>Status</th>
+          <th id="range">Range</th>
+        </tr>
+        <tr>
+          <td id="correct">Correct</td>
+          <td id="range"> l-RMSd < 0.92 </td>
+        </tr>
+        <tr>
+          <td id="suspect">Suspect</td>
+          <td id="range"> 0.92 < l-RMSd < 3.10 </td>
+        </tr>
+        <tr>
+          <td id="unreliable" >Unreliable</td>
+          <td id="range"> l-RMSd > 3.10 </td>
+        </tr>
+      </table>
+
+  definition_legend:
+    id: 'definition_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'Definitions'
+    plot_type: 'html'
+    data: |
+      <dl class="dl-horizontal">
+          <dt>g-RMSD</dt><dd><samp>This is the global Root Mean Square Deviation. The compounds of interest are structurally aligned on Cα-atoms of the AlphaFold model; the g-RMSD is the RMSD calculated from this alignment (Hekkelman et al. 2023).</samp></dd>
+          <dt>l-RMSD</dt><dd><samp>This is the local Root Mean Square Deviation. Starting from the closest homolog, all backbone atoms within 6 Å from the atoms of each compound that will be considered for ‘transplantation’ are selected and used for a local structural alignment to the AlphaFold model; the l-RMSD is the RMSD calculated from this alignment (Hekkelman et al. 2023). The l-RMSD is a proxy to assess the local environment validation (LEV) score. The LEV is defined as the all-atom RMSD of any ligand atom and all proteins’ atoms within 6.0 Å from the ligand, between the AlphaFill and experimental complexes.</samp></dd>
+      </dl>
+
+
+  reference_legend:
+    id: 'reference_legend'
+    parent_id: legend
+    parent_name: 'Legend'
+    section_name: 'References'
+    description: 'List of publications'
+    plot_type: 'html'
+    data: |
+      <ul>
+        <li>Hekkelman, M.L., de Vries, I., Joosten, R.P. et al. AlphaFill: enriching AlphaFold models with ligands and cofactors. Nat Methods 20, 205–213 (2023). <a href="https://www.nature.com/articles/s41592-022-01685-y">https://doi.org/10.1038/s41592-022-01685-yi</a></li>
+      </ul>
+
+sp:
+
+  scores_alphafill_identity25_table:
+    fn: "identity0.25.tsv"
+
+  scores_alphafill_identity30_table:
+    fn: "identity0.30.tsv"
+
+  scores_alphafill_identity40_table:
+    fn: "identity0.40.tsv"
+
+  scores_alphafill_identity50_table:
+    fn: "identity0.50.tsv"
+
+  scores_alphafill_identity60_table:
+    fn: "identity0.60.tsv"
+
+  scores_alphafill_identity70_table:
+    fn: "identity0.70.tsv"
+
+report_section_order:
+  scores_alphafill:
+    order: -1000
+  scores_alphafill_identity25_table:
+    order: -990
+  scores_alphafill_identity30_table:
+    order: -980
+  scores_alphafill_identity40_table:
+    order: -970
+  scores_alphafill_identity50_table:
+    order: -960
+  scores_alphafill_identity60_table:
+    order: -950
+  scores_alphafill_identity70_table:
+    order: -940
+  legend:
+    order: -1500
+  alphafill_legend:
+    order: -1490
+  definition_legend:
+    order: -1480
+  reference_legend:
+    order: -1470

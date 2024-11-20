@@ -19,7 +19,7 @@ process getSoftwareOptions{
 
   script:
   """
-  scrape_software_versions.py -i ${options}  --split ' options=' --id 'software_options' --name 'Software Options' > software_options_mqc.yaml
+  scrape_software_versions.py -i ${options}  --split ' options=' --id 'software_options' --name 'Options' > software_options_mqc.yaml
   """
 }
 

@@ -34,6 +34,181 @@ def printFileContent(file) {
     }
 }
 
+
+// Function to chack that the multimer version is valid
+def checkMultimerVersions(String version) {
+  switch(version) {
+  case 'v1':
+    break
+  case 'v2':
+    break
+  case 'v3':
+    break
+  default:
+    exit 1, "version " + version + " is not supported."
+  }
+}
+
+
+/*
+=================================================
+  Create channel with alphaFold models to run the
+  predictions in parallel inseatd of sequential.
+  This is used with afMassive
+=================================================
+*/
+
+def createAfModelsCh(String alphaFoldOptions,
+                     int predictionsPerModel = 5,
+                     int numberOfModels = 5,
+                     String multimerVersions = "v1,v2,v3") {
+  // Set variables
+  List afModels
+  Map afModelsInfo = [:]
+  int modelNumber = 0
+  String modelsToRelaxOptions = ""
+  List multimerVersionsList
+  int randomSeed
+ 
+  // This variable will store the new parameters
+  String alphaFoldOptionsParallel = alphaFoldOptions
+
+  // Multimer
+  if(alphaFoldOptions.contains('model_preset=multimer')){
+    multimerVersionsList = multimerVersions.split(',').toList()
+    afModels = []
+    for (version in multimerVersionsList) {
+      checkMultimerVersions(version)
+      for (int model = 1; model <= numberOfModels; model++) {
+        modelNumber++
+        afModels.add("model_" + model + "_multimer_" + version)
+      }
+    }
+  }
+
+  // Monomer
+  if(!alphaFoldOptions.contains('model_preset=monomer_ptm') 
+     && (alphaFoldOptions.contains('model_preset=monomer') || !alphaFoldOptions.contains('model_preset'))) {
+    afModels = []
+    for (int model = 1; model <= numberOfModels; model++) {
+      modelNumber++
+      afModels.add("model_" + model)
+    }
+  }
+
+  // Monomer pTM
+  if(alphaFoldOptions.contains('model_preset=monomer_ptm')){
+    afModels = []
+    for (int model = 1; model < numberOfModels; model++) {
+      modelNumber++
+      afModels.add("model_" + model + "_ptm")
+    }
+  }
+
+  // We can not keep the same random_seed for each prediction
+  // otherwise results would be the same.
+  if(alphaFoldOptions.contains('random_seed')){
+    String randomSeedParams = (alphaFoldOptions =~ /--random_seed=\d+/)[0]
+    alphaFoldOptionsParallel = alphaFoldOptions
+                                 .replace(randomSeedParams, '')
+    randomSeed = randomSeedParams
+                   .replaceAll('--random_seed=', '')
+                   .toInteger()
+  }
+
+  // Check what is the option for relaxation.
+  // We do not want to relax all the models 
+  // as we we have only one model each time
+  // which will be obviously the best
+  if(alphaFoldOptions.contains('models_to_relax')){
+    modelsToRelaxOptions = (alphaFoldOptions =~ /--models_to_relax=\w+/)[0]
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel
+                                 .replaceAll(modelsToRelaxOptions, '')
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel + " --models_to_relax=none"
+  } else {
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel + " --models_to_relax=none"
+  }
+   
+  // This is necessary to have a deterministic combination of model/pred with the random seed
+  def afModelsList = [] 
+  for (int pred_i = 1; pred_i <= predictionsPerModel; pred_i++) {
+    afModels.each { 
+      randomSeed = randomSeed + 1
+      afModelsList.add(tuple(pred_i, it, randomSeed))
+    }
+
+  afModelsCh = Channel.fromList(afModelsList)
+  
+  }
+
+  afModelsInfo['alphaFoldOptionsParallel'] = alphaFoldOptionsParallel
+  afModelsInfo['channel'] = afModelsCh
+  afModelsInfo['modelsToRelaxOptions'] = modelsToRelaxOptions
+
+  return afModelsInfo
+
+}
+
+/*
+=================================================
+  Create channel for a list a protein directories
+=================================================
+*/
+def createFromCh(def fromParams, fastaFilesCh) {
+  File fromParamsFile = new File(params[fromParams])
+  if (!fromParamsFile.exists()){
+    exit 1, "The path to the folder '" + params[fromParams] + "' does not exist."
+  }
+  if (!fromParamsFile.isDirectory()){
+    exit 1, "The path to the folder '" + params[fromParams] + "' is not a directory."
+  }
+
+  def fromCh
+  def proteinInDir
+  def proteinInFasta
+  def proteinUnion
+
+  fromCh = Channel.fromPath("${params[fromParams]}/*", type: 'dir')
+             .map { def dir -> 
+                String protein = dir.toString()
+                                   .replaceAll(".*/", "")
+                File proteinDir = new File("${params[fromParams]}/${protein}")
+                def dirFileList = [] 
+                proteinDir.eachFile {def file -> dirFileList.add(file.getAbsolutePath())}
+                tuple(protein, dirFileList)
+             }
+ 
+  proteinInDir = fromCh.map { it[0]}.collect().map { tuple ('list', it) }
+  proteinInFasta = fastaFilesCh.map { it[0]}.collect().map { tuple ('list', it) }
+  proteinUnion = proteinInDir.join(proteinInFasta)
+
+  // Print warning if the msas is present but not the fasta file  
+  proteinUnion
+    .map{
+      elementsNotPresent(it[2].toList(), it[1].toList())
+        .each{ def prot ->
+                 String msg
+                 msg = "WARNING (option ${fromParams}) - folder is present but no FASTA file available for protein '" 
+                 msg = msg + prot + "'. The protein will be ignored."
+                 NFTools.printOrangeText(msg)
+        }
+    }
+    
+  // Print warning if the fasta file is present but not the msas folder
+  proteinUnion
+    .map{
+      elementsNotPresent(it[1].toList(), it[2].toList())
+        .each{ def prot ->
+          String msg
+          msg = "WARNING (option ${fromParams}) - FASTA file is present but no folder available for protein '"
+          msg = msg + prot + "'. The protein will be ignored. "
+          NFTools.printOrangeText(msg)
+        }
+    }
+
+    return fromCh
+}
+
 /*
 =============================================
    Set of functions to check the input file

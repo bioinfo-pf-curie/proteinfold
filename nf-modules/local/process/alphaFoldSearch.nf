@@ -45,8 +45,8 @@ process alphaFoldSearch {
 
   script:
   """
-  alphafold_options="\$(cat ${alphaFoldOptions}) --fasta_paths=${fastaFile} --only_msas"
-  launch_alphafold.sh \${alphafold_options} --chain_id_num ${chainIdNum}
+  alphafold_options="\$(cat ${alphaFoldOptions}) --only_msas"
+  launch_alphafold.sh \${alphafold_options}  --fasta_paths=${fastaFile} --chain_id_num ${chainIdNum}
   if [[ -f "predictions/${protein}/msas/chain_id_map.json" ]]; then
     mv predictions/${protein}/msas/chain_id_map.json predictions/${protein}/msas/chain_id_map_${chainIdNum}.json
   fi
@@ -56,9 +56,9 @@ process alphaFoldSearch {
 
   stub:
   """
-  alphafold_options=\$(cat ${alphaFoldOptions})
+  alphafold_options="\$(cat ${alphaFoldOptions}) --only_msas"
   mkdir -p predictions/${protein}/msas
-  touch predictions/${protein}/msas/${protein}.txt
+  touch predictions/${protein}/msas/${protein}-${chainIdNum}.txt
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (MSAS) options=\${alphafold_options}" > options.txt
   """

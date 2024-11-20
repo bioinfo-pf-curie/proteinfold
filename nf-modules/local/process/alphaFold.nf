@@ -22,7 +22,9 @@ process alphaFold {
   label 'alphaFold'
   label 'highMem'
   label 'medCpu'
-  publishDir path: "${params.outDir}/alphaFold/${protein}", mode: 'copy'
+  publishDir path: "${params.outDir}/alphaFold/",
+             mode: 'copy',
+             saveAs: { it.replaceAll('predictions/', '') }
   containerOptions { (params.useGpu) ? "--nv --env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} --env NVIDIA_VISIBLE_DEVICES=all --env TF_FORCE_UNIFIED_MEMORY=1 --env XLA_PYTHON_CLIENT_MEM_FRACTION=4.0 -B \$PWD:/tmp" : "--env AF_HHBLITS_N_CPU=${task.cpus} --env AF_JACKHMMER_N_CPU=${task.cpus} -B \$PWD:/tmp" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
@@ -33,6 +35,8 @@ process alphaFold {
 
   output:
   tuple val(protein), val("alphaFold"), path("predictions/*", type: 'dir'), emit: predictions
+  tuple val(protein), path("predictions/${protein}/ranking_debug.tsv"), emit: ranking
+  tuple val(protein), path("predictions/${protein}/ranked_*.pdb"), emit: pdb
   path("versions.txt"), emit: versions
   path("options.txt"), emit: options
 
@@ -40,8 +44,11 @@ process alphaFold {
   """
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
-  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g') --fasta_paths=${fastaFile}"
-  launch_alphafold.sh \${alphafold_options}
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
+  launch_alphafold.sh \${alphafold_options} --fasta_paths=${fastaFile}
+  ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
+  # the code below will produce the json file only if the pkl file contains the 'predicted_aligned_error' (which is not always the case) 
+  ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked_0_pae.json
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """
@@ -50,8 +57,25 @@ process alphaFold {
   """
   mkdir -p predictions/${protein}
   ln -s \$(realpath msas/) predictions/${protein}/msas
-  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g') --fasta_paths=${fastaFile}"
-  touch predictions/${protein}/${protein}.txt
+  alphafold_options="\$(cat ${alphaFoldOptions} | sed -e 's|use_precomputed_msas=False|use_precomputed_msas=True|g')"
+  # We copy here the predictions
+  if [[ "\$alphafold_options" =~ "preset=multimer" ]]; then
+    folder="multimer"
+  else
+    folder="monomer2"
+  fi
+  cp $projectDir/test/data/afmassive/\$folder/${protein}/* predictions/${protein}
+  if [[ -f predictions/${protein}/ranking_debug.tsv ]]; then rm predictions/${protein}/ranking_debug.tsv; fi
+  if [[ -f predictions/${protein}/ranking_debug_multimer.tsv ]]; then rm predictions/${protein}/ranking_debug_multimer.tsv; fi
+  ap_ranking_debug_tsv.py --predictions_path=predictions/${protein}
+  nb_model=\$(wc -l predictions/${protein}/ranking_debug.tsv | awk '{print \$1}')
+  nb_model=\$(( \$nb_model - 1 ))
+  best_model=\$(sed -n '2p' predictions/${protein}/ranking_debug.tsv | awk -F'\\t' '{print \$2}')
+  echo "\${best_model}"
+  for i in \$(seq \$(( \$nb_model - 1 )) ); do cp predictions/${protein}/ranked_0.pdb predictions/${protein}/ranked_\${i}.pdb; done
+  for i in \$(seq 3 \$(( \$nb_model + 1 )) ); do current_model=\$(sed -n ''"\$i"'p' predictions/${protein}/ranking_debug.tsv | awk -F'\\t' '{print \$2}'); cp predictions/${protein}/result_\${best_model}.pkl predictions/${protein}/result_\${current_model}.pkl; done
+  # the code below will produce the json file only if the pkl file contains the 'predicted_aligned_error' (which is not always the case) 
+  ap_generate_pae_json.py --prediction_dir=predictions/${protein} --output_file=predictions/${protein}/ranked_0_pae.json
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=\${alphafold_options}" > options.txt
   """

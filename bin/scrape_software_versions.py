@@ -1,19 +1,37 @@
 #!/usr/bin/env python
 
+"""generate header used as input yaml file for multiqc"""
 
-import os
 import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", help="version file", type=str, default='')
-parser.add_argument("-s", "--split", help="string to split the line", type=str, default=' ')
-parser.add_argument("-t", "--id", help="section id", type=str, default='software_versions')
-parser.add_argument("-n", "--name", help="section name", type=str, default='Software Versions')
-parser.add_argument("-d", "--description", help="section ", type=str, default='This information is collected at runtime from the software output.')
+parser.add_argument("-s",
+                    "--split",
+                    help="string to split the line",
+                    type=str,
+                    default=' ')
+parser.add_argument("-t",
+                    "--id",
+                    help="section id",
+                    type=str,
+                    default='software_versions')
+parser.add_argument("-n",
+                    "--name",
+                    help="section name",
+                    type=str,
+                    default=' Versions')
+parser.add_argument(
+    "-d",
+    "--description",
+    help="section ",
+    type=str,
+    default='This information is collected at runtime from the software output.'
+)
 args = parser.parse_args()
 
 versions = {}
-with open(args.input) as f:
+with open(args.input, 'r',  encoding="utf-8") as f:
     for line in f:
         if line.strip():
             (key, val) = line.strip().split(args.split)
@@ -24,16 +42,17 @@ with open(args.input) as f:
                 versions[str(key)] = val
 
 # Dump to YAML
-print (f"""
+print(f"""
 id: '{args.id}'
+parent_id: software
+parent_name: 'Software'
 section_name: '{args.name}'
-section_href: 'https://gitlab.curie.fr/data-analysis/proteinfold'
 plot_type: 'html'
 description: '{args.description}'
 data: |
     <dl class="dl-horizontal">
 """)
 #.format(args.id, args.name, args.description)
-for k,v in versions.items():
-    print("        <dt>{}</dt><dd><samp>{}</samp></dd>".format(k,v))
-print ("    </dl>")
+for k, v in versions.items():
+    print(f"        <dt>{k}</dt><dd><samp>{v}</samp></dd>")
+print("    </dl>")

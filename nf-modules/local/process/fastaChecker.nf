@@ -31,12 +31,12 @@ process fastaChecker {
 
   script:
   """
-  fasta_checker.sh ${fastaFile}
+  ap_fasta_checker.sh ${fastaFile}
   """
 
   stub:
   """
-  echo fasta_checker.sh ${fastaFile}
+  echo ap_fasta_checker.sh ${fastaFile}
   """
 
 }
