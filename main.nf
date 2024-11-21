@@ -305,6 +305,7 @@ include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
 include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { alphaFillHelp } from './nf-modules/local/process/alphaFillHelp'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
+include { alphaFold3Help } from './nf-modules/local/process/alphaFold3Help'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
@@ -438,6 +439,9 @@ workflow {
   if(params.alphaFoldHelp){
     alphaFoldHelp()
   }
+  if(params.alphaFold3Help){
+    alphaFold3Help()
+  }
   if(params.colabFoldHelp){
     colabFoldHelp()
   }
@@ -463,6 +467,11 @@ workflow.onComplete {
       NFTools.printGreenText("\n\n=====================================\nAlphaFold help, list of options:\n=====================================\n")
       printFileContent("${params.outDir}/alphaFoldHelp.txt")
       NFTools.printGreenText("\n\n=====================================\nAlphaFold help, see options above.\n=====================================\n")
+    }
+    if (params.alphaFold3Help) {
+      NFTools.printGreenText("\n\n=====================================\nAlphaFold3 help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/alphaFold3Help.txt")
+      NFTools.printGreenText("\n\n=====================================\nAlphaFold3 help, see options above.\n=====================================\n")
     }
     if (params.colabFoldHelp) {
       NFTools.printGreenText("\n\n=====================================\nColabFold help, list of options:\n=====================================\n")
