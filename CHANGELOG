@@ -1,3 +1,6 @@
+BUGFIXES
+- Remove double-quotes for boolean parameter in json files
+
 v1.3.0
 11/20/2024
 
