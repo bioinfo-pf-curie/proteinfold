@@ -1,5 +1,5 @@
 {
-	"launchDynamicBind": "true",
+	"launchDynamicBind": true,
 	"dynamicBindOptions": "--random-seed 654321 --model-type=alphafold2 --amber --use-gpu-relax",
 	"proteinLigandFile": "test/data/dynamicbind/protein-ligand.csv",
 	"dynamicBindOptions": "--savings_per_complex 40 --inference_steps 20 --movie --seed 654321"

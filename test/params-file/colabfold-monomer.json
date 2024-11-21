@@ -1,5 +1,5 @@
 {
-	"launchColabFold": "true",
+	"launchColabFold": true,
 	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2 --amber --use-gpu-relax",
 	"fastaPath": "test/data/fasta/monomer2"
 }
