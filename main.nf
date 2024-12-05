@@ -84,6 +84,11 @@ if(params.launchDynamicBind || params.launchDiffDock) {
   }
 }
 
+// AlphaFold3 does not take fasta file as input
+if(params.launchAlphaFold3) {
+  allowFastaPathNull = true
+}
+
 // DynamicBind works only with GPU
 if(params.launchDynamicBind) {
   if (!params.useGpu && !isStubRun){
@@ -144,6 +149,11 @@ if (params.launchAlphaFold){
   params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
 }
 
+if (params.launchAlphaFold3){
+  File alphaFold3DB = new File(params.genomes.alphafold3.database)
+  params.alphaFold3Database = alphaFold3DB.getCanonicalPath()
+}
+
 if (params.launchColabFold){
   if (!params.useGpu && !isStubRun){
     exit 1, "ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
@@ -183,22 +193,50 @@ if (params.onlyMsas && params.fromMsas != null){
 ==========================
 */
 
+// The fastaPathCh contains:
+// /path/to/protein.fasta
+// or in the case of AlphaFold3
+// /path/to/protein.json
+// example:
+// /proteinfold/test/data/fasta/monomer2/MRLN.fasta
+// /proteinfold/test/data/fasta/monomer2/MISFA.fasta
+if (params.launchAlphaFold3){
+  // AlphaFold3 does not take fasta file as input but json file 
+  fastaPathCh = Channel.fromPath("${params.fastaPath}/*.json")
+} else{
+  fastaPathCh = Channel.fromPath("${params.fastaPath}/*.fasta")
+}
 
-fastaPathCh = Channel.fromPath("${params.fastaPath}/*.fasta")
 
-// This allows the processing of msas chain by chain
-// in the multimer mode to speedup computation
+// The fastaFilesCh contains:
+// [protein, /path/to/protein.fasta]
+// or in the case of AlphaFold3
+// [protein, /path/to/protein.json]
+// example:
+// [MRLN, /proteinfold/test/data/fasta/monomer2/MRLN.fasta]
+// [MISFA, /proteinfold/test/data/fasta/monomer2/MISFA.fasta]
 fastaFilesCh = fastaPathCh
                  .map { fastaFile -> 
                    String protein = fastaFile.toString()
                                       .replaceAll(".*/", "")
                                       .replaceFirst('\\.fasta$', "")
+                                      .replaceFirst('\\.json$', "")
                    tuple(protein, file(fastaFile))
                  }
 
+// The fastaChainCh allows the processing of msas chain by chain
+// in the multimer mode to speedup computation.
+// The fastaChainCh contains:
+// [protein, /path/to/protein.fasta, chainIdNum]
+// example:
+// [BTB-domain, /proteinfold/test/data/fasta/multimer/alphafold/BTB-domain.fasta, 1]
+// [BTB-domain, /proteinfold/test/data/fasta/multimer/alphafold/BTB-domain.fasta, 2]
 fastaChainsCh = fastaFilesCh
                   .map { protein, fastaFile ->
-                    int nbChain = fastaFile.countFasta()
+                    int nbChain = 1 // this will be the default for Alphafold3 as the parallelisation by chain is not implemeted in the nextflow pipeline
+                    if(fastaFile.toString().endsWith('.fasta')) {
+                      nbChain = fastaFile.countFasta()
+                    }
                     (1..nbChain).collect { chainIdNum ->
                       tuple(protein, file(fastaFile), chainIdNum)
                     }
@@ -206,20 +244,25 @@ fastaChainsCh = fastaFilesCh
                    .flatten()
                    .collate(3)
 
-// set the msasCh when the pipeline is launched using existing msas
+// Set the msasCh when the pipeline is launched using existing msas.
+// The msasCh contains:
+// [protein, [/path/to/msas/protein/file1, ... , /path/to/msas/protein/fileX]]
+// example:
+// [MISFA, [/proteinfold/test/data/msas/monomer2/alphafold/MISFA/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/mgnify_hits.sto]]
+// [MRLN, [/proteinfold/test/data/msas/monomer2/alphafold/MRLN/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/mgnify_hits.sto]]
 msasCh = Channel.empty()
 if(params.fromMsas != null){
   msasCh = createMsasCh('fromMsas', fastaFilesCh)
 }
 
-// set the predictionsCh when the pipeline is launched using existing predicted structures
+// Set the predictionsCh when the pipeline is launched using existing predicted structures
 predictionsCh = Channel.empty()
 if(params.fromPredictions != null){
   predictionsCh = createPredictionsCh('fromPredictions', fastaFilesCh)
                     .map { tuple(it[0], '', file(file(it[1][0]).getParent())) }
 
-  // rankingCh is not needed if we launch only AlphaFill
-  if (!params.launchAlphaFill){
+  // rankingCh is not needed if we only launch AlphaFill
+  if(!params.launchAlphaFill){
     rankingCh = createRankingCh('fromPredictions', fastaFilesCh)
                   .map {
                          def rankingTsvMonomer = it[1]
@@ -272,6 +315,8 @@ summary = [
   'AlphaFill Database' : params.launchAlphaFill ? params.alphaFillDatabase : null,
   'AlphaFold Database' : params.launchAlphaFold ? params.alphaFoldDatabase : null,
   'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
+  'AlphaFold3 Database' : params.launchAlphaFold3 ? params.alphaFold3Database : null,
+  'AlphaFold3 Options' : params.launchAlphaFold3 ? params.alphaFold3Options : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'DiffDock Database' : params.launchDiffDock ? params.diffDockDatabase : null,
@@ -321,6 +366,7 @@ include { pymolPng } from './nf-modules/local/process/pymolPng'
 // Subworkflows
 include { alphaFillWkfl } from './nf-modules/local/subworkflow/alphaFillWkfl'
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
+include { alphaFold3Wkfl } from './nf-modules/local/subworkflow/alphaFold3Wkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { diffDockWkfl } from './nf-modules/local/subworkflow/diffDockWkfl'
@@ -362,6 +408,16 @@ workflow {
   if (params.launchAlphaFold){
     alphaFoldWkfl(
       fastaChainsCh,
+      fastaFilesCh,
+      fastaPathCh,
+      msasCh,
+      workflowSummaryCh
+    )
+  }
+
+  // Launch the prediction of the protein 3D structure with AlphaFold3
+  if (params.launchAlphaFold3){
+    alphaFold3Wkfl(
       fastaFilesCh,
       fastaPathCh,
       msasCh,
