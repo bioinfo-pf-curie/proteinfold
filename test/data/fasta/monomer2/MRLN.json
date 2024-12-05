@@ -1,0 +1,14 @@
+{
+  "name": "MRLN",
+  "modelSeeds": [1, 2],
+  "sequences": [
+    {
+      "protein": {
+        "id": "A",
+        "sequence": "MTGKNWILISTTTPKSLEDEIVGRLLKILFVIFVDLISIIYVVITS"
+      }
+    }
+  ],
+  "dialect": "alphafold3",
+  "version": 1
+}

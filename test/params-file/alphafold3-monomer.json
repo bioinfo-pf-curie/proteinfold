@@ -1,0 +1,5 @@
+{
+	"launchAlphaFold3": true,
+	"alphaFold3Options": "",
+	"fastaPath": "test/data/fasta/monomer2"
+}
