@@ -49,8 +49,14 @@ process alphaFold3 {
 
   stub:
   """
-  mkdir -p predictions/${protein}
-  touch predictions/${protein}/${protein}.txt
+  mkdir -p predictions/
+  # We copy here the predictions
+  if [[ "${protein}" =~ "domain" ]]; then
+    folder="multimer"
+  else
+    folder="monomer2"
+  fi
+  cp -r $projectDir/test/data/alphafold3/\$folder/${protein} predictions/
   echo "AlphaFold \$(get_version.sh)" > versions.txt
   echo "AlphaFold (prediction) options=--norun_data_pipeline --run_inference --db_dir ${alphaFold3Database.target.toString()} ${params.alphaFold3Options} --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=predictions" > options.txt
   """
