@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import csv
 import json
 import os
 import pickle
@@ -14,6 +15,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from colabfold_plots import plot_msa_v2, plot_plddts, plot_confidence, plot_paes, plot_pae
+from ap_format_ranking_alphafold3 import order_ranking_scores_af3
 
 FLAGS = flags.FLAGS
 
@@ -38,12 +40,26 @@ flags.DEFINE_string(
 flags.DEFINE_list('runs_to_compare', [],
                   'Runs that you want to compare on a same distribution plot')
 
+def test_alphafold_version():
+    alphafold_version = "unknown"
+    if os.path.isfile(f'{FLAGS.input_path}/ranking_debug.json'):
+        alphafold_version = 'alphafold2'
+    if os.path.isfile(f'{FLAGS.input_path}/ranking_scores.csv'):
+        alphafold_version = 'alphafold3'
+    
+    print(f"af version is {alphafold_version}")
+
+    return alphafold_version
+
 
 def extract_top_predictions():
-    with open(f'{FLAGS.input_path}/ranking_debug.json', 'r') as json_file:
-        scores = json.load(json_file)
-    top_pred = scores['order'][:FLAGS.top_n_predictions]
-    #top_pred = [pred for pred in top_pred if os.path.isfile(f'{FLAGS.input_path}/result_{pred}.pkl')]
+    if test_alphafold_version() == 'alphafold2':
+        with open(f'{FLAGS.input_path}/ranking_debug.json', 'r') as json_file:
+            scores = json.load(json_file)
+        top_pred = scores['order'][:FLAGS.top_n_predictions]
+    if test_alphafold_version() == 'alphafold3':
+        sorted_rows = order_ranking_scores_af3(f'{FLAGS.input_path}/ranking_scores.csv')
+        top_pred = [row['model'] for row in sorted_rows[:FLAGS.top_n_predictions]]
 
     return top_pred
 
@@ -52,13 +68,23 @@ def CF_PAEs():
     all_models_pae = []
     jobname = FLAGS.input_path
     preds_to_plot = extract_top_predictions()
-    pos_s = sequence_length(f'{jobname}/features.pkl')
+    if test_alphafold_version() == 'alphafold2':
+        pos_s = sequence_length(f'{jobname}/features.pkl')
+    if test_alphafold_version() == 'alphafold3':
+        pos_s = sequence_length_alphafold3(f'{jobname}/{os.path.basename(jobname).lower()}_data.json')
     for pred in preds_to_plot:
-        with open(f'{jobname}/result_{pred}.pkl', "rb") as pkl_file:
-            data = pickle.load(pkl_file)
-        if 'predicted_aligned_error' not in data:
-            return False
-        all_models_pae.append(np.asarray(data['predicted_aligned_error']))
+        if test_alphafold_version() == 'alphafold2':
+            with open(f'{jobname}/result_{pred}.pkl', "rb") as pkl_file:
+                data = pickle.load(pkl_file)
+            if 'predicted_aligned_error' not in data:
+                return False
+            all_models_pae.append(np.asarray(data['predicted_aligned_error']))
+        if test_alphafold_version() == 'alphafold3':
+            with open(f'{jobname}/{pred}/confidences.json', "rb") as json_file:
+                data = json.load(json_file)
+            if 'pae' not in data:
+                return False
+            all_models_pae.append(np.asarray(data['pae']))
     plot_paes(all_models_pae, pos_s=pos_s)
     if FLAGS.action == "save":
         plt.savefig(
@@ -74,11 +100,19 @@ def CF_plddts():
     all_models_plddt = []
     jobname = FLAGS.input_path
     preds_to_plot = extract_top_predictions()
-    pos_s = sequence_length(f'{jobname}/features.pkl')
+    if test_alphafold_version() == 'alphafold2':
+        pos_s = sequence_length(f'{jobname}/features.pkl')
+    if test_alphafold_version() == 'alphafold3':
+        pos_s = sequence_length_alphafold3(f'{jobname}/{os.path.basename(jobname).lower()}_data.json')
     for pred in preds_to_plot:
-        with open(f'{jobname}/result_{pred}.pkl', "rb") as pkl_file:
-            data = pickle.load(pkl_file)
-        all_models_plddt.append(np.asarray(data['plddt']))
+        if test_alphafold_version() == 'alphafold2':
+            with open(f'{jobname}/result_{pred}.pkl', "rb") as pkl_file:
+                data = pickle.load(pkl_file)
+            all_models_plddt.append(np.asarray(data['plddt']))
+        if test_alphafold_version() == 'alphafold3':
+            with open(f'{jobname}/{pred}/confidences.json', "rb") as json_file:
+                data = json.load(json_file)
+            all_models_plddt.append(np.asarray(data['atom_plddts']))
     plot_plddts(all_models_plddt, pos_s=pos_s)
     if FLAGS.action == "save":
         plt.savefig(
@@ -92,22 +126,38 @@ def CF_plddts():
 
 def MF_DM_dual_plddt_PAE(prediction, rank):
     jobname = FLAGS.input_path
-    with open(f'{jobname}/result_{prediction}.pkl', "rb") as results_file:
-        results = pickle.load(results_file)
+    if test_alphafold_version() == 'alphafold2':
+        with open(f'{jobname}/result_{prediction}.pkl', "rb") as pkl_file:
+            results = pickle.load(pkl_file)
+        if 'predicted_aligned_error' not in results:
+            return False
 
-    pos_s = sequence_length(f'{jobname}/features.pkl')
+        results_plddt = results['plddt']
+        pae_outputs = {}
+        pae_outputs["test"] = (results["predicted_aligned_error"],
+                               results['max_predicted_aligned_error'])
+    if test_alphafold_version() == 'alphafold3':
+        with open(f'{jobname}/{prediction}/confidences.json', "rb") as json_file:
+            results = json.load(json_file)
+        if 'pae' not in results:
+            return False
 
-    if 'predicted_aligned_error' not in results:
-        return False
+        results_plddt = results['atom_plddts']
+        pae_outputs = {}
+        pae_outputs["test"] = (np.asarray(results["pae"]),
+                               np.max(np.asarray(results['pae'])))
 
-    pae_outputs = {}
-    pae_outputs["test"] = (results["predicted_aligned_error"],
-                           results['max_predicted_aligned_error'])
+    if test_alphafold_version() == 'alphafold2':
+        pos_s = sequence_length(f'{jobname}/features.pkl')
+    if test_alphafold_version() == 'alphafold3':
+        pos_s = sequence_length_alphafold3(f'{jobname}/{os.path.basename(jobname).lower()}_data.json')
+
+
     pae, max_pae = list(pae_outputs.values())[0]
     plt.figure(figsize=[8 * 2, 6])
 
     plt.subplot(1, 2, 1)
-    plt.plot(results['plddt'])
+    plt.plot(results_plddt)
     plt.title('Predicted LDDT')
     plt.suptitle(f'rank_{rank}_{prediction}')
     plt.ylim(0, 100)
@@ -490,6 +540,23 @@ def MF_recycles():
             print(f'Recycles are broken for {os.path.basename(log_file)}')
 
 
+def sequence_length_alphafold3(data_json):
+    with open(data_json, 'rb') as f:
+        input_data = json.load(f)
+
+    print('seq fir AF3')
+
+    for seq in input_data['sequences']:
+        print('loop seq fir AF3')
+        pos_s = []
+        if list(seq.keys())[0] == 'protein':
+            pos_s.append(len(seq['protein']['sequence']))
+
+    print(f"AF3: {pos_s}")
+
+    return pos_s
+
+
 def sequence_length(features_pkl):
     with open(features_pkl, 'rb') as f:
         feature_dict = pickle.load(f)
@@ -538,6 +605,7 @@ def main(argv):
       -> regardless of the plot type, plot alignment coverage and group PAE for top 10 predictions
     """
     FLAGS.input_path = os.path.realpath(FLAGS.input_path)
+
     MF_plots = {
         "DM_plddt_PAE": call_dual,
         "CF_plddt": MF_indiv_plddt,
@@ -548,6 +616,7 @@ def main(argv):
         "distribution_comparison": MF_distribution_comparison,
         "recycles": MF_recycles
     }
+
 
     # Flags checking
     if not FLAGS.input_path or not FLAGS.chosen_plots:
@@ -566,6 +635,10 @@ def main(argv):
 
     if not shutil.os.path.exists(FLAGS.output_path):
         shutil.os.makedirs(FLAGS.output_path)
+
+    # TO REMOVE
+    FLAGS.chosen_plots = ['CF_PAEs', 'CF_plddts', 'DM_plddt_PAE']
+
     for chosen_plot in FLAGS.chosen_plots:
         MF_plots[chosen_plot]()
 
