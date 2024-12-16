@@ -24,7 +24,14 @@ of the license and that you accept its terms.
 include { alphaFold3 } from '../process/alphaFold3'
 //include { alphaFold3Options } from '../process/alphaFoldOptions'
 include { alphaFold3Search } from '../process/alphaFold3Search'
+include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
+include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { jsonChecker } from '../process/jsonChecker'
+include { massiveFoldPlots } from '../process/massiveFoldPlots'
+include { pymolPng } from '../process/pymolPng'
+
+// Subworkflows
+include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 
 /*
 =====================================
@@ -84,4 +91,36 @@ workflow alphaFold3Wkfl {
     versionsCh = versionsCh.mix(alphaFold3.out.versions)
     optionsCh = optionsCh.mix(alphaFold3.out.options)
     }
+
+  rankingCh = alphaFold3.out.ranking
+
+  massiveFoldPlots(alphaFold3.out.predictions)
+  plotsCh = massiveFoldPlots.out.plots
+
+  ///////////////////////
+  // plot 3D structure //
+  ///////////////////////
+  pymolPng(alphaFold3.out.pdb)
+
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
+  //////////////////////////////////
+  // multiqc by protein structure //
+  //////////////////////////////////
+  Channel.empty()
+  mqcProteinStructWkfl(
+    optionsYamlCh,
+    versionsYamlCh,
+    plotsCh,
+    rankingCh,
+    pymolPng.out.png,
+    fastaFilesCh,
+    workflowSummaryCh
+  )
 }
