@@ -82,11 +82,11 @@ For example:
 
 ## AFMassive
 
-ranked0_pae.json with the APE matrix in JSON format (whenever the model generate the predicted_aligned_error)
+ranked0_pae.json with the PAE matrix in JSON format (whenever the model generate the predicted_aligned_error)
 
 ## AlphaFold
 
-ranked0_pae.json with the APE matrix in JSON format (whenever the model generate the predicted_aligned_error)
+ranked0_pae.json with the PAE matrix in JSON format (whenever the model generate the predicted_aligned_error)
 
 ## DiffDock
 

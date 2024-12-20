@@ -1,4 +1,4 @@
-# Admin document for the developxement of the pipeline
+# Admin document for the development and test of the pipeline
 
 ## stub-run
 
@@ -8,6 +8,7 @@ The following stub-run works:
 #! /bin/bash
 
 set -oeu pipefail
+
 
 # afMassive
 
@@ -68,6 +69,32 @@ rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 
+# alphaFold3
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-frommsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-frommsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+
 # colbaFold
 
 rm -r work results/ .nextflow*
@@ -113,5 +140,13 @@ rm -r work results/ .nextflow*
 nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/multimer --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
 nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/multimer --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
 
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/alphafold3/monomer2/ --htmlProteinStruct --fastaPath test/data/fasta/monomer2
+nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/alphafold3/monomer2/ --htmlProteinStruct --fastaPath test/data/fasta/monomer2
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/alphafold3/multimer/ --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
+nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/alphafold3/multimer/ --htmlProteinStruct --fastaPath test/data/fasta/multimer/alphafold
 
 ```
