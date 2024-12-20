@@ -35,7 +35,7 @@ process alphaFold3 {
   output:
   tuple val(protein), val("alphaFold3"), path("predictions/*", type: 'dir'), emit: predictions
   tuple val(protein), path("predictions/${protein}/ordered_ranking_scores.tsv"), emit: ranking
-  tuple val(protein), path("predictions/${protein}/cif/ranked_*.cif"), emit: pdb // which is actually cif file in AlphaFold3
+  tuple val(protein), path("predictions/${protein}/ranked_*.cif"), emit: pdb // which is actually cif file in AlphaFold3
   path("versions.txt"), emit: versions
   path("options.txt"), emit: options
 
@@ -45,8 +45,7 @@ process alphaFold3 {
   protein_lowercase=\$(echo ${protein} | tr '[:upper:]' '[:lower:]')
   launch_alphafold.sh --norun_data_pipeline --run_inference --db_dir ${alphaFold3Database.target.toString()} ${params.alphaFold3Options} --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=predictions
   mv predictions/\${protein_lowercase} predictions/${protein}
-  mkdir -p predictions/${protein}/cif
-  ap_format_ranking_alphafold3.py --input_file predictions/${protein}/ranking_scores.csv --output_file predictions/${protein}/ordered_ranking_scores.tsv --cif_dir predictions/${protein}/cif
+  ap_format_ranking_alphafold3.py --input_file predictions/${protein}/ranking_scores.csv --output_file predictions/${protein}/ordered_ranking_scores.tsv --cif_dir predictions/${protein}/
   echo "AlphaFold3 \$(get_version.sh)" > versions.txt
   echo "AlphaFold3 (prediction) options=--norun_data_pipeline --run_inference --db_dir ${alphaFold3Database.target.toString()} ${params.alphaFold3Options} --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=predictions" > options.txt
   """
@@ -61,8 +60,7 @@ process alphaFold3 {
     folder="monomer2"
   fi
   cp -r $projectDir/test/data/alphafold3/\$folder/${protein} predictions/
-  mkdir -p predictions/${protein}/cif
-  ap_format_ranking_alphafold3.py --input_file predictions/${protein}/ranking_scores.csv --output_file predictions/${protein}/ordered_ranking_scores.tsv --cif_dir predictions/${protein}/cif
+  ap_format_ranking_alphafold3.py --input_file predictions/${protein}/ranking_scores.csv --output_file predictions/${protein}/ordered_ranking_scores.tsv --cif_dir predictions/${protein}
   echo "AlphaFold3 \$(get_version.sh)" > versions.txt
   echo "AlphaFold3 (prediction) options=--norun_data_pipeline --run_inference --db_dir ${alphaFold3Database.target.toString()} ${params.alphaFold3Options} --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=predictions" > options.txt
   """
