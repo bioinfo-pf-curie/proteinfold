@@ -99,7 +99,7 @@ def createAfModelsCh(String alphaFoldOptions,
   // Monomer pTM
   if(alphaFoldOptions.contains('model_preset=monomer_ptm')){
     afModels = []
-    for (int model = 1; model < numberOfModels; model++) {
+    for (int model = 1; model < 6; model++) {
       modelNumber++
       afModels.add("model_" + model + "_ptm")
     }
@@ -332,4 +332,32 @@ def checkInput4Docking(filePath) {
     checkProteinLigandFiles(filePath)
 
     return true
+}
+
+// Function to check that theire is eithe json of fasta file
+// but not both
+
+def buildFastaPathCh(fastaPath) {
+
+  fastaPathCh = Channel.fromPath(fastaPath)
+  fastaPathCh
+    .collect()
+    .map { fileList ->
+      // Use regex to extract the file extension
+  		List extensionList = []
+      fileList.each { 
+        def matcher = it =~ /.*\.(\w+)$/
+        def extension = matcher ? matcher[0][1] : null
+        extensionList.add(extension)
+      }
+  
+      if (extensionList.unique().size() > 1) {
+        msg = "In the path " + params.fastaPath + " multiple file extension have been found: " + extensionList.unique() + ". Only one extension type must be found: either 'fasta' or 'json' (for AlphaFold3)"
+        NFTools.printRedText(msg)
+        exit 1, msg
+      }
+    }
+
+  return fastaPathCh
+
 }

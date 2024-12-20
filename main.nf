@@ -50,6 +50,7 @@ include { createFromCh as createMsasCh } from './lib/functions'
 include { createFromCh as createPredictionsCh } from './lib/functions'
 include { createFromCh as createRankingCh } from './lib/functions'
 include { createFromCh as createPdbFileCh } from './lib/functions'
+include { buildFastaPathCh } from './lib/functions'
 
 /*
 ===================================
@@ -200,13 +201,9 @@ if (params.onlyMsas && params.fromMsas != null){
 // example:
 // /proteinfold/test/data/fasta/monomer2/MRLN.fasta
 // /proteinfold/test/data/fasta/monomer2/MISFA.fasta
-if (params.launchAlphaFold3){
-  // AlphaFold3 does not take fasta file as input but json file 
-  fastaPathCh = Channel.fromPath("${params.fastaPath}/*.json")
-} else{
-  fastaPathCh = Channel.fromPath("${params.fastaPath}/*.fasta")
-}
-
+  
+// In the fastaPath we want either json or fasta but not both
+fastaPathCh = buildFastaPathCh("${params.fastaPath}/*.{json,fasta}")
 
 // The fastaFilesCh contains:
 // [protein, /path/to/protein.fasta]
@@ -223,6 +220,7 @@ fastaFilesCh = fastaPathCh
                                       .replaceFirst('\\.json$', "")
                    tuple(protein, file(fastaFile))
                  }
+
 
 // The fastaChainCh allows the processing of msas chain by chain
 // in the multimer mode to speedup computation.
@@ -258,8 +256,16 @@ if(params.fromMsas != null){
 // Set the predictionsCh when the pipeline is launched using existing predicted structures
 predictionsCh = Channel.empty()
 if(params.fromPredictions != null){
+
+  // The predictionsCh contains:
+  // [protein, toolFold, /path/to/predictions/results/protein]
+  // The toolFold is empty as we don't knowd what was used hen using the fromPredictions option
+  // example:
+  // [MISFA, , /home/phupe/git/gitlab/data-analysis/proteinfold/test/data/afmassive/monomer2/MISFA]
+  // [MRLN, , /home/phupe/git/gitlab/data-analysis/proteinfold/test/data/afmassive/monomer2/MRLN]
   predictionsCh = createPredictionsCh('fromPredictions', fastaFilesCh)
                     .map { tuple(it[0], '', file(file(it[1][0]).getParent())) }
+
 
   // rankingCh is not needed if we only launch AlphaFill
   if(!params.launchAlphaFill){
@@ -273,13 +279,20 @@ if(params.fromPredictions != null){
                                                    .findAll { fileName ->
                                                               fileName.toString().endsWith('ranking_debug_multimer.tsv')
 	  																				      					}
+                         def rankingTsvAF3 = it[1]
+                                                   .findAll { fileName ->
+                                                              fileName.toString().endsWith('ordered_ranking_scores.tsv')
+	  																				      					}
+
                          def rankingTsv
                          if (rankingTsvMultimer) {
                            rankingTsv = rankingTsvMultimer
                          } else if (rankingTsvMonomer) {
                            rankingTsv = rankingTsvMonomer
+                         } else if (rankingTsvAF3) {
+                           rankingTsv = rankingTsvAF3
                          } else {
-                           error("ERROR: there is no 'ranking_debug.tsv' nor 'ranking_debug_multimer.tsv' file for protein: " + it[0])
+                           error("ERROR: there is no 'ranking_debug.tsv' (AlphaFold2), nor 'ranking_debug_multimer.tsv' (AlphaFold2), nor 'ordered_ranking_scores.tsv' (AlphaFold3) file for protein: " + it[0])
                          }
 
  	  									   tuple(it[0], file(rankingTsv[0]))
@@ -289,13 +302,14 @@ if(params.fromPredictions != null){
   pdbFileCh = createPdbFileCh('fromPredictions', fastaFilesCh)
                 .map { def pdbFile = it[1]
                                        .findAll { fileName ->
-                                                  fileName.toString().matches(/.*ranked_.*\.pdb$/)
+                                                  fileName.toString().matches(/.*ranked_.*\.pdb$|.*ranked_.*\.cif$/)
 																								}
                    if (!pdbFile) {
-                         error("ERROR: there is no pdb files file for protein: " + it[0])
+                         error("ERROR: there is no pdb files  nor cif files for protein: " + it[0])
                        }
  										   tuple(it[0], pdbFile)
                      }
+
 }
 
 /*
