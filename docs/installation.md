@@ -1,5 +1,57 @@
 # Installation
 
+## Nextflow pipeline
+
+The ProteinFold pipeline is implemented according to the [geniac](https://github.com/bioinfo-pf-curie/geniac) guidelines. Details are available at:
+
+* The [geniac documentation](https://geniac.readthedocs.io) provides a set of best practises to implement *Nextflow* pipelines.
+* The [geniac](https://github.com/bioinfo-pf-curie/geniac) source code provides the set of utilities.
+* The [geniac demo](https://github.com/bioinfo-pf-curie/geniac-demo) provides a toy pipeline to test and practise *Geniac*.
+* The [geniac template](https://github.com/bioinfo-pf-curie/geniac-template) provides a pipeline template to start a new pipeline.
+
+The pipeline can be installed with the [geniac](https://github.com/bioinfo-pf-curie/geniac) toolbx as described in the next sections.
+
+### Install conda
+
+If conda is not available on your computer, proceed as follows:
+
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+
+### Create the geniac conda environment
+```bash
+export GENIAC_CONDA="https://raw.githubusercontent.com/bioinfo-pf-curie/geniac/release/environment.yml"
+wget ${GENIAC_CONDA}
+conda env create -f environment.yml
+conda activate geniac
+```
+
+### Install the pipeline with Geniac
+
+```bash
+export WORK_DIR="${HOME}/tmp/myPipeline"
+export INSTALL_DIR="${WORK_DIR}/install"
+export GIT_URL="https://github.com/bioinfo-pf-curie/proteinfold.git"
+
+# Initialization of a working directory
+# with the src and build folders
+geniac init -w ${WORK_DIR} ${GIT_URL}
+cd ${WORK_DIR}
+
+# Install the pipeline with the singularity images
+geniac install . ${INSTALL_DIR} -m singularity
+sudo chown -R  $(id -gn):$(id -gn) build
+
+# Test the pipeline with the singularity profile
+geniac test singularity
+
+# Test the pipeline with the singularity and cluster profiles
+geniac test singularity --check-cluster
+```
+
+
 ## Annotations
 
 Protein annotations databases and other dependency files are required to run the pipeline.
@@ -19,3 +71,5 @@ params {
 We provide below the link to the detailed procedure to install the data required by each tool.
 
 * [DiffDock](annotations/diffdock.md)
+* [DynamicBind](annotations/dynamicbind.md)
+* [NanoBERT](annotations/nanobert.md)
