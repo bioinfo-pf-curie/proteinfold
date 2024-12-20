@@ -1,1 +1,1 @@
-AlphaFold v3.0.0
+AlphaFold3 v3.0.0
