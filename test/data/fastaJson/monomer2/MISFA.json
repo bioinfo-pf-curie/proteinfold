@@ -1,0 +1,14 @@
+{
+  "name": "MISFA",
+  "modelSeeds": [1, 2],
+  "sequences": [
+    {
+      "protein": {
+        "id": "A",
+        "sequence": "MIVLGWMFFVGLVCYMGTFPELMPPTLKWQERWPVQESKTQLRRRALGEDLLQNHVEGI"
+      }
+    }
+  ],
+  "dialect": "alphafold3",
+  "version": 1
+}
