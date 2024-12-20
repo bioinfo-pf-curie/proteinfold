@@ -31,6 +31,7 @@ include { massiveFoldPlots } from '../process/massiveFoldPlots'
 include { pymolPng } from '../process/pymolPng'
 
 // Subworkflows
+include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
 include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 
 /*
@@ -123,4 +124,11 @@ workflow alphaFold3Wkfl {
     fastaFilesCh,
     workflowSummaryCh
   )
+
+  ///////////////
+  // AlphaFill //
+  ///////////////
+  if(params.launchAlphaFill){
+    alphaFillWkfl(alphaFold3.out.predictions)
+  }
 }
