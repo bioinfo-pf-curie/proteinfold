@@ -48,7 +48,12 @@ process alphaFold3Search {
   """
   # AlphaFold3 converts the value in the name field into lowercase (sanitised name)
   protein_lowercase=\$(echo ${protein} | tr '[:upper:]' '[:lower:]')
-  cp -r ${projectDir}/test/data/msas/monomer2/alphafold3/${protein} .
+  if [[ "${protein}" =~ "domain" ]]; then
+    folder="multimer"
+  else
+    folder="monomer2"
+  fi
+  cp -r ${projectDir}/test/data/msas/\$folder/alphafold3/${protein} .
   echo launch_alphafold.sh --run_data_pipeline --db_dir ${alphaFold3Database.target.toString()} --norun_inference --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas
   echo "AlphaFold3 \$(get_version.sh)" > versions.txt
   echo "AlphaFold3 (MSAS) options=--run_data_pipeline --db_dir ${alphaFold3Database.target.toString()} --norun_inference --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas" > options.txt
