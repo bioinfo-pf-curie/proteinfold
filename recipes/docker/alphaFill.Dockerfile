@@ -1,2 +1,2 @@
-FROM registrygitlab.curie.fr/cubic-registry/proteinfold/alphafill:v2.1.1-base
+FROM docker.io/4geniac/proteinfold:alphafill-v2.1.1-base
 

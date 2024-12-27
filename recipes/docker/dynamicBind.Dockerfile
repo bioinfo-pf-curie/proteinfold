@@ -1,4 +1,4 @@
-FROM registrygitlab.curie.fr/cubic-registry/proteinfold/dynamicbind:v1.0-base
+FROM docker.io/4geniac/proteinfold:dynamicbind-v1.0-base
 
 RUN /bin/echo -e '#! /bin/bash\nldconfig -C ld.so.cache\npython /app/dynamicbind/run_single_protein_inference.py "$@"' > /app/launch_dynamicbind.sh \
   && chmod +x /app/launch_dynamicbind.sh \

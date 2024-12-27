@@ -1,4 +1,4 @@
-FROM registrygitlab.curie.fr/cubic-registry/proteinfold/alphafold:v3.0.0-base
+FROM docker.io/4geniac/proteinfold:alphafold-v3.0.0-base
 
 # echo -e does not work with ubuntu shell builtin
 RUN /bin/echo -e '#! /bin/bash\npython /app/alphafold/run_alphafold.py "$@"' > /app/launch_alphafold.sh \

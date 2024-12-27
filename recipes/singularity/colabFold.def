@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: registrygitlab.curie.fr/cubic-registry/proteinfold/colabfold:v1.5.5-base
+From: docker.io/4geniac/proteinfold:colabfold-v1.5.5-base
 
 %environment
   export PATH="$PATH:/app"
