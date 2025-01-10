@@ -8,7 +8,8 @@ Assuming that the nextflow parameters `params.genomeAnnotationPath` is set to th
 
 ```
 mkdir -p /data/annotations/proteinfold/
-rsync -avP rsync://rsync.alphafill.eu/alphafill/ /data/annotations/proteinfold/
+rsync -avP --exclude=attic rsync://rsync.pdb-redo.eu/pdb-redo/ /data/annotations/proteinfold/pdb-redo/
+
 ```
 
 Then, set the correct values the the parameter `params.genomes.alphafill.database` in the `conf/genomes.config` file accordingly, for example:
@@ -17,7 +18,7 @@ Then, set the correct values the the parameter `params.genomes.alphafill.databas
 params {
   genomes {
     alphafill {
-      database = "${params.genomeAnnotationPath}/proteinfold/alphafill"
+      database = "${params.genomeAnnotationPath}/proteinfold/pdb-redo"
     }
   }
 }

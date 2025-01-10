@@ -9,7 +9,7 @@ The ProteinFold pipeline is implemented according to the [geniac](https://github
 * The [geniac demo](https://github.com/bioinfo-pf-curie/geniac-demo) provides a toy pipeline to test and practise *Geniac*.
 * The [geniac template](https://github.com/bioinfo-pf-curie/geniac-template) provides a pipeline template to start a new pipeline.
 
-The pipeline can be installed with the [geniac](https://github.com/bioinfo-pf-curie/geniac) toolbx as described in the next sections.
+The pipeline can be installed with the [geniac](https://github.com/bioinfo-pf-curie/geniac) toolbox as described in the next sections.
 
 ### Install conda
 
@@ -78,6 +78,8 @@ params {
 We provide below the link to the detailed procedure to install the data required by each tool.
 
 * [AlphaFill](annotations/alphafill.md)
+* [AlphaFold](annotations/alphafold.md)
+* [AlphaFold3](annotations/alphafold3.md)
 * [ColabFold](annotations/colabfold.md)
 * [DiffDock](annotations/diffdock.md)
 * [DynamicBind](annotations/dynamicbind.md)
