@@ -121,7 +121,7 @@ Available Profiles
 
 ## Quick run
 
-The pipeline can be run on any infrastructure. The use of GPU is preferred to speed-up computation.
+The pipeline can be run on any infrastructure. The use of GPU is preferred (and even required for some tools) to speed-up computation.
 
 ### Run the pipeline on a test dataset
 
@@ -154,7 +154,7 @@ For example, to launch the pipeline on a computing cluster with SLURM:
 ```bash
 echo "#! /bin/bash" > launcher.sh
 echo "set -oue pipefail" >> launcher.sh
-echo "nextflow run main.nf --fastaPath=\"test/data\" --alphaFoldOptions \"max_template_date=2024-01-01|random_seed=654321\" --outDir MY_OUTPUT_DIR -profile singularity,cluster" >> launcher.sh
+echo nextflow run main.nf --fastaPath="test/data" -params-file params.json --outDir MY_OUTPUT_DIR -profile singularity,cluster >> launcher.sh
 sbatch launcher.sh
 ```
 

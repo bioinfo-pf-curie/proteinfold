@@ -26,6 +26,7 @@ export GENIAC_CONDA="https://raw.githubusercontent.com/bioinfo-pf-curie/geniac/r
 wget ${GENIAC_CONDA}
 conda env create -f environment.yml
 conda activate geniac
+pip install geniac
 ```
 
 ### Install the pipeline with Geniac
@@ -39,6 +40,12 @@ export GIT_URL="https://github.com/bioinfo-pf-curie/proteinfold.git"
 # with the src and build folders
 geniac init -w ${WORK_DIR} ${GIT_URL}
 cd ${WORK_DIR}
+
+# As the building of apptainer/singularity requires more than 16GB of RAM memory,
+# it is highly recommended to define a dedicated folder on your filesystem.
+# This folder will be used instead of the RAM
+export APPTAINER_TMPDIR=$HOME/tmp/apptainer_tmpdir
+mkdir -p $APPTAINER_TMPDIR
 
 # Install the pipeline with the singularity images
 geniac install . ${INSTALL_DIR} -m singularity
@@ -70,6 +77,8 @@ params {
 
 We provide below the link to the detailed procedure to install the data required by each tool.
 
+* [AlphaFill](annotations/alphafill.md)
+* [ColabFold](annotations/colabfold.md)
 * [DiffDock](annotations/diffdock.md)
 * [DynamicBind](annotations/dynamicbind.md)
 * [NanoBERT](annotations/nanobert.md)
