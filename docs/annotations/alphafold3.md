@@ -1,11 +1,5 @@
 # Installation of data required by AlphaFold3
 
-Install the following software:
-
-- `aria2c`: [https://aria2.github.io/](https://aria2.github.io/)
-
-Make sure it is in your PATH.
-
 
 ## Annotations
 
