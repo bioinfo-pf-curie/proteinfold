@@ -9,12 +9,9 @@ Install the following software:
 
 Make sure their are in your PATH.
 
-
 ## Annotations
 
-
 Create the bash script `download-database.sh` and modify the different variables if needed:
-
 
 ```bash
 #! /bin/bash
@@ -31,7 +28,6 @@ mkdir -p $DOWNLOAD_DIR
 wget https://raw.githubusercontent.com/sokrypton/ColabFold/refs/tags/v1.5.5/setup_databases.sh -P $TMPDIR
 
 MMSEQS_NO_INDEX=1 $TMPDIR/setup_databases.sh $DOWNLOAD_DIR
-
 ```
 
 Launch `bash download-database.sh`
@@ -39,15 +35,9 @@ Launch `bash download-database.sh`
 
 ## Download model parameters
 
-Build the colabfold sif image by launching the CI/CD pipeline: set `BUILD_SIF=true` as described in [README.md](../README.md).
-
-Launch `bash download-alphafold2-weights.sh`
-
-Create the bash script `download-params.sh` and modify the different variables if needed:
-
+Create the bash script `download-alphafold2-weights.sh` and modify the different variables if needed:
 
 ```bash
-
 set -oue pipefail
 
 # set variables
@@ -61,11 +51,9 @@ apptainer run -B $DOWNLOAD_DIR:/cache $COLABFOLD_SIF python -m colabfold.downloa
 apptainer run -B $DOWNLOAD_DIR:/cache $COLABFOLD_SIF python -m colabfold.download alphafold2_multimer_v1
 apptainer run -B $DOWNLOAD_DIR:/cache $COLABFOLD_SIF python -m colabfold.download AlphaFold2-ptm
 apptainer run -B $DOWNLOAD_DIR:/cache $COLABFOLD_SIF python -m colabfold.download deepfold_v1
-
 ```
 
-Launch `bash download-params.sh`
-
+Launch `bash download-alphafold2-weights.sh`
 
 ## Copy the data in the appropriate folder and modify the `conf/process.config` file
 

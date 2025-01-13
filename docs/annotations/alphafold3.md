@@ -1,18 +1,15 @@
 # Installation of data required by AlphaFold3
 
-
 ## Annotations
 
-
 Create the bash script `download-database.sh` and modify the different variables if needed:
-
 
 ```bash
 #! /bin/bash
 
 set -euo pipefail
 
-readonly db_dir=/data/annotations/proteinfold/alphafold3
+readonly db_dir=$HOME/tmp/alphafold3
 
 for cmd in wget tar zstd ; do
   if ! command -v "${cmd}" > /dev/null 2>&1; then
@@ -75,14 +72,13 @@ echo "Complete"
 
 Launch `bash download-database.sh`
 
-
 ## Copy the data in the appropriate folder and modify the `conf/process.config` file
 
 Assuming that the nextflow parameters `params.genomeAnnotationPath` is set to the path  `/data/annotations`, move the data in the following folder:
 
 ```
 mkdir -p /data/annotations/proteinfold/
-mv $DOWNLOAD_DIR/alphafold /data/annotations/proteinfold/
+mv $HOME/tmp/alphafold3 /data/annotations/proteinfold/
 ```
 
 Then, set the correct values the the parameter `params.genomes.alphafold3.database` in the `conf/genomes.config` file accordingly, for example:
