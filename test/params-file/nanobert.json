@@ -1,4 +1,4 @@
 {
-	"launchNanoBert": "true",
+	"launchNanoBert": true,
 	"fastaPath": "test/data/fasta/monomer2"
 }

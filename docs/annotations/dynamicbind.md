@@ -1,4 +1,4 @@
-# Installation or data required by DynamicBind
+# Installation of data required by DynamicBind
 
 To install some dependencies, it is needed to build the apptainer `dynamicbind.sif` image using geniac from the ProteinFold pipeline.
 
@@ -70,7 +70,7 @@ wget https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t33_650M_UR50D.pt
 wget https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t33_650M_UR50D-contact-regression.pt
 ```
 
-## Copy the data in the appropiate folder and modify the `conf/process.config` file
+## Copy the data in the appropriate folder and modify the `conf/process.config` file
 
 Assuming that the nextflow parameters `params.genomeAnnotationPath` is set to the path  `/data/annotations`, move the data in the following folder:
 

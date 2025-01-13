@@ -1,4 +1,4 @@
-# Installation or data required by DiffDock
+# Installation of data required by DiffDock
 
 ## human_heavy model
 ```bash
@@ -18,7 +18,7 @@ git clone https://huggingface.co/NaturalAntibody/nanoBERT
 ```
 
 
-## Copy the data in the appropiate folder and modify the `conf/process.config` file
+## Copy the data in the appropriate folder and modify the `conf/process.config` file
 
 Assuming that the nextflow parameters `params.genomeAnnotationPath` is set to the path  `/data/annotations`, move the data in the following folder:
 

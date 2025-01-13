@@ -1,4 +1,4 @@
-FROM registrygitlab.curie.fr/cubic-registry/proteinfold/afmassive:v1.1.0-hhsuite-compile-avx2
+FROM docker.io/4geniac/proteinfold:afmassive-v1.1.0-hhsuite-compile-avx2
 
 COPY afMassive/afMassive.patch /app/alphafold/afMassive.patch
 

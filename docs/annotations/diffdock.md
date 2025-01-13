@@ -1,4 +1,4 @@
-# Installation or data required by DiffDock
+# Installation of data required by DiffDock
 
 To install some dependencies, it is needed to build the apptainer `diffdock.sif` image using geniac from the ProteinFold pipeline.
 
@@ -55,7 +55,7 @@ curl -L -o diffdock_models_v1.1.zip "https://github.com/gcorso/DiffDock/releases
   && rm diffdock_models_v1.1.zip
 ```
 
-## Copy the data in the appropiate folder and modify the `conf/process.config` file
+## Copy the data in the appropriate folder and modify the `conf/process.config` file
 
 Assuming that the nextflow parameters `params.genomeAnnotationPath` is set to the path  `/data/annotations`, move the data in the following folder:
 

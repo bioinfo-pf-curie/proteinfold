@@ -50,6 +50,7 @@ include { createFromCh as createMsasCh } from './lib/functions'
 include { createFromCh as createPredictionsCh } from './lib/functions'
 include { createFromCh as createRankingCh } from './lib/functions'
 include { createFromCh as createPdbFileCh } from './lib/functions'
+include { buildFastaPathCh } from './lib/functions'
 
 /*
 ===================================
@@ -82,6 +83,11 @@ if(params.launchDynamicBind || params.launchDiffDock) {
   if(params.proteinLigandFile == null) {
     exit 1, "The option --proteinLigandFile has not been set"
   }
+}
+
+// AlphaFold3 does not take fasta file as input
+if(params.launchAlphaFold3) {
+  allowFastaPathNull = true
 }
 
 // DynamicBind works only with GPU
@@ -144,6 +150,11 @@ if (params.launchAlphaFold){
   params.alphaFoldDatabase = alphaFoldDB.getCanonicalPath()
 }
 
+if (params.launchAlphaFold3){
+  File alphaFold3DB = new File(params.genomes.alphafold3.database)
+  params.alphaFold3Database = alphaFold3DB.getCanonicalPath()
+}
+
 if (params.launchColabFold){
   if (!params.useGpu && !isStubRun){
     exit 1, "ColabFold works only using GPU. Launch the pipeline with the '--useGpu true' option."
@@ -183,22 +194,47 @@ if (params.onlyMsas && params.fromMsas != null){
 ==========================
 */
 
+// The fastaPathCh contains:
+// /path/to/protein.fasta
+// or in the case of AlphaFold3
+// /path/to/protein.json
+// example:
+// /proteinfold/test/data/fasta/monomer2/MRLN.fasta
+// /proteinfold/test/data/fasta/monomer2/MISFA.fasta
+  
+// In the fastaPath we want either json or fasta but not both
+fastaPathCh = buildFastaPathCh("${params.fastaPath}/*.{json,fasta}")
 
-fastaPathCh = Channel.fromPath("${params.fastaPath}/*.fasta")
-
-// This allows the processing of msas chain by chain
-// in the multimer mode to speedup computation
+// The fastaFilesCh contains:
+// [protein, /path/to/protein.fasta]
+// or in the case of AlphaFold3
+// [protein, /path/to/protein.json]
+// example:
+// [MRLN, /proteinfold/test/data/fasta/monomer2/MRLN.fasta]
+// [MISFA, /proteinfold/test/data/fasta/monomer2/MISFA.fasta]
 fastaFilesCh = fastaPathCh
                  .map { fastaFile -> 
                    String protein = fastaFile.toString()
                                       .replaceAll(".*/", "")
                                       .replaceFirst('\\.fasta$', "")
+                                      .replaceFirst('\\.json$', "")
                    tuple(protein, file(fastaFile))
                  }
 
+
+// The fastaChainCh allows the processing of msas chain by chain
+// in the multimer mode to speedup computation.
+// The fastaChainCh contains:
+// [protein, /path/to/protein.fasta, chainIdNum]
+// example:
+// [BTB-domain, /proteinfold/test/data/fasta/multimer/alphafold/BTB-domain.fasta, 1]
+// [BTB-domain, /proteinfold/test/data/fasta/multimer/alphafold/BTB-domain.fasta, 2]
 fastaChainsCh = fastaFilesCh
                   .map { protein, fastaFile ->
-                    int nbChain = fastaFile.countFasta()
+                    int nbChain = 1 // this will be the default for Alphafold3 as the parallelisation by chain is not implemeted in the nextflow pipeline
+                    if(fastaFile.toString().endsWith('.fasta')) {
+                      nbChain = fastaFile.countFasta()
+                    }
                     (1..nbChain).collect { chainIdNum ->
                       tuple(protein, file(fastaFile), chainIdNum)
                     }
@@ -206,20 +242,33 @@ fastaChainsCh = fastaFilesCh
                    .flatten()
                    .collate(3)
 
-// set the msasCh when the pipeline is launched using existing msas
+// Set the msasCh when the pipeline is launched using existing msas.
+// The msasCh contains:
+// [protein, [/path/to/msas/protein/file1, ... , /path/to/msas/protein/fileX]]
+// example:
+// [MISFA, [/proteinfold/test/data/msas/monomer2/alphafold/MISFA/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/mgnify_hits.sto]]
+// [MRLN, [/proteinfold/test/data/msas/monomer2/alphafold/MRLN/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/mgnify_hits.sto]]
 msasCh = Channel.empty()
 if(params.fromMsas != null){
   msasCh = createMsasCh('fromMsas', fastaFilesCh)
 }
 
-// set the predictionsCh when the pipeline is launched using existing predicted structures
+// Set the predictionsCh when the pipeline is launched using existing predicted structures
 predictionsCh = Channel.empty()
 if(params.fromPredictions != null){
+
+  // The predictionsCh contains:
+  // [protein, toolFold, /path/to/predictions/results/protein]
+  // The toolFold is empty as we don't knowd what was used hen using the fromPredictions option
+  // example:
+  // [MISFA, , /home/phupe/git/gitlab/data-analysis/proteinfold/test/data/afmassive/monomer2/MISFA]
+  // [MRLN, , /home/phupe/git/gitlab/data-analysis/proteinfold/test/data/afmassive/monomer2/MRLN]
   predictionsCh = createPredictionsCh('fromPredictions', fastaFilesCh)
                     .map { tuple(it[0], '', file(file(it[1][0]).getParent())) }
 
-  // rankingCh is not needed if we launch only AlphaFill
-  if (!params.launchAlphaFill){
+
+  // rankingCh is not needed if we only launch AlphaFill
+  if(!params.launchAlphaFill){
     rankingCh = createRankingCh('fromPredictions', fastaFilesCh)
                   .map {
                          def rankingTsvMonomer = it[1]
@@ -230,13 +279,20 @@ if(params.fromPredictions != null){
                                                    .findAll { fileName ->
                                                               fileName.toString().endsWith('ranking_debug_multimer.tsv')
 	  																				      					}
+                         def rankingTsvAF3 = it[1]
+                                                   .findAll { fileName ->
+                                                              fileName.toString().endsWith('ordered_ranking_scores.tsv')
+	  																				      					}
+
                          def rankingTsv
                          if (rankingTsvMultimer) {
                            rankingTsv = rankingTsvMultimer
                          } else if (rankingTsvMonomer) {
                            rankingTsv = rankingTsvMonomer
+                         } else if (rankingTsvAF3) {
+                           rankingTsv = rankingTsvAF3
                          } else {
-                           error("ERROR: there is no 'ranking_debug.tsv' nor 'ranking_debug_multimer.tsv' file for protein: " + it[0])
+                           error("ERROR: there is no 'ranking_debug.tsv' (AlphaFold2), nor 'ranking_debug_multimer.tsv' (AlphaFold2), nor 'ordered_ranking_scores.tsv' (AlphaFold3) file for protein: " + it[0])
                          }
 
  	  									   tuple(it[0], file(rankingTsv[0]))
@@ -246,13 +302,14 @@ if(params.fromPredictions != null){
   pdbFileCh = createPdbFileCh('fromPredictions', fastaFilesCh)
                 .map { def pdbFile = it[1]
                                        .findAll { fileName ->
-                                                  fileName.toString().matches(/.*ranked_.*\.pdb$/)
+                                                  fileName.toString().matches(/.*ranked_.*\.pdb$|.*ranked_.*\.cif$/)
 																								}
                    if (!pdbFile) {
-                         error("ERROR: there is no pdb files file for protein: " + it[0])
+                         error("ERROR: there is no pdb files  nor cif files for protein: " + it[0])
                        }
  										   tuple(it[0], pdbFile)
                      }
+
 }
 
 /*
@@ -272,6 +329,8 @@ summary = [
   'AlphaFill Database' : params.launchAlphaFill ? params.alphaFillDatabase : null,
   'AlphaFold Database' : params.launchAlphaFold ? params.alphaFoldDatabase : null,
   'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
+  'AlphaFold3 Database' : params.launchAlphaFold3 ? params.alphaFold3Database : null,
+  'AlphaFold3 Options' : params.launchAlphaFold3 ? params.alphaFold3Options : null,
   'ColabFold Database' : params.launchColabFold ? params.colabFoldDatabase : null,
   'ColabFold Options' : params.launchColabFold ? params.colabFoldOptions : null,
   'DiffDock Database' : params.launchDiffDock ? params.diffDockDatabase : null,
@@ -305,6 +364,7 @@ include { afMassiveSearch } from './nf-modules/local/process/afMassiveSearch'
 include { afMassiveHelp } from './nf-modules/local/process/afMassiveHelp'
 include { alphaFillHelp } from './nf-modules/local/process/alphaFillHelp'
 include { alphaFoldHelp } from './nf-modules/local/process/alphaFoldHelp'
+include { alphaFold3Help } from './nf-modules/local/process/alphaFold3Help'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
@@ -320,6 +380,7 @@ include { pymolPng } from './nf-modules/local/process/pymolPng'
 // Subworkflows
 include { alphaFillWkfl } from './nf-modules/local/subworkflow/alphaFillWkfl'
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
+include { alphaFold3Wkfl } from './nf-modules/local/subworkflow/alphaFold3Wkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { diffDockWkfl } from './nf-modules/local/subworkflow/diffDockWkfl'
@@ -361,6 +422,16 @@ workflow {
   if (params.launchAlphaFold){
     alphaFoldWkfl(
       fastaChainsCh,
+      fastaFilesCh,
+      fastaPathCh,
+      msasCh,
+      workflowSummaryCh
+    )
+  }
+
+  // Launch the prediction of the protein 3D structure with AlphaFold3
+  if (params.launchAlphaFold3){
+    alphaFold3Wkfl(
       fastaFilesCh,
       fastaPathCh,
       msasCh,
@@ -438,6 +509,9 @@ workflow {
   if(params.alphaFoldHelp){
     alphaFoldHelp()
   }
+  if(params.alphaFold3Help){
+    alphaFold3Help()
+  }
   if(params.colabFoldHelp){
     colabFoldHelp()
   }
@@ -463,6 +537,11 @@ workflow.onComplete {
       NFTools.printGreenText("\n\n=====================================\nAlphaFold help, list of options:\n=====================================\n")
       printFileContent("${params.outDir}/alphaFoldHelp.txt")
       NFTools.printGreenText("\n\n=====================================\nAlphaFold help, see options above.\n=====================================\n")
+    }
+    if (params.alphaFold3Help) {
+      NFTools.printGreenText("\n\n=====================================\nAlphaFold3 help, list of options:\n=====================================\n")
+      printFileContent("${params.outDir}/alphaFold3Help.txt")
+      NFTools.printGreenText("\n\n=====================================\nAlphaFold3 help, see options above.\n=====================================\n")
     }
     if (params.colabFoldHelp) {
       NFTools.printGreenText("\n\n=====================================\nColabFold help, list of options:\n=====================================\n")

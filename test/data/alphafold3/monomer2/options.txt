@@ -1,0 +1,1 @@
+AlphaFold3 (prediction) options=--norun_data_pipeline --run_inference --db_dir /home/phupe/git/gitlab/data-analysis/annotations/proteinfold/alphafold3/2024-11  --pdb_database_path /home/phupe/git/gitlab/data-analysis/annotations/proteinfold/alphafold3/2024-11/mmcif_files --jackhmmer_n_cpu 1 --nhmmer_n_cpu 1 --json_path MRLN.json --output_dir=predictions

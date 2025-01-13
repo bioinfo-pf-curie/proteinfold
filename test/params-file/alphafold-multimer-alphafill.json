@@ -1,6 +1,6 @@
 {
-	"launchAlphaFold": "true",
-	"launchAlphaFill": "true",
+	"launchAlphaFold": true,
+	"launchAlphaFill": true,
 	"alphaFoldOptions": "--max_template_date=2024-01-01 --db_preset=full_dbs --random_seed=123456 --model_preset=multimer",
 	"fastaPath": "test/data/fasta/multimer/alphafold"
 }

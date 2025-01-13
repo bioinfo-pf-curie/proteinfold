@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: registrygitlab.curie.fr/cubic-registry/proteinfold/dynamicbind:v1.0-base
+From: docker.io/4geniac/proteinfold:dynamicbind-v1.0-base
 
 %environment
   export LC_ALL=C

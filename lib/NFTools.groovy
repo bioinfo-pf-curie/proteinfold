@@ -30,13 +30,24 @@ class NFTools {
 
     // ANSI escape code for orange color
     def orangeColor = "\u001B[38;5;208m" 
-    def greenColor = "\u001B[32m"
     
     // ANSI escape code to reset color
     def resetColor = "\u001B[0m"
 
     // Print text in green color
     log.info "${orangeColor}${text}${resetColor}"
+    }
+
+    public static void printRedText(text) {
+
+    // ANSI escape code for orange color
+    def redColor = "\u001b[31m" 
+    
+    // ANSI escape code to reset color
+    def resetColor = "\u001B[0m"
+
+    // Print text in green color
+    log.info "${redColor}${text}${resetColor}"
     }
 
     private static LinkedHashMap generateLogColors(Boolean monochromeLogs = false) {

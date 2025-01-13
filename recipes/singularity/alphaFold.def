@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: registrygitlab.curie.fr/cubic-registry/proteinfold/alphafold:v2.3.2-hhsuite-compile-avx2
+From: docker.io/4geniac/proteinfold:alphafold-v2.3.2-hhsuite-compile-avx2
 
 %environment
   export LC_ALL=C

@@ -1,5 +1,5 @@
 {
-	"launchColabFold": "true",
+	"launchColabFold": true,
 	"colabFoldOptions": "--random-seed 654321 --model-type=alphafold2_multimer_v3 --amber --use-gpu-relax",
 	"fastaPath": "test/data/fasta/multimer/colabfold",
 	"fromMsas": "test/data/msas/multimer/colabfold"

@@ -1,0 +1,6 @@
+{
+	"launchAlphaFold3": true,
+	"alphaFold3Options": "",
+	"fastaPath": "test/data/fastaJson/monomer2",
+	"fromMsas": "test/data/msas/monomer2/alphafold3"
+}

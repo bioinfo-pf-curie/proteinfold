@@ -79,6 +79,11 @@ workflow alphaFoldWkfl {
   } else {
     if (params.fromMsas != null){
       // step MSAS when fromMsas
+      // after the join operator, msasCh contains:
+      // [protein, /path/to/fasta/protein.fasta, [/path/to/msas/protein/file1, ..., /path/to/msas/protein/fileX]]
+      // example: 
+      // [MISFA, [/proteinfold/test/data/msas/monomer2/alphafold/MISFA/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/mgnify_hits.sto]]
+      // [MRLN, [/proteinfold/test/data/msas/monomer2/alphafold/MRLN/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/mgnify_hits.sto]]
       msasCh = fastaFilesCh.join(msasCh)
     } else {
       // step - MSAS

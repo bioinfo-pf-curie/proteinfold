@@ -1,3 +1,18 @@
+v1.4.0
+01/13/2025
+
+NEW FEATURES
+  - AlphaFold3
+  - Bootstrap using Docker containers on Docker Hub 4geniac
+
+BUGFIXES
+  - Remove double-quotes for boolean parameter in json files
+  - Numpy forced to version 1.26.4 in nanoBERT container
+
+DOCUMENTATION
+  - Detail outputs and explain how the different annotations must be installed
+  - Examples of different channels patterns explained in the nextflow code
+
 v1.3.0
 11/20/2024
 
