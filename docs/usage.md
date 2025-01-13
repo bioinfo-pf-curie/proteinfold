@@ -10,6 +10,7 @@
 - [AlphaFold](#alphafold)
   * [monomer](#monomer-1)
   * [multimer](#multimer-1)
+- [AlphaFold3](#alphafold3)
 - [ColabFold](#colabfold)
   * [monomer](#monomer-2)
   * [multimer](#multimer-2)
@@ -52,7 +53,7 @@ MANDATORY ARGUMENTS, NEXTFLOW:
     -profile  STRING [test, singularity, cluster]  Configuration profile to use. Can use multiple (comma separated).
 
 OTHER OPTIONS, NEXTFLOW:
-    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration filei (i.e. 'params.json'). All parameters defined as JSON
+    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration file (i.e. 'params.json'). All parameters defined as JSON
                          type must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING:
                          passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which
                          are not appreciated by nextflow.
@@ -241,6 +242,34 @@ Define the options in a JSON file, for example:
 	"fastaPath": "test/data/fasta/multimer/alphafold"
 }
 ```
+
+## AlphaFold3
+
+Visit the [AlphaFold3](https://github.com/google-deepmind/alphafold3/) GitHub repository for more details about the prediction model.
+
+List of AlphaFold3 options:
+
+```bash
+nextflow run main.nf --alphaFold3Help -profile singularity
+```
+
+Launch the nextflow pipeline using GPU:
+
+```bash
+nextflow run main.nf -params-file test/params-file/alphafold3-monomer.json -profile singularity --useGpu
+```
+
+Define the options in a JSON file, for example:
+
+```json
+{
+	"launchAlphaFold": "true",
+	"alphaFold3Options": "--model_dir=/path/to/alphafold3/params",
+	"fastaPath": "test/data/fasta/monomer2"
+}
+```
+
+Note that you have to apply to otain the AlphaFolf3 model parameters as described on [google-deepmind/alphafold3](https://github.com/google-deepmind/alphafold3?tab=readme-ov-file#obtaining-model-parameters). Therefore, it is mandatory that the `alphaFold3Options` option in the JSON file provide the path to the model parameter `AF3.bin` via using `--model_dir`.
 
 ## ColabFold
 

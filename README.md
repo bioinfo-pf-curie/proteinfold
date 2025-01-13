@@ -55,7 +55,7 @@ MANDATORY ARGUMENTS, NEXTFLOW:
     -profile  STRING [test, singularity, cluster]  Configuration profile to use. Can use multiple (comma separated).
 
 OTHER OPTIONS, NEXTFLOW:
-    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration filei (i.e. 'params.json'). All parameters defined as JSON
+    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration file (i.e. 'params.json'). All parameters defined as JSON
                          type must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING:
                          passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which
                          are not appreciated by nextflow.
