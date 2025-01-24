@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: docker.io/4geniac/proteinfold:alphafold3-v3.0.0-base
+From: docker.io/4geniac/proteinfold:alphafold3-v3.0.1-base
 
 %environment
   export LC_ALL=C
