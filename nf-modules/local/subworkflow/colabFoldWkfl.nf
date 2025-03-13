@@ -63,6 +63,14 @@ workflow colabFoldWkfl {
   /////////////////////////////////////////////////////////
   fastaChecker(fastaPathCh)
 
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
   //////////////////////////
   // Structure prediction //
   //////////////////////////
@@ -81,32 +89,25 @@ workflow colabFoldWkfl {
     versionsCh = versionsCh.mix(colabFold.out.versions)
     optionsCh = optionsCh.mix(colabFold.out.options)
     plotsCh = colabFold.out.plots
-  }
  
-  ///////////////////////
-  // plot 3D structure //
-  ///////////////////////
-  pymolPng(colabFold.out.pdb)
-   
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+    ///////////////////////
+    // plot 3D structure //
+    ///////////////////////
+    pymolPng(colabFold.out.pdb)
+    
+    //////////////////////////////////
+    // multiqc by protein structure //
+    //////////////////////////////////
+    mqcProteinStructWkfl(
+      optionsYamlCh,
+      versionsYamlCh,
+      plotsCh,
+      colabFold.out.ranking,
+      pymolPng.out.png,
+      fastaFilesCh,
+      workflowSummaryCh
+    )
 
-  //////////////////////////////////
-  // multiqc by protein structure //
-  //////////////////////////////////
-  mqcProteinStructWkfl(
-    optionsYamlCh,
-    versionsYamlCh,
-    plotsCh,
-    colabFold.out.ranking,
-    pymolPng.out.png,
-    fastaFilesCh,
-    workflowSummaryCh
-  )
+  }
 
 }

@@ -71,6 +71,15 @@ workflow alphaFoldWkfl {
   // Structure prediction //
   //////////////////////////
   alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
+
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
     alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
@@ -105,87 +114,79 @@ workflow alphaFoldWkfl {
     // step generate plots
     massiveFoldPlots(alphaFold.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
-  }
  
-  ///////////////////////
-  // plot 3D structure //
-  ///////////////////////
-  pymolPng(alphaFold.out.pdb)
-   
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
-
-  // rankModelCh contains:
-  // [protein, rank, model, tool, pathToprediction]
-  // for example:
-  // [BTB-domain, 67, model_1_multimer_v3_pred_5, alphaFold, /path/to/work/70/fb3e7/predictions/BTB-domain]
-  rankModelCh = alphaFold.out.ranking
-    .map {
-      File rankingTsv = new File(it[1].toString())
-      int lineNumber = 0 
-      List rankModel = [] 
-      for(line in rankingTsv.readLines()) {
-        if (lineNumber != 0) {
-          def (rank, model, score) = line.tokenize('\t')
-          rankModel.add(tuple (it[0], rank, model))
+    ///////////////////////
+    // plot 3D structure //
+    ///////////////////////
+    pymolPng(alphaFold.out.pdb)
+    
+    // rankModelCh contains:
+    // [protein, rank, model, tool, pathToprediction]
+    // for example:
+    // [BTB-domain, 67, model_1_multimer_v3_pred_5, alphaFold, /path/to/work/70/fb3e7/predictions/BTB-domain]
+    rankModelCh = alphaFold.out.ranking
+      .map {
+        File rankingTsv = new File(it[1].toString())
+        int lineNumber = 0 
+        List rankModel = [] 
+        for(line in rankingTsv.readLines()) {
+          if (lineNumber != 0) {
+            def (rank, model, score) = line.tokenize('\t')
+            rankModel.add(tuple (it[0], rank, model))
+          }
+          lineNumber = lineNumber + 1 
         }
-        lineNumber = lineNumber + 1 
+        rankModel
       }
-      rankModel
+      .flatten()
+      .collate(3)
+      .combine(alphaFold.out.predictions, by: 0)
+      // The map is needed for adaptive memory resource
+      .map {
+        // size in Bytes of the pickle file
+        long pickleSize = 0
+        def pickle = new File(it[4].toString() + "/result_" + it[2] + ".pkl")
+        pickleSize = pickle.length()
+        it.add(pickleSize)
+        it
+      }
+
+
+    /////////////////////////////////////////
+    // metrics for the multimer prediction //
+    /////////////////////////////////////////
+
+    if(params.alphaFoldOptions.contains('multimer')){
+      metricsMultimer(rankModelCh)
+      mergeMetricsMultimer(metricsMultimer.out.metrics
+                            .groupTuple()
+                            .map { tuple(it[0], it[1], it[2][0])}
+                          )
+      rankingCh = mergeMetricsMultimer.out.ranking
+    } else {
+      rankingCh = alphaFold.out.ranking
     }
-    .flatten()
-    .collate(3)
-    .combine(alphaFold.out.predictions, by: 0)
-    // The map is needed for adaptive memory resource
-    .map {
-      // size in Bytes of the pickle file
-      long pickleSize = 0
-      def pickle = new File(it[4].toString() + "/result_" + it[2] + ".pkl")
-      pickleSize = pickle.length()
-      it.add(pickleSize)
-      it
+
+
+    //////////////////////////////////
+    // multiqc by protein structure //
+    //////////////////////////////////
+    mqcProteinStructWkfl(
+      optionsYamlCh,
+      versionsYamlCh,
+      plotsCh,
+      rankingCh,
+      pymolPng.out.png,
+      fastaFilesCh,
+      workflowSummaryCh
+    )
+
+    ///////////////
+    // AlphaFill //
+    ///////////////
+    if(params.launchAlphaFill){
+      alphaFillWkfl(alphaFold.out.predictions)
     }
-
-
-  /////////////////////////////////////////
-  // metrics for the multimer prediction //
-  /////////////////////////////////////////
-
-  if(params.alphaFoldOptions.contains('multimer')){
-    metricsMultimer(rankModelCh)
-    mergeMetricsMultimer(metricsMultimer.out.metrics
-                          .groupTuple()
-                          .map { tuple(it[0], it[1], it[2][0])}
-                        )
-    rankingCh = mergeMetricsMultimer.out.ranking
-  } else {
-    rankingCh = alphaFold.out.ranking
-  }
-
-
-  //////////////////////////////////
-  // multiqc by protein structure //
-  //////////////////////////////////
-  mqcProteinStructWkfl(
-    optionsYamlCh,
-    versionsYamlCh,
-    plotsCh,
-    rankingCh,
-    pymolPng.out.png,
-    fastaFilesCh,
-    workflowSummaryCh
-  )
-
-  ///////////////
-  // AlphaFill //
-  ///////////////
-  if(params.launchAlphaFill){
-    alphaFillWkfl(alphaFold.out.predictions)
   }
 
 }

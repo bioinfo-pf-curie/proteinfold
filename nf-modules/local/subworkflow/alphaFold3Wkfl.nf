@@ -64,6 +64,14 @@ workflow alphaFold3Wkfl {
   ////////////////////////////////////////////////////////////////////////
   jsonChecker(fastaPathCh)
 
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
   //////////////////////////
   // Structure prediction //
   //////////////////////////
@@ -74,16 +82,16 @@ workflow alphaFold3Wkfl {
     versionsCh = versionsCh.mix(alphaFold3Search.out.versions)
     optionsCh = optionsCh.mix(alphaFold3Search.out.options)
   } else {
-      if (params.fromMsas != null){
-        // Do nothing (just to have the same if/else condition as in the alphaFold.nf file
-        msasCh = msasCh
-      } else {
-        // step - MSAS
-        alphaFold3Search(fastaFilesCh, params.alphaFold3Database)
-        versionsCh = versionsCh.mix(alphaFold3Search.out.versions)
-        optionsCh = optionsCh.mix(alphaFold3Search.out.options)
-        msasCh = alphaFold3Search.out.msas
-      }
+    if (params.fromMsas != null){
+      // Do nothing (just to have the same if/else condition as in the alphaFold.nf file
+      msasCh = msasCh
+    } else {
+      // step - MSAS
+      alphaFold3Search(fastaFilesCh, params.alphaFold3Database)
+      versionsCh = versionsCh.mix(alphaFold3Search.out.versions)
+      optionsCh = optionsCh.mix(alphaFold3Search.out.options)
+      msasCh = alphaFold3Search.out.msas
+    }
     // msasCh contains:
     // [protein, /path/to/msas/protein.json]
     // the file  /path/to/msas/protein.json contains the msas in a dedicated field
@@ -91,44 +99,36 @@ workflow alphaFold3Wkfl {
     alphaFold3(msasCh, params.alphaFold3Database, jsonChecker.out.jsonOK)
     versionsCh = versionsCh.mix(alphaFold3.out.versions)
     optionsCh = optionsCh.mix(alphaFold3.out.options)
+
+    rankingCh = alphaFold3.out.ranking
+
+    massiveFoldPlots(alphaFold3.out.predictions)
+    plotsCh = massiveFoldPlots.out.plots
+
+    ///////////////////////
+    // plot 3D structure //
+    ///////////////////////
+    pymolPng(alphaFold3.out.pdb)
+
+    //////////////////////////////////
+    // multiqc by protein structure //
+    //////////////////////////////////
+    Channel.empty()
+    mqcProteinStructWkfl(
+      optionsYamlCh,
+      versionsYamlCh,
+      plotsCh,
+      rankingCh,
+      pymolPng.out.png,
+      fastaFilesCh,
+      workflowSummaryCh
+    )
+
+    ///////////////
+    // AlphaFill //
+    ///////////////
+    if(params.launchAlphaFill){
+      alphaFillWkfl(alphaFold3.out.predictions)
     }
-
-  rankingCh = alphaFold3.out.ranking
-
-  massiveFoldPlots(alphaFold3.out.predictions)
-  plotsCh = massiveFoldPlots.out.plots
-
-  ///////////////////////
-  // plot 3D structure //
-  ///////////////////////
-  pymolPng(alphaFold3.out.pdb)
-
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
-
-  //////////////////////////////////
-  // multiqc by protein structure //
-  //////////////////////////////////
-  Channel.empty()
-  mqcProteinStructWkfl(
-    optionsYamlCh,
-    versionsYamlCh,
-    plotsCh,
-    rankingCh,
-    pymolPng.out.png,
-    fastaFilesCh,
-    workflowSummaryCh
-  )
-
-  ///////////////
-  // AlphaFill //
-  ///////////////
-  if(params.launchAlphaFill){
-    alphaFillWkfl(alphaFold3.out.predictions)
   }
 }
