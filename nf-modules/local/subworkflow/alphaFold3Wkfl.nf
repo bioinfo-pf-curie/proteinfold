@@ -64,14 +64,6 @@ workflow alphaFold3Wkfl {
   ////////////////////////////////////////////////////////////////////////
   jsonChecker(fastaPathCh)
 
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
-
   //////////////////////////
   // Structure prediction //
   //////////////////////////
@@ -131,4 +123,13 @@ workflow alphaFold3Wkfl {
       alphaFillWkfl(alphaFold3.out.predictions)
     }
   }
+
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
 }

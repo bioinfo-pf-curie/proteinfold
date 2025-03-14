@@ -89,15 +89,6 @@ workflow afMassiveWkfl {
   // afMassive is alphaFold-like, it uses alphaFold's options too
   alphaFoldOptions(afModelsInfo.alphaFoldOptionsParallel, params.afMassiveDatabase)
 
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
-
-
   // predictions
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
@@ -227,5 +218,13 @@ workflow afMassiveWkfl {
       alphaFillWkfl(afMassiveGather.out.predictions)
     }
   }
+
+  ////////////////////
+  // Software infos //
+  ////////////////////
+  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
 }
