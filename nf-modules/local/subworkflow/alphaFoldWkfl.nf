@@ -75,8 +75,7 @@ workflow alphaFoldWkfl {
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
     alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
-    versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
-    optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
+
   } else {
     if (params.fromMsas != null){
       // step MSAS when fromMsas
@@ -106,6 +105,14 @@ workflow alphaFoldWkfl {
     // step generate plots
     massiveFoldPlots(alphaFold.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
+
+    ////////////////////
+    // Software infos //
+    ////////////////////
+    getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+    getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+    optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+    versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
  
     ///////////////////////
     // plot 3D structure //
@@ -180,13 +187,5 @@ workflow alphaFoldWkfl {
       alphaFillWkfl(alphaFold.out.predictions)
     }
   }
-
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
 }

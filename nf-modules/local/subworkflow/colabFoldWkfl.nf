@@ -68,8 +68,7 @@ workflow colabFoldWkfl {
   //////////////////////////
   if (params.onlyMsas){
     colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-    versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
-    optionsCh = optionsCh.mix(colabFoldSearch.out.options)
+
   } else {
     if (params.fromMsas == null){
       colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
@@ -81,7 +80,15 @@ workflow colabFoldWkfl {
     versionsCh = versionsCh.mix(colabFold.out.versions)
     optionsCh = optionsCh.mix(colabFold.out.options)
     plotsCh = colabFold.out.plots
- 
+
+    ////////////////////
+    // Software infos //
+    ////////////////////
+    getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+    getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+    optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+    versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
     ///////////////////////
     // plot 3D structure //
     ///////////////////////
@@ -101,13 +108,5 @@ workflow colabFoldWkfl {
     )
 
   }
-
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
 }

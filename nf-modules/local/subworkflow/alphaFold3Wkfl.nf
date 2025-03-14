@@ -71,8 +71,7 @@ workflow alphaFold3Wkfl {
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
     alphaFold3Search(fastaFilesCh, params.alphaFold3Database)
-    versionsCh = versionsCh.mix(alphaFold3Search.out.versions)
-    optionsCh = optionsCh.mix(alphaFold3Search.out.options)
+
   } else {
     if (params.fromMsas != null){
       // Do nothing (just to have the same if/else condition as in the alphaFold.nf file
@@ -91,6 +90,14 @@ workflow alphaFold3Wkfl {
     alphaFold3(msasCh, params.alphaFold3Database, jsonChecker.out.jsonOK)
     versionsCh = versionsCh.mix(alphaFold3.out.versions)
     optionsCh = optionsCh.mix(alphaFold3.out.options)
+
+    ////////////////////
+    // Software infos //
+    ////////////////////
+    getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+    getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+    optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+    versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
     rankingCh = alphaFold3.out.ranking
 
@@ -123,13 +130,5 @@ workflow alphaFold3Wkfl {
       alphaFillWkfl(alphaFold3.out.predictions)
     }
   }
-
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
 }

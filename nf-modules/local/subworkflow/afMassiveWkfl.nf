@@ -93,8 +93,7 @@ workflow afMassiveWkfl {
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
     afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
-    versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
-    optionsCh = optionsCh.mix(afMassiveSearch.out.options)
+  
   } else {
     if (params.fromMsas != null){
       // step MSAS when fromMsas
@@ -148,6 +147,15 @@ workflow afMassiveWkfl {
                   
     versionsCh = versionsCh.mix(afMassive.out.versions)
     optionsCh = optionsCh.mix(afMassive.out.options)
+
+    ////////////////////
+    // Software infos //
+    ////////////////////
+    getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+    getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+    optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+    versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
     // step generate plots
     massiveFoldPlots(afMassiveGather.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
@@ -218,13 +226,5 @@ workflow afMassiveWkfl {
       alphaFillWkfl(afMassiveGather.out.predictions)
     }
   }
-
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
 }
