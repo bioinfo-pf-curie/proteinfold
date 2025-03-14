@@ -1,0 +1,6 @@
+{
+	"launchAlphaFold3": true,
+	"alphaFold3Options": "",
+	"fastaPath": "test/data/fastaJson/multimer/alphafold",
+	"onlyMsas": true
+}

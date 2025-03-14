@@ -89,7 +89,6 @@ workflow afMassiveWkfl {
   // afMassive is alphaFold-like, it uses alphaFold's options too
   alphaFoldOptions(afModelsInfo.alphaFoldOptionsParallel, params.afMassiveDatabase)
 
-
   // predictions
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
@@ -152,8 +151,74 @@ workflow afMassiveWkfl {
     // step generate plots
     massiveFoldPlots(afMassiveGather.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
+
+    // rankModelCh contains:
+    // [protein, rank, model, tool, pathToprediction]
+    // for example:
+    // [BTB-domain, 67, model_1_multimer_v3_pred_5, alphaFold, /path/to/work/70/fb3e7/predictions/BTB-domain]
+    rankModelCh = afMassiveGather.out.ranking
+      .map {
+        File rankingTsv = new File(it[1].toString())
+        int lineNumber = 0 
+        List rankModel = [] 
+        for(line in rankingTsv.readLines()) {
+          if (lineNumber != 0) {
+            def (rank, model, score) = line.tokenize('\t')
+            rankModel.add(tuple (it[0], rank, model))
+          }
+          lineNumber = lineNumber + 1 
+        }
+        rankModel
+      }
+      .flatten()
+      .collate(3)
+      .combine(afMassiveGather.out.predictions, by: 0)
+      // The map is needed for adaptive memory resource
+      .map {
+        // size in Bytes of the pickle file
+        long pickleSize = 0
+        def pickle = new File(it[4].toString() + "/result_" + it[2] + ".pkl")
+        pickleSize = pickle.length()
+        it.add(pickleSize)
+        it
+      }
+
+    /////////////////////////////////////////
+    // metrics for the multimer prediction //
+    /////////////////////////////////////////
+    if(params.alphaFoldOptions.contains('multimer')){
+      metricsMultimer(rankModelCh)
+      mergeMetricsMultimer(metricsMultimer.out.metrics
+                            .groupTuple()
+                            .map { tuple(it[0], it[1], it[2][0])}
+                          )
+      rankingCh = mergeMetricsMultimer.out.ranking
+    } else {
+      rankingCh = afMassiveGather.out.ranking
+    }
+
+    //////////////////////////////////
+    // multiqc by protein structure //
+    //////////////////////////////////
+    mqcProteinStructWkfl(
+      optionsYamlCh,
+      versionsYamlCh,
+      plotsCh,
+      rankingCh,
+      pymolPng.out.png,
+      fastaFilesCh,
+      workflowSummaryCh
+    )
+
+
+    ///////////////
+    // AlphaFill //
+    ///////////////
+    if(params.launchAlphaFill){
+      alphaFillWkfl(afMassiveGather.out.predictions)
+    }
   }
- 
+
   ////////////////////
   // Software infos //
   ////////////////////
@@ -161,71 +226,5 @@ workflow afMassiveWkfl {
   getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
   optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
   versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
-
-  // rankModelCh contains:
-  // [protein, rank, model, tool, pathToprediction]
-  // for example:
-  // [BTB-domain, 67, model_1_multimer_v3_pred_5, alphaFold, /path/to/work/70/fb3e7/predictions/BTB-domain]
-  rankModelCh = afMassiveGather.out.ranking
-    .map {
-      File rankingTsv = new File(it[1].toString())
-      int lineNumber = 0 
-      List rankModel = [] 
-      for(line in rankingTsv.readLines()) {
-        if (lineNumber != 0) {
-          def (rank, model, score) = line.tokenize('\t')
-          rankModel.add(tuple (it[0], rank, model))
-        }
-        lineNumber = lineNumber + 1 
-      }
-      rankModel
-    }
-    .flatten()
-    .collate(3)
-    .combine(afMassiveGather.out.predictions, by: 0)
-    // The map is needed for adaptive memory resource
-    .map {
-      // size in Bytes of the pickle file
-      long pickleSize = 0
-      def pickle = new File(it[4].toString() + "/result_" + it[2] + ".pkl")
-      pickleSize = pickle.length()
-      it.add(pickleSize)
-      it
-    }
-
-  /////////////////////////////////////////
-  // metrics for the multimer prediction //
-  /////////////////////////////////////////
-  if(params.alphaFoldOptions.contains('multimer')){
-    metricsMultimer(rankModelCh)
-    mergeMetricsMultimer(metricsMultimer.out.metrics
-                          .groupTuple()
-                          .map { tuple(it[0], it[1], it[2][0])}
-                        )
-    rankingCh = mergeMetricsMultimer.out.ranking
-  } else {
-    rankingCh = afMassiveGather.out.ranking
-  }
-
-  //////////////////////////////////
-  // multiqc by protein structure //
-  //////////////////////////////////
-  mqcProteinStructWkfl(
-    optionsYamlCh,
-    versionsYamlCh,
-    plotsCh,
-    rankingCh,
-    pymolPng.out.png,
-    fastaFilesCh,
-    workflowSummaryCh
-  )
-
-
-  ///////////////
-  // AlphaFill //
-  ///////////////
-  if(params.launchAlphaFill){
-    alphaFillWkfl(afMassiveGather.out.predictions)
-  }
 
 }
