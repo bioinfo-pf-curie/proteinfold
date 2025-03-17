@@ -188,6 +188,19 @@ if (params.onlyMsas && params.fromMsas != null){
   exit 1, "The --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
 }
 
+// Check random_seed value
+if ((params.launchAfMassive || params.launchAlphaFold) && !params.alphaFoldOptions.find("--random_seed=\\d")){
+  params.alphaFoldOptions = params.alphaFoldOptions + " --random_seed=123456 "
+  println("${params.alphaFoldOptions}")
+  msg = "ERROR : The --random_seed parameter is not specified, AlphaFold Options : " + params.alphaFoldOptions
+  exit 1, NFTools.printOrangeText(msg)
+}
+
+if ((params.launchColabFold) && !params.colabFoldOptions.find("--random_seed=\\d")){
+  params.colabFoldOptions = params.colabFoldOptions + " --random_seed=123456 "
+  msg = "ERROR : The --random_seed parameter is not specified, ColabFold Options : " + params.colabFoldOptions
+  exit 1, NFTools.printOrangeText(msg)
+}
 /*
 ==========================
  BUILD CHANNELS
