@@ -1,6 +1,7 @@
 Issue #89
   BUGFIXES
     - Test added for onlyMsas
+    - Added command test in Admin.md
     - Resole error for onlyMsas
 
 Issue #88
