@@ -1,0 +1,6 @@
+{
+  "launchAfMassive3": true,
+  "alphaFold3Options": "--model_dir=/lustre/fswork/projects/rech/kci/commun/pipelines/proteinfold/dev/annotations/proteinfold/alphafold3/params",
+  "fastaPath": "test/data/fastaJson/multimer/alphafold",
+  "onlyMsas": true
+}
