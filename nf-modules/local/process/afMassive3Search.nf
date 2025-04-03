@@ -18,7 +18,7 @@ of the license and that you accept its terms.
 //   - https://github.com/google-deepmind/alphafold3
 process afMassive3Search {
   tag "${protein}"
-  label 'alphafold3'
+  label 'alphaFold3'
   label 'extraMem'
   label 'highCpu'
   publishDir path: "${params.outDir}/afmassive3Search/", mode: 'copy'
