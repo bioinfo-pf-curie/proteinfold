@@ -50,6 +50,40 @@ rm -r work results/ .nextflow*
 nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
 nextflow run main.nf -stub-run -resume -profile singularity --fromPredictions test/data/afmassive/monomer2/ --launchAlphaFill --alphaFillDatabase $PWD/test/data/alphafill/database/ --fastaPath test/data/fasta/monomer2
 
+# afMassive3
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer-frommsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer-onlymsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer-frommsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer-onlymsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive3-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
+
 
 # alphaFold
 
