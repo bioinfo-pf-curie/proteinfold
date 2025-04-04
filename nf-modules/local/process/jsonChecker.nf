@@ -27,7 +27,12 @@ process jsonChecker {
   val(true), emit: jsonOK
 
   script:
+  def num_seed = null
+  if (params.alphaFold3Options.contains("--num_seeds")){
+    num_seed = (params.alphaFold3Options =~ /--num_seeds=\w+/)[0]
+  }
   """
+  ap_create_afmassive3_json_seed.py --protein=None --json=$fastaFileJson $num_seed --create_file=False
   ap_json_checker.py --json=${fastaFileJson} 
   """
 
