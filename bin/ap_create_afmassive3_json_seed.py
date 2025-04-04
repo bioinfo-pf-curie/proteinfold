@@ -17,6 +17,7 @@ Flags:
     --num_seeds: Number of seeds to generate (optional).
 """
 
+import sys
 import json
 import os
 from absl import app, flags
@@ -26,6 +27,10 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string("json", None, "Path to the JSON file")
 flags.DEFINE_string("protein", None, "Path to the protein file")
 flags.DEFINE_integer("num_seeds", None, "Number of seeds")
+flags.DEFINE_boolean(
+    "create_file", True, "Boolean for create or not a file per seeds"
+)
+
 flags.mark_flag_as_required("json")
 flags.mark_flag_as_required("protein")
 
@@ -54,7 +59,11 @@ def get_seed(data):
     Returns:
         list: List of seeds.
     """
-    return data["modelSeeds"]
+    if "modelSeeds" in data:
+        return list(set(data["modelSeeds"]))
+    else:
+        print("ERROR: there is no modelSeeds field in the fasta.json file")
+        sys.exit(1)
 
 
 def test_list_modelSeeds(seed):
@@ -69,19 +78,63 @@ def test_list_modelSeeds(seed):
     """
     try:
         if isinstance(seed, list):
-            if all(isinstance(element, int) for element in seed):
+            if all(
+                (isinstance(element, int) and element >= 0) for element in seed
+            ):
                 return True
-
-            raise ValueError(
-                "All elements inside your modelSeeds list are not integers"
-            )
-
-        raise ValueError("modelSeeds is not a list")
+            else:
+                print(
+                    "ERROR: All elements inside your modelSeeds list are not positive integers"
+                )
+                sys.exit(1)
+        else:
+            print("ERROR: modelSeeds is not a list")
+            sys.exit(1)
     except ValueError as error:
         print("Caught an error: " + repr(error))
 
 
-def create_json(data, seed, num_seeds, protein):
+def control_num_seed_modelSeeds(seed, num_seeds, json_name):
+    """
+    Validates the combination of seed and num_seeds parameters.
+
+    Args:
+        seed (list): List of seeds from the modelSeeds section.
+        num_seeds (int): Number of seeds specified in alphafold3Options.
+        json_name (str): Name of the JSON file.
+
+    Returns:
+        None
+
+    Raises:
+        SystemExit: If both multiple seeds and num_seeds are specified,
+                    an error message is printed and the program exits.
+    """
+    if len(seed) > 1 and num_seeds is None:
+        return
+    elif len(seed) == 1 and num_seeds is not None:
+        return
+    else:
+        print(
+            f"""ERROR: You have selected multiple seeds in the modelSeeds section of
+                your fasta.json file ({json_name}) and also specified the num_seeds
+                option in alphafold3Options in the params-file ({num_seeds}).
+
+                To resolve this, you need to:
+
+                    Option 1: Specify the seeds you want in the modelSeeds section of
+                    your fasta.json file (e.g., "modelSeeds": [1, 8, 14]) and set
+                    the --num_seeds option to None in alphafold3Options in the params-file.
+
+                    Option 2: Specify the number of seeds using the --num_seeds option 
+                    (e.g., --num_seeds=1000) in alphafold3Options in the params-file 
+                    and select the starting seed in the modelSeeds section of your fasta.json file (e.g., "modelSeeds": [1]).
+            """
+        )
+        sys.exit(1)
+
+
+def create_json(data, seed, num_seeds, protein, json_name):
     """
     Creates JSON files based on the seeds and protein information.
 
@@ -127,11 +180,22 @@ def create_json(data, seed, num_seeds, protein):
                 json.dump(content, outfile)
     else:
         print(
-            """ERROR: you can either specify several seeds in modelSeeds (num_seeds=None)
-               or choose a number of seeds with num_seeds by having a single starting seed
-               in modelSeeds."""
+            f"""ERROR: You have selected multiple seeds in the modelSeeds section of
+                your fasta.json file ({json_name}) and also specified the num_seeds
+                option in alphafold3Options in the params-file ({num_seeds}).
+
+                To resolve this, you need to:
+
+                    Option 1: Specify the seeds you want in the modelSeeds section of
+                    your fasta.json file (e.g., "modelSeeds": [1, 8, 14]) and set
+                    the --num_seeds option to None in alphafold3Options in the params-file.
+
+                    Option 2: Specify the number of seeds using the --num_seeds option 
+                    (e.g., --num_seeds=1000) in alphafold3Options in the params-file 
+                    and select the starting seed in the modelSeeds section of your fasta.json file (e.g., "modelSeeds": [1]).
+            """
         )
-        exit(1)
+        sys.exit(1)
 
 
 def main(argv):
@@ -148,7 +212,9 @@ def main(argv):
     data = open_json(FLAGS.json)
     seed = get_seed(data)
     test_list_modelSeeds(seed)
-    create_json(data, seed, FLAGS.num_seeds, FLAGS.protein)
+    control_num_seed_modelSeeds(seed, FLAGS.num_seeds, FLAGS.json)
+    if FLAGS.create_file:
+        create_json(data, seed, FLAGS.num_seeds, FLAGS.protein, FLAGS.json)
 
 
 if __name__ == "__main__":
