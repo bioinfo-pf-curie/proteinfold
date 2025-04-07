@@ -1,3 +1,7 @@
+Issue #90
+  NEW FEATURES
+    - add AfMassive3 : parallelized Alphafold3 seeds
+
 Issue #89
   BUGFIXES
     - Test added for onlyMsas
