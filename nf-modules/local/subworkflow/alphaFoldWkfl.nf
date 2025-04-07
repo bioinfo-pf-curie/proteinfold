@@ -74,7 +74,7 @@ workflow alphaFoldWkfl {
 
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
-    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, fastaChecker.out.jsonOK)
 
   } else {
     if (params.fromMsas != null){
@@ -87,7 +87,7 @@ workflow alphaFoldWkfl {
       msasCh = fastaFilesCh.join(msasCh)
     } else {
       // step - MSAS
-      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, fastaChecker.out.jsonOK)
       versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
       optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
       msasCh = alphaFoldSearch.out.msas

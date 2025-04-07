@@ -68,14 +68,14 @@ workflow afMassive3Wkfl {
  
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
-    alphaFold3Search(fastaFilesCh, params.afMassive3Database)
+    alphaFold3Search(fastaFilesCh, params.afMassive3Database, jsonChecker.out.jsonOK)
   } else {
     if (params.fromMsas != null){
       // Do nothing (just to have the same if/else condition as in the alphaFold.nf file
       msasCh = msasCh
     } else {
       // step - MSAS
-      alphaFold3Search(fastaFilesCh, params.afMassive3Database)
+      alphaFold3Search(fastaFilesCh, params.afMassive3Database, jsonChecker.out.jsonOK)
       versionsCh = versionsCh.mix(alphaFold3Search.out.versions)
       optionsCh = optionsCh.mix(alphaFold3Search.out.options)
       msasCh = alphaFold3Search.out.msas

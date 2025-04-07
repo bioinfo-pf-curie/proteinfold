@@ -53,7 +53,7 @@ workflow nanoBertWkfl {
   // Check that the fasta files are correctly formatted  //
   /////////////////////////////////////////////////////////
   fastaChecker(fastaPathCh)
-  nanoBert(fastaFilesCh, params.nanoBertDatabase)
+  nanoBert(fastaFilesCh, params.nanoBertDatabase, fastaChecker.out.jsonOK)
 
   // step - generate multiqc for nanoBERT
   mqcNanoBert(

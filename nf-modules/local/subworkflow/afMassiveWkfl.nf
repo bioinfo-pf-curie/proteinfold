@@ -92,7 +92,7 @@ workflow afMassiveWkfl {
   // predictions
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
-    afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+    afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase, fastaChecker.out.jsonOK)
   
   } else {
     if (params.fromMsas != null){
@@ -100,7 +100,7 @@ workflow afMassiveWkfl {
       msasCh = fastaFilesCh.join(msasCh)
     } else {
       // step - MSAS
-      afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+      afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase, fastaChecker.out.jsonOK)
       versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
       optionsCh = optionsCh.mix(afMassiveSearch.out.options)
       msasCh = afMassiveSearch.out.msas

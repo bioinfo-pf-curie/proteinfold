@@ -67,11 +67,11 @@ workflow colabFoldWkfl {
   // Structure prediction //
   //////////////////////////
   if (params.onlyMsas){
-    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
 
   } else {
     if (params.fromMsas == null){
-      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
       versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
       optionsCh = optionsCh.mix(colabFoldSearch.out.options)
       msasCh = colabFoldSearch.out.msas

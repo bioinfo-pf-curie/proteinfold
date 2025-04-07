@@ -29,6 +29,7 @@ process colabFoldSearch {
   input:
   tuple val(protein), path(fastaFile)
   path colabFoldDatabase
+  val jsonOK
 
   output:
   tuple val(protein), path("*", type: 'dir'), emit: msas
