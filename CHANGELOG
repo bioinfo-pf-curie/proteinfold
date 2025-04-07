@@ -1,3 +1,7 @@
+Issue #79
+  BUGFIXES
+    - Added Checker result to search processes to respect script order
+
 Issue #89
   BUGFIXES
     - Test added for onlyMsas
