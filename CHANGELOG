@@ -1,22 +1,15 @@
-Issue #79
-  BUGFIXES
-    - Added Checker result to search processes to respect script order
 
-Issue #89
-  BUGFIXES
-    - Test added for onlyMsas
-    - Added command test in Admin.md
-    - Resole error for onlyMsas
-
-Issue #88
   NEW FEATURES
-    - Added a default value of false for launchAfMassive
+   - Seed parallelization (AfMassive3) (Issue #90)
+   - Test for AfMassive3 (Issue #90)
+   - Added a default value of false for launchAfMassive (Issue #88)
+   - Error added if option --random_seed not provided for alphafold2, afMassive, ColabFold (Issue #87)
 
-
-Issue #87
-  NEW FEATURES
-    - Error added if option --random_seed not profided for alphafold2, afMassive, ColabFold
-
+  BUGFIXES
+    - Test added for onlyMsas (Issue #89)
+    - Added command test in Admin.md (Issue #89)
+    - Resole error for onlyMsas (Issue #89)
+    - Added Checker result to search processes to respect script order (Issue #79)
 
 v1.5.0
 01/24/2025

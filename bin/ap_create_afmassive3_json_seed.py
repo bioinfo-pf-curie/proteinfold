@@ -117,17 +117,17 @@ def control_num_seed_modelSeeds(seed, num_seeds, json_name):
     else:
         print(
             f"""ERROR: You have selected multiple seeds in the modelSeeds section of
-                your fasta.json file ({json_name}) and also specified the num_seeds
-                option in alphafold3Options in the params-file ({num_seeds}).
+                your fasta.json file ({json_name}) and also specified the num_seeds (set to {num_seeds})
+                option in alphaFold3Options in the params-file.
 
                 To resolve this, you need to:
 
                     Option 1: Specify the seeds you want in the modelSeeds section of
                     your fasta.json file (e.g., "modelSeeds": [1, 8, 14]) and set
-                    the --num_seeds option to None in alphafold3Options in the params-file.
+                    the --num_seeds option to None in alphaFold3Options in the params-file.
 
                     Option 2: Specify the number of seeds using the --num_seeds option 
-                    (e.g., --num_seeds=1000) in alphafold3Options in the params-file 
+                    (e.g., --num_seeds=1000) in alphaFold3Options in the params-file 
                     and select the starting seed in the modelSeeds section of your fasta.json file (e.g., "modelSeeds": [1]).
             """
         )
@@ -181,17 +181,17 @@ def create_json(data, seed, num_seeds, protein, json_name):
     else:
         print(
             f"""ERROR: You have selected multiple seeds in the modelSeeds section of
-                your fasta.json file ({json_name}) and also specified the num_seeds
-                option in alphafold3Options in the params-file ({num_seeds}).
+                your fasta.json file ({json_name}) and also specified the num_seeds (set to {num_seeds})
+                option in alphaFold3Options in the params-file.
 
                 To resolve this, you need to:
 
                     Option 1: Specify the seeds you want in the modelSeeds section of
                     your fasta.json file (e.g., "modelSeeds": [1, 8, 14]) and set
-                    the --num_seeds option to None in alphafold3Options in the params-file.
+                    the --num_seeds option to None in alphaFold3Options in the params-file.
 
                     Option 2: Specify the number of seeds using the --num_seeds option 
-                    (e.g., --num_seeds=1000) in alphafold3Options in the params-file 
+                    (e.g., --num_seeds=1000) in alphaFold3Options in the params-file 
                     and select the starting seed in the modelSeeds section of your fasta.json file (e.g., "modelSeeds": [1]).
             """
         )
