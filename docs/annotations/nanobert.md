@@ -1,4 +1,16 @@
-# Installation of data required by DiffDock
+# Installation of data required by NanoBERT
+
+You may have to set the appropriate `git` setting to allow the `git clone` command:
+
+```bash
+git config --global http.sslVerify false
+```
+
+Once you have cloned the repository, do not forvert to revert the config:
+
+```bash
+git config --global http.sslVerify true
+```
 
 ## human_heavy model
 ```bash
@@ -7,8 +19,6 @@ cd $HOME/tmp/nanobert
 git lfs install
 git clone https://huggingface.co/NaturalAntibody/human_heavy
 ```
-
-
 
 ## nanoBERT model
 ```bash
