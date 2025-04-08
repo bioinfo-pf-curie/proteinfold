@@ -37,6 +37,7 @@ process alphaFoldSearch {
   tuple val(protein), path(fastaFile), val(chainIdNum)
   path alphaFoldOptions
   path alphaFoldDatabase
+  val jsonOK
 
   output:
   tuple val(protein), path("predictions/${protein}/msas/*"), emit: msas

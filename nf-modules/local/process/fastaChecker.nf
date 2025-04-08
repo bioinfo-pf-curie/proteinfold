@@ -29,6 +29,9 @@ process fastaChecker {
   input:
   path fastaFile
 
+  output:
+  val(true), emit: jsonOK
+  
   script:
   """
   ap_fasta_checker.sh ${fastaFile}

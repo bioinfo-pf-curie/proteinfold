@@ -37,6 +37,7 @@ process afMassiveSearch {
   tuple val(protein), path(fastaFile), val(chainIdNum)
   path alphaFoldOptions
   path afMassiveDatabase
+  val jsonOK
 
   output:
   tuple val(protein), path("predictions/${protein}/msas/*"), emit: msas

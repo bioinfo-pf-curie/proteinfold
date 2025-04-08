@@ -28,6 +28,7 @@ process nanoBert {
   // this is: path nanoBertDatabase
   // but renames as 'models''
   path('models')
+  val jsonOK
 
   output:
   tuple val("${protein}"), path("nanobert"), emit: scores

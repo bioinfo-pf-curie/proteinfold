@@ -27,6 +27,7 @@ process afMassive3Search {
   input:
   tuple val(protein), path(fastaFileJson)
   path afmassive3Database
+  val jsonOK
 
   output:
   tuple val(protein), path("${protein}/${protein}.json"), emit: msas
