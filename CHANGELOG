@@ -1,6 +1,7 @@
 Issue #90
   NEW FEATURES
-    - add AfMassive3 : parallelized Alphafold3 seeds
+  - Seed parallelization (AfMassive3)
+  - Test for AfMassive3
 
 Issue #89
   BUGFIXES
