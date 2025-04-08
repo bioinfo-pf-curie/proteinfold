@@ -11,6 +11,9 @@
     - Resole error for onlyMsas (Issue #89)
     - Added Checker result to search processes to respect script order (Issue #79)
 
+  DOCUMENTATION
+    - git setting for HuggingFace (NanoBert)
+
 v1.5.0
 01/24/2025
 
