@@ -15,12 +15,12 @@ of the license and that you accept its terms.
 
 */
 
-process afMassive3Gather {
+process alphaFold3Gather {
   tag "${protein}"
   label 'python'
   label 'minMem'
   label 'minCpu'
-  publishDir path: "${params.outDir}/afMassive3/",
+  publishDir path: "${params.outDir}/alphaFold3/",
              mode: 'copy',
              saveAs: { it.replaceAll('predictions/', '') }
 
