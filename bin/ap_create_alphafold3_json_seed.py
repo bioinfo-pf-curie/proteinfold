@@ -8,7 +8,7 @@ with updated seed values and protein names.
 The script supports both single and multiple seed configurations.
 
 Usage:
-    python ap_create_afmassive3_json_seed.py --json <path_to_json>
+    python ap_create_alphafold3_json_seed.py --json <path_to_json>
     --protein <protein_name> [--num_seeds <number_of_seeds>]
 
 Flags:
