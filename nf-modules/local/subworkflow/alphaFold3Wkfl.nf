@@ -22,6 +22,7 @@ of the license and that you accept its terms.
 */ 
 
 // Processes
+include { alphaBridge } from '../process/alphaBridge'
 include { alphaFold3 } from '../process/alphaFold3'
 include { alphaFold3Gather } from '../process/alphaFold3Gather'
 include { alphaFold3Search } from '../process/alphaFold3Search'
@@ -109,12 +110,13 @@ workflow alphaFold3Wkfl {
     afMassiveGatherCh = alphaFold3.out.predictions
                           .groupTuple()
                           .map { it ->
-                            it[1] =it[1].unique()
-                            it[2] = it[2].flatten()
+                            it[1] =it[1].unique().sort()
+                            it[2] = it[2].flatten().sort()
                             it
                           }
-    
-    alphaFold3Gather(afMassiveGatherCh, msasCh)
+                          .join(msasCh)
+
+    alphaFold3Gather(afMassiveGatherCh)
     ////////////////////
     // Software infos //
     ////////////////////
@@ -124,7 +126,7 @@ workflow alphaFold3Wkfl {
     versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
     rankingCh = alphaFold3Gather.out.ranking
-  
+    //alphaBridge(alphaFold3Gather.out.predictions)
     massiveFoldPlots(alphaFold3Gather.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
 
