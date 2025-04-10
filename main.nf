@@ -85,8 +85,8 @@ if(params.launchDynamicBind || params.launchDiffDock) {
   }
 }
 
-// AlphaFold3 and AfMassive3 do not take fasta file as input
-if(params.launchAlphaFold3 || params.launchAfMassive3) {
+// AlphaFold3 do not take fasta file as input
+if(params.launchAlphaFold3) {
   allowFastaPathNull = true
 }
 
@@ -134,17 +134,6 @@ if (!params.alphaFoldOptions.find("--max_template_date=(?:\\d{4})-(?:0[1-9]|1[0-
 if (params.launchAfMassive){
   File afMassiveDB = new File(params.genomes.afmassive.database)
   params.afMassiveDatabase = afMassiveDB.getCanonicalPath()
-
-  if(params.numberOfModels > 5) {
-    exit 1, "the option numberOfModels must not be greater than 5."
-  }
-}
-
-// AfMassive3
-// Get realpath for the annotations to avoid symlink issues in bindings with apptainer
-if (params.launchAfMassive3){
-  File afMassive3DB = new File(params.genomes.afmassive3.database)
-  params.afMassive3Database = afMassive3DB.getCanonicalPath()
 
   if(params.numberOfModels > 5) {
     exit 1, "the option numberOfModels must not be greater than 5."
@@ -347,7 +336,6 @@ summary = [
   'Inputs' : params.fastaPath ?: null,
   'AfMassive Database' : params.launchAfMassive ? params.afMassiveDatabase : null,
   'AfMassive Options' : params.launchAfMassive ? params.afMassiveOptions : null,
-  'AfMassive3 Database' : params.launchAfMassive3 ? params.afMassive3Database : null,
   'AlphaFill Database' : params.launchAlphaFill ? params.alphaFillDatabase : null,
   'AlphaFold Database' : params.launchAlphaFold ? params.alphaFoldDatabase : null,
   'AlphaFold Options' : params.launchAlphaFold || params.launchAfMassive ? params.alphaFoldOptions : null,
@@ -404,7 +392,6 @@ include { alphaFillWkfl } from './nf-modules/local/subworkflow/alphaFillWkfl'
 include { alphaFoldWkfl } from './nf-modules/local/subworkflow/alphaFoldWkfl'
 include { alphaFold3Wkfl } from './nf-modules/local/subworkflow/alphaFold3Wkfl'
 include { afMassiveWkfl } from './nf-modules/local/subworkflow/afMassiveWkfl'
-include { afMassive3Wkfl } from './nf-modules/local/subworkflow/afMassive3Wkfl'
 include { colabFoldWkfl } from './nf-modules/local/subworkflow/colabFoldWkfl'
 include { diffDockWkfl } from './nf-modules/local/subworkflow/diffDockWkfl'
 include { dynamicBindWkfl } from './nf-modules/local/subworkflow/dynamicBindWkfl'
@@ -434,16 +421,6 @@ workflow {
   if (params.launchAfMassive){
     afMassiveWkfl(
       fastaChainsCh,
-      fastaFilesCh,
-      fastaPathCh,
-      msasCh,
-      workflowSummaryCh
-    )
-  }
-
-  // Launch the prediction of the protein 3D structure with AfMassive3
-  if (params.launchAfMassive3){
-    afMassive3Wkfl(
       fastaFilesCh,
       fastaPathCh,
       msasCh,

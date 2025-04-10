@@ -32,7 +32,7 @@ process jsonChecker {
     num_seed = (params.alphaFold3Options =~ /--num_seeds=\w+/)[0]
   }
   """
-  ap_create_afmassive3_json_seed.py --protein=None --json=$fastaFileJson $num_seed --create_file=False
+  ap_create_alphafold3_json_seed.py --protein=None --json=$fastaFileJson $num_seed --create_file=False
   ap_json_checker.py --json=${fastaFileJson} 
   """
 

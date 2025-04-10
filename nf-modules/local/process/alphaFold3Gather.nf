@@ -15,18 +15,17 @@ of the license and that you accept its terms.
 
 */
 
-process afMassive3Gather {
+process alphaFold3Gather {
   tag "${protein}"
   label 'python'
   label 'minMem'
   label 'minCpu'
-  publishDir path: "${params.outDir}/afMassive3/",
+  publishDir path: "${params.outDir}/alphaFold3/",
              mode: 'copy',
              saveAs: { it.replaceAll('predictions/', '') }
 
   input:
-  tuple val(protein), val(toolFold), path('predictions_parallel/*')
-  tuple val(protein), path(fastaFileJson)
+  tuple val(protein), val(toolFold), path('predictions_parallel/*'), path(fastaFileJson)
 
   output:
   tuple val(protein), val("alphaFold3"), path("predictions/*", type: 'dir'), emit: predictions
@@ -49,7 +48,10 @@ process afMassive3Gather {
   ap_format_ranking_alphafold3.py --input_file ranking_scores.csv --output_file ordered_ranking_scores.tsv --cif_dir .
   best=\$(awk 'NR==2 {print \$2}' ordered_ranking_scores.tsv)
   if [ -n "\$best" ]; then
-    cp "\$best"/* .
+    for file in \${best}/*; do
+      filename=\$(basename "\$file")
+      cp "\$file" "./\${protein_lowercase}_\${filename}"
+    done
   fi
   """
 }

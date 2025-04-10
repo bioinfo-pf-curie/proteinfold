@@ -14,6 +14,7 @@ of the license and that you accept its terms.
 
 */
 
+
 /*
 ==================================
            INCLUDE
@@ -21,9 +22,11 @@ of the license and that you accept its terms.
 */ 
 
 // Processes
+include { alphaBridge } from '../process/alphaBridge'
 include { alphaFold3 } from '../process/alphaFold3'
-//include { alphaFold3Options } from '../process/alphaFoldOptions'
+include { alphaFold3Gather } from '../process/alphaFold3Gather'
 include { alphaFold3Search } from '../process/alphaFold3Search'
+include { createAf3ModelsCh } from '../process/createAf3ModelsCh'
 include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { jsonChecker } from '../process/jsonChecker'
@@ -41,8 +44,7 @@ include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 */
 
 workflow alphaFold3Wkfl {
-
-  take:
+	take:
 
   fastaFilesCh
   fastaPathCh
@@ -50,28 +52,24 @@ workflow alphaFold3Wkfl {
   workflowSummaryCh
 
   main:
-  
+
+  /////////////////////////////////////////////////////////
+  // Check that the fasta files are correctly formatted  //
+  /////////////////////////////////////////////////////////
+  jsonChecker(fastaPathCh)
+	  
   ///////////////////
   // Init channels //
   ///////////////////
 
+  // empty channel
   optionsCh = Channel.empty()
   versionsCh = Channel.empty()
   plotsCh = Channel.empty()
-
-  ////////////////////////////////////////////////////////////////////////
-  // Check that the fasta files in JSON format are correctly formatted  //
-  ////////////////////////////////////////////////////////////////////////
-  jsonChecker(fastaPathCh)
-
-  //////////////////////////
-  // Structure prediction //
-  //////////////////////////
-  //alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
+ 
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
     alphaFold3Search(fastaFilesCh, params.alphaFold3Database, jsonChecker.out.jsonOK)
-
   } else {
     if (params.fromMsas != null){
       // Do nothing (just to have the same if/else condition as in the alphaFold.nf file
@@ -83,14 +81,42 @@ workflow alphaFold3Wkfl {
       optionsCh = optionsCh.mix(alphaFold3Search.out.options)
       msasCh = alphaFold3Search.out.msas
     }
-    // msasCh contains:
-    // [protein, /path/to/msas/protein.json]
-    // the file  /path/to/msas/protein.json contains the msas in a dedicated field
-    //created by the process alphaFold3Search
-    alphaFold3(msasCh, params.alphaFold3Database, jsonChecker.out.jsonOK)
+    // afMassive options for parallelization
+    // create on json file per seeds
+    afModels = createAf3ModelsCh(msasCh, jsonChecker.out.jsonOK)
+                | transpose()
+                | map { prot, file, jsonOK -> 
+                        def seed = file.getName()
+                                       .replaceFirst(/\.[^\.]+$/, '')
+                                       .replaceFirst(/.*_seed_/, '')
+                        [prot, file, seed, jsonOK]
+                    }
+
+    // afModels contains:
+    // [protein, /path/to/msas/protein_seed.json, seed, true]
+    
+    // json quality recovery
+    jsonOK = afModels.map{ prot, file, seed, jsonOK -> [jsonOK]}
+    // json quality suppression
+    afModels = afModels.map{ prot, file, seed, jsonOK -> [prot, file, seed]}
+    // afModels contains:
+    // [protein, /path/to/msas/protein_seed.json, seed]
+
+    alphaFold3(afModels, params.alphaFold3Database,jsonOK)
     versionsCh = versionsCh.mix(alphaFold3.out.versions)
     optionsCh = optionsCh.mix(alphaFold3.out.options)
 
+    //step - gather the predcition after parallelization
+    afMassiveGatherCh = alphaFold3.out.predictions
+                          .groupTuple()
+                          .map { it ->
+                            it[1] =it[1].unique().sort()
+                            it[2] = it[2].flatten().sort()
+                            it
+                          }
+                          .join(msasCh)
+
+    alphaFold3Gather(afMassiveGatherCh)
     ////////////////////
     // Software infos //
     ////////////////////
@@ -99,15 +125,15 @@ workflow alphaFold3Wkfl {
     optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
     versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
-    rankingCh = alphaFold3.out.ranking
-
-    massiveFoldPlots(alphaFold3.out.predictions)
+    rankingCh = alphaFold3Gather.out.ranking
+    //alphaBridge(alphaFold3Gather.out.predictions)
+    massiveFoldPlots(alphaFold3Gather.out.predictions)
     plotsCh = massiveFoldPlots.out.plots
 
     ///////////////////////
     // plot 3D structure //
     ///////////////////////
-    pymolPng(alphaFold3.out.pdb)
+    pymolPng(alphaFold3Gather.out.pdb)
 
     //////////////////////////////////
     // multiqc by protein structure //
@@ -127,8 +153,8 @@ workflow alphaFold3Wkfl {
     // AlphaFill //
     ///////////////
     if(params.launchAlphaFill){
-      alphaFillWkfl(alphaFold3.out.predictions)
+      alphaFillWkfl(alphaFold3Gather.out.predictions)
     }
   }
-
+  
 }

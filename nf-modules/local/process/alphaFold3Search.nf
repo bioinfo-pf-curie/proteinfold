@@ -21,12 +21,12 @@ process alphaFold3Search {
   label 'alphaFold3'
   label 'extraMem'
   label 'highCpu'
-  publishDir path: "${params.outDir}/alphaFold3Search/", mode: 'copy'
+  publishDir path: "${params.outDir}/alphafold3Search/", mode: 'copy'
   containerOptions "-B \$PWD:/tmp"
 
   input:
   tuple val(protein), path(fastaFileJson)
-  path alphaFold3Database
+  path alphafold3Database
   val jsonOK
 
   output:
@@ -38,11 +38,11 @@ process alphaFold3Search {
   """
   # AlphaFold3 converts the value in the name field into lowercase (sanitised name)
   protein_lowercase=\$(echo ${protein} | tr '[:upper:]' '[:lower:]')
-  launch_alphafold.sh --run_data_pipeline --db_dir ${alphaFold3Database.target.toString()} --norun_inference --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=\$PWD
+  launch_alphafold.sh --run_data_pipeline --db_dir ${alphafold3Database.target.toString()} --norun_inference --pdb_database_path ${alphafold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=\$PWD
   mv \${protein_lowercase} ${protein}
   mv ${protein}/\${protein_lowercase}_data.json ${protein}/${protein}.json 
   echo "AlphaFold3 \$(get_version.sh)" > versions.txt
-  echo "AlphaFold3 (MSAS) options=--run_data_pipeline --db_dir ${alphaFold3Database.target.toString()} --norun_inference --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas" > options.txt
+  echo "AlphaFold3 (MSAS) options=--run_data_pipeline --db_dir ${alphafold3Database.target.toString()} --norun_inference --pdb_database_path ${alphafold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas" > options.txt
   """
 
   stub:
@@ -55,9 +55,9 @@ process alphaFold3Search {
     folder="monomer2"
   fi
   cp -r ${projectDir}/test/data/msas/\$folder/alphafold3/${protein} .
-  echo launch_alphafold.sh --run_data_pipeline --db_dir ${alphaFold3Database.target.toString()} --norun_inference --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas
+  echo launch_alphafold.sh --run_data_pipeline --db_dir ${alphafold3Database.target.toString()} --norun_inference --pdb_database_path ${alphafold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas
   echo "AlphaFold3 \$(get_version.sh)" > versions.txt
-  echo "AlphaFold3 (MSAS) options=--run_data_pipeline --db_dir ${alphaFold3Database.target.toString()} --norun_inference --pdb_database_path ${alphaFold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas" > options.txt
+  echo "AlphaFold3 (MSAS) options=--run_data_pipeline --db_dir ${alphafold3Database.target.toString()} --norun_inference --pdb_database_path ${alphafold3Database.target.toString()}/mmcif_files --jackhmmer_n_cpu ${task.cpus} --nhmmer_n_cpu ${task.cpus} --json_path ${fastaFileJson} --output_dir=msas" > options.txt
   """
 
 }

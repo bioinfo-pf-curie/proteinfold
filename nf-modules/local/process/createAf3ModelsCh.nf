@@ -38,7 +38,7 @@ process createAf3ModelsCh {
     num_seed = (params.alphaFold3Options =~ /--num_seeds=\w+/)[0]
   }
   """
-  ap_create_afmassive3_json_seed.py --protein=$protein --json=$fastaFileJson $num_seed
+  ap_create_alphafold3_json_seed.py --protein=$protein --json=$fastaFileJson $num_seed
   """
 }
 
