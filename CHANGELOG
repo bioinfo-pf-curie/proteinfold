@@ -1,4 +1,7 @@
+NEW FEATURES
+  - Add AlphaBridge on Alphafold3 multiqc (Issue #92)
 
+v1.6.0
   NEW FEATURES
    - Seed parallelization (AfMassive3) (Issue #90)
    - Test for AfMassive3 (Issue #90)
