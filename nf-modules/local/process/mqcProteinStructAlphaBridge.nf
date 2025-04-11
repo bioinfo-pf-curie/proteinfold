@@ -2,7 +2,7 @@
  * MultiQC for ProteinFold report
  */
 
-process mqcProteinStruct {
+process mqcProteinStructAlphaBridge {
   tag "${protein}"
   label 'multiqc'
   label 'minCpu'
@@ -10,7 +10,7 @@ process mqcProteinStruct {
   publishDir "${params.outDir}/multiqc/proteinStruct/", mode: 'copy', saveAs: { "${protein}.html" }
 
   input:
-  tuple val(protein), path('plots/*'), path('ranking_debug.tsv'), path('pymolPng/*'), path('protein.fasta'), path('softwareVersions/*'), path ('softwareOptions/*'), path ('workflowSummary/*')
+  tuple val(protein), path('plots/*'), path('ranking_debug.tsv'), path('pymolPng/*'), path('AlphaBridge/*'), path('protein.fasta'), path('softwareVersions/*'), path ('softwareOptions/*'), path ('workflowSummary/*')
 
   output:
   path "*report.html", emit: report
