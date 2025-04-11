@@ -126,8 +126,12 @@ workflow alphaFold3Wkfl {
     versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
     rankingCh = alphaFold3Gather.out.ranking
+<<<<<<< HEAD
     //alphaBridge(alphaFold3Gather.out.predictions)
+=======
+>>>>>>> f7aea70 ([MODIF] add AlphaBrige on AlphaFold3 (Issue #92))
     massiveFoldPlots(alphaFold3Gather.out.predictions)
+    alphaBridge(alphaFold3Gather.out.predictions, "AF3")
     plotsCh = massiveFoldPlots.out.plots
 
     ///////////////////////
@@ -145,6 +149,7 @@ workflow alphaFold3Wkfl {
       plotsCh,
       rankingCh,
       pymolPng.out.png,
+      alphaBridge.out.png,
       fastaFilesCh,
       workflowSummaryCh
     )

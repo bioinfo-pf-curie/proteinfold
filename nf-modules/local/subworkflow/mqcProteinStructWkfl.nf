@@ -26,6 +26,7 @@ workflow mqcProteinStructWkfl {
   plotsCh
   rankingCh
   pymolPngCh
+  alphaBridgePngCh
   fastaFileCh
   workflowSummaryCh
 
@@ -42,6 +43,7 @@ workflow mqcProteinStructWkfl {
     plotsCh
       .join(rankingCh)
       .join(pymolPngCh)
+      .join(alphaBridgePngCh)
       .join(fastaFileCh)
       .combine(versionsYamlCh)
       .combine(optionsYamlCh)
