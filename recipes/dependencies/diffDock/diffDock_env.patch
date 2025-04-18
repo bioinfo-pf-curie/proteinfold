@@ -1,0 +1,13 @@
+diff --git a/environment.yml b/environment.yml
+index 7ae81f4..7d5aef0 100644
+--- a/environment.yml
++++ b/environment.yml
+@@ -4,7 +4,7 @@ channels:
+   - nvidia
+   - pytorch
+   - conda-forge
+-  - defaults
++  - nodefaults
+ dependencies:
+   - python=3.9.18
+   - pip

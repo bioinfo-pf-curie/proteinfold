@@ -1,0 +1,13 @@
+diff --git a/environment.yml b/environment.yml
+index 4c8a994..a3acbf6 100644
+--- a/environment.yml
++++ b/environment.yml
+@@ -2,7 +2,7 @@ name: AFmassive
+ channels:
+   - conda-forge
+   - bioconda
+-  - defaults
++  - nodefaults
+ dependencies:
+   - python=3.10
+   - compilers
