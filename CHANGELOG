@@ -10,6 +10,7 @@
     - Added command test in Admin.md (Issue #89)
     - Resole error for onlyMsas (Issue #89)
     - Added Checker result to search processes to respect script order (Issue #79)
+    - diffdock precompute npy all the time (Issue #95)
 
   DOCUMENTATION
     - git setting for HuggingFace (NanoBert)
