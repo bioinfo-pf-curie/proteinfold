@@ -1,0 +1,9 @@
+name: bolzt1_env
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - conda-forge::openblas=0.3.28=pthreads_h6ec200e_1
+  - pip=24.0=pyhd8ed1ab_0
+  - pip:
+      - boltz==0.4.1
