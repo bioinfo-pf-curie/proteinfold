@@ -1,4 +1,3 @@
-
   NEW FEATURES
    - Seed parallelization (AfMassive3) (Issue #90)
    - Test for AfMassive3 (Issue #90)
@@ -10,7 +9,7 @@
     - Added command test in Admin.md (Issue #89)
     - Resole error for onlyMsas (Issue #89)
     - Added Checker result to search processes to respect script order (Issue #79)
-    - diffdock precompute npy all the time (Issue #95)
+    - diffdock no longer recalculates .npy files on each run (Issue #95)
 
   DOCUMENTATION
     - git setting for HuggingFace (NanoBert)
