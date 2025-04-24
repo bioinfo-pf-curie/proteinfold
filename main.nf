@@ -499,6 +499,7 @@ workflow {
       massiveFoldPlots.out.plots,
       rankingCh,
       pymolPng.out.png,
+      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
       fastaFilesCh,
       Channel.of('').collectFile(name: 'empty.txt')
     )

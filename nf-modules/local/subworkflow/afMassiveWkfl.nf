@@ -214,7 +214,7 @@ workflow afMassiveWkfl {
       plotsCh,
       rankingCh,
       pymolPng.out.png,
-      null,
+      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
       fastaFilesCh,
       workflowSummaryCh
     )

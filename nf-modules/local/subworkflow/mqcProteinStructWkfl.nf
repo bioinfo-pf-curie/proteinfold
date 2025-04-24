@@ -16,7 +16,6 @@ of the license and that you accept its terms.
 
 // Processes
 include { mqcProteinStruct } from '../process/mqcProteinStruct'
-include { mqcProteinStructAlphaBridge } from '../process/mqcProteinStructAlphaBridge'
 
 workflow mqcProteinStructWkfl {
 
@@ -33,21 +32,8 @@ workflow mqcProteinStructWkfl {
 
 
   main:
-  if (!alphaBridgePngCh){
     // Perform multiqc by protein structure
     mqcProteinStruct(
-      plotsCh
-      .join(rankingCh)
-      .join(pymolPngCh)
-      .join(fastaFileCh)
-      .combine(versionsYamlCh)
-      .combine(optionsYamlCh)
-      .combine(workflowSummaryCh)
-      )
-  }
-  else{
-    // Perform multiqc by protein structure
-    mqcProteinStructAlphaBridge(
       plotsCh
       .join(rankingCh)
       .join(pymolPngCh)
@@ -56,11 +42,6 @@ workflow mqcProteinStructWkfl {
       .combine(versionsYamlCh)
       .combine(optionsYamlCh)
       .combine(workflowSummaryCh)
-      )
-  }
-
-
-  
-  
+      ) 
 
 }
