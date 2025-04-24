@@ -110,7 +110,7 @@ def control_num_seed_modelSeeds(seed, num_seeds, json_name):
         SystemExit: If both multiple seeds and num_seeds are specified,
                     an error message is printed and the program exits.
     """
-    if len(seed) > 1 and num_seeds is None:
+    if len(seed) >= 1 and num_seeds is None:
         return
     elif len(seed) == 1 and num_seeds is not None:
         return
@@ -148,7 +148,7 @@ def create_json(data, seed, num_seeds, protein, json_name):
         None
     """
     os.makedirs("seeds_json", exist_ok=True)
-    if len(seed) > 1 and num_seeds is None:
+    if len(seed) >= 1 and num_seeds is None:
         for s in seed:
             if s > 2**32:
                 print(
