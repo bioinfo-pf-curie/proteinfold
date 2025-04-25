@@ -18,8 +18,10 @@ of the license and that you accept its terms.
 // It uses the code from https://github.com/GBLille/AfMassive with a minor patch to
 // check whether PAEs are available within the picle data
 process alphaBridge {
+  maxRetries 0
+  debug true
   tag { ("${toolFold}".isEmpty()) ? "${protein}" : "${protein}-${toolFold}" }
-  label 'alphabridge'
+  label 'alphaBridge'
   label 'lowMem'
   label 'lowCpu'
   publishDir path: "${params.outDir}/AlphaBridge/${protein}", mode: 'copy'
@@ -33,6 +35,9 @@ process alphaBridge {
 
   script:
   """
+  set -e
+  trap 'touch empty.txt; exit 0' ERR #if there is an error in the execution of alphabridge, the program will be coninued
+
   # there is no possibility to choose where the out are profided we must copy the working folder outside a symbolic link
   cp -rL predictions/${protein} ${protein}
 
@@ -43,6 +48,7 @@ process alphaBridge {
   IMAGES=(*_ribbon_plot.png)  
   MAX_WIDTH=1800
   COLS=3
+  ROW=\$(awk -v i="\${#IMAGES[@]}" -v c="\$COLS" 'BEGIN { print int((i+c-1)/c) }')
   WIDTH_PER_IMAGE=\$((MAX_WIDTH / COLS))
   
   mkdir -p resized temp_rows
@@ -51,25 +57,27 @@ process alphaBridge {
     convert "\$img" -resize "\${WIDTH_PER_IMAGE}" "resized/\$img"
   done
   
-  i=0
-  row=0
-  
-  for ((i=0; i<\${#IMAGES[@]}; i+=3)); do
-      row=\$((i / 3))
-      convert +append \
-      resized/"\${IMAGES[\$i]}" \
-      resized/"\${IMAGES[\$((i + 1))]:-xc:white}" \
-      resized/"\${IMAGES[\$((i + 2))]:-xc:white}" \
-      "temp_rows/row_\$row.png"
+  for ((i=0; i<ROW; i++)); do
+    row_images=()
+    for ((j=0; j<COLS; j++)); do
+      index=\$((i * COLS + j))
+      if [ \$index -lt \${#IMAGES[@]} ]; then
+        row_images+=( "resized/\${IMAGES[\$index]}" )
+      else
+        row_images+=( "xc:white" ) # si pas assez d'images, ajoute une blanche
+      fi
+    done
+    convert +append "\${row_images[@]}" "temp_rows/row_\$i.png"
   done
 
   convert -append temp_rows/row_*.png ribbon_plot.png
 
   rm -rf temp_rows resized
 
-  IMAGES=(*_matrix.png)  
+  IMAGES=(*_matrix.png *contact_plot.png)
   MAX_WIDTH=1200
   COLS=2
+  ROW=\$(awk -v i="\${#IMAGES[@]}" -v c="\$COLS" 'BEGIN { print int((i+c-1)/c) }')
   WIDTH_PER_IMAGE=\$((MAX_WIDTH / COLS))
   
   mkdir -p resized temp_rows
@@ -78,17 +86,20 @@ process alphaBridge {
     convert "\$img" -resize "\${WIDTH_PER_IMAGE}" "resized/\$img"
   done
   
-  i=0
-  row=0
-  
-  for ((i=0; i<\${#IMAGES[@]}; i+=\$COLS)); do
-      row=\$((i / \$COLS))
-      convert +append \
-      resized/"\${IMAGES[\$i]}" \
-      resized/"\${IMAGES[\$((i + 1))]:-xc:white}" \
-      "temp_rows/row_\$row.png"
+ 
+  for ((i=0; i<ROW; i++)); do
+    row_images=()
+    for ((j=0; j<COLS; j++)); do
+      index=\$((i * COLS + j))
+      if [ \$index -lt \${#IMAGES[@]} ]; then
+        row_images+=( "resized/\${IMAGES[\$index]}" )
+      else
+        row_images+=( "xc:white" ) # si pas assez d'images, ajoute une blanche
+      fi
+    done
+    convert +append "\${row_images[@]}" "temp_rows/row_\$i.png"
   done
-
+  realpath .
   convert -append temp_rows/row_*.png quality_matrix.png
 
   rm -rf temp_rows resized

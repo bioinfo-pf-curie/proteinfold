@@ -128,6 +128,7 @@ workflow alphaFold3Wkfl {
     rankingCh = alphaFold3Gather.out.ranking
     massiveFoldPlots(alphaFold3Gather.out.predictions)
     alphaBridge(alphaFold3Gather.out.predictions, "AF3")
+
     plotsCh = massiveFoldPlots.out.plots
 
     ///////////////////////
@@ -138,7 +139,6 @@ workflow alphaFold3Wkfl {
     //////////////////////////////////
     // multiqc by protein structure //
     //////////////////////////////////
-    Channel.empty()
     mqcProteinStructWkfl(
       optionsYamlCh,
       versionsYamlCh,
