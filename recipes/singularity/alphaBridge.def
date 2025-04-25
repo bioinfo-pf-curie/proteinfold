@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: docker.io/4geniac/proteinfold:alphabridge-v0.0.1-base
+
+%environment
+  export PATH="/opt/conda/bin:$PATH"
+  export PATH="$PATH:/app"
+  source /opt/etc/bashrc
+
+
