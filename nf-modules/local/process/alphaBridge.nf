@@ -64,7 +64,7 @@ process alphaBridge {
       if [ \$index -lt \${#IMAGES[@]} ]; then
         row_images+=( "resized/\${IMAGES[\$index]}" )
       else
-        row_images+=( "xc:white" ) # si pas assez d'images, ajoute une blanche
+        row_images+=( "xc:white" )
       fi
     done
     convert +append "\${row_images[@]}" "temp_rows/row_\$i.png"
@@ -94,12 +94,12 @@ process alphaBridge {
       if [ \$index -lt \${#IMAGES[@]} ]; then
         row_images+=( "resized/\${IMAGES[\$index]}" )
       else
-        row_images+=( "xc:white" ) # si pas assez d'images, ajoute une blanche
+        row_images+=( "xc:white" )
       fi
     done
     convert +append "\${row_images[@]}" "temp_rows/row_\$i.png"
   done
-  realpath .
+  
   convert -append temp_rows/row_*.png quality_matrix.png
 
   rm -rf temp_rows resized
