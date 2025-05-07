@@ -2,6 +2,8 @@ Bootstrap: docker
 From: docker.io/4geniac/proteinfold:alphabridge-v0.0.2-base
 
 %environment
+  export MPLCONFIGDIR="/tmp"
+  export FONTCONFIG_CACHE=$MPLCONFIGDIR
   export PATH="/opt/conda/bin:$PATH"
   export PATH="$PATH:/app"
   source /opt/etc/bashrc
