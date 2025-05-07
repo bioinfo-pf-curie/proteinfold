@@ -18,13 +18,12 @@ of the license and that you accept its terms.
 // It uses the code from https://github.com/GBLille/AfMassive with a minor patch to
 // check whether PAEs are available within the picle data
 process alphaBridge {
-  maxRetries 0
-  debug true
   tag { ("${toolFold}".isEmpty()) ? "${protein}" : "${protein}-${toolFold}" }
   label 'alphaBridge'
   label 'lowMem'
   label 'lowCpu'
   publishDir path: "${params.outDir}/AlphaBridge/${protein}", mode: 'copy'
+  containerOptions { "-B /tmp:/tmp" }
 
   input:
   tuple val(protein), val(toolFold), path("predictions/*")
@@ -41,7 +40,7 @@ process alphaBridge {
   # there is no possibility to choose where the out are profided we must copy the working folder outside a symbolic link
   cp -rL predictions/${protein} ${protein}
 
-  define_interfaces.sh -i ${protein} -m ${abbr_toolFold}
+  define_interfaces.sh -i ${protein} -m ${abbr_toolFold} -p True
 
   mv ${protein}/AlphaBridge/*.png .
 
