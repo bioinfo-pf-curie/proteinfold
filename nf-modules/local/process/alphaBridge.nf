@@ -35,7 +35,7 @@ process alphaBridge {
   script:
   """
   set -e
-  trap 'touch empty.txt; exit 0' ERR #if there is an error in the execution of alphabridge, the program will be coninued
+  trap 'convert -pointsize 12 label:"There is a problem on the execution of alphabridge please see the log" ribbon_plot.png ; exit 0' ERR #if there is an error in the execution of alphabridge, the program will be coninued
 
   # there is no possibility to choose where the out are profided we must copy the working folder outside a symbolic link
   cp -rL predictions/${protein} ${protein}
@@ -46,7 +46,7 @@ process alphaBridge {
 
   IMAGES=(*_ribbon_plot.png)  
   MAX_WIDTH=1800
-  COLS=3
+  COLS=1
   ROW=\$(awk -v i="\${#IMAGES[@]}" -v c="\$COLS" 'BEGIN { print int((i+c-1)/c) }')
   WIDTH_PER_IMAGE=\$((MAX_WIDTH / COLS))
   
@@ -54,6 +54,7 @@ process alphaBridge {
   
   for img in "\${IMAGES[@]}"; do
     convert "\$img" -resize "\${WIDTH_PER_IMAGE}" "resized/\$img"
+    convert resized/\$img -pointsize 50 label:"\$(basename \$img .png )" -gravity Center -append resized/\$img
   done
   
   for ((i=0; i<ROW; i++)); do
