@@ -1,8 +1,6 @@
-NEW FEATURES
-  - Add AlphaBridge on Alphafold3 multiqc (Issue #92)
-
 v1.6.0
   NEW FEATURES
+   - Add AlphaBridge on Alphafold3 multiqc (Issue #92)
    - Seed parallelization (AfMassive3) (Issue #90)
    - Test for AfMassive3 (Issue #90)
    - Added a default value of false for launchAfMassive (Issue #88)
@@ -13,6 +11,8 @@ v1.6.0
     - Added command test in Admin.md (Issue #89)
     - Resole error for onlyMsas (Issue #89)
     - Added Checker result to search processes to respect script order (Issue #79)
+    - diffdock no longer recalculates .npy files on each run (Issue #95)
+    - Resolve bug when len modelSeeds = 1 and numSeeds is None (Issue #98) 
 
   DOCUMENTATION
     - git setting for HuggingFace (NanoBert)
