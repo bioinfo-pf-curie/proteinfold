@@ -166,7 +166,6 @@ workflow alphaFoldWkfl {
       rankingCh = alphaFold.out.ranking
     }
 
-
     //////////////////////////////////
     // multiqc by protein structure //
     //////////////////////////////////
@@ -176,6 +175,7 @@ workflow alphaFoldWkfl {
       plotsCh,
       rankingCh,
       pymolPng.out.png,
+      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
       fastaFilesCh,
       workflowSummaryCh
     )

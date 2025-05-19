@@ -126,8 +126,9 @@ workflow alphaFold3Wkfl {
     versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
     rankingCh = alphaFold3Gather.out.ranking
-    //alphaBridge(alphaFold3Gather.out.predictions)
     massiveFoldPlots(alphaFold3Gather.out.predictions)
+    alphaBridge(alphaFold3Gather.out.predictions, "AF3")
+
     plotsCh = massiveFoldPlots.out.plots
 
     ///////////////////////
@@ -138,13 +139,13 @@ workflow alphaFold3Wkfl {
     //////////////////////////////////
     // multiqc by protein structure //
     //////////////////////////////////
-    Channel.empty()
     mqcProteinStructWkfl(
       optionsYamlCh,
       versionsYamlCh,
       plotsCh,
       rankingCh,
       pymolPng.out.png,
+      alphaBridge.out.png,
       fastaFilesCh,
       workflowSummaryCh
     )
