@@ -1,3 +1,27 @@
+v1.6.0
+05/20/2025
+
+  NEW FEATURES
+   - AlphaFold3: 
+     * Add AlphaBridge in multiqc report (Issue #92)
+     * Seed parallelization (Issue #90)
+   - AfMassive:
+     * Added a default value of false for launchAfMassive (Issue #88)
+   - Error added if option --random_seed not provided for AlphaFold2, afMassive, ColabFold (Issue #87)
+
+  BUGFIXES
+   - Test added for onlyMsas (Issue #89)
+   - Added command test in Admin.md (Issue #89)
+   - Resolve error for onlyMsas (Issue #89)
+   - Added Json or Fasta Checker result to foldSearch processes to respect script order (Issue #79)
+   - DiffDock:
+     *  no longer recalculates .npy files on each run (Issue #95)
+   - AlphaFold3:
+     * Resolve bug when len modelSeeds = 1 and numSeeds is None (Issue #98) 
+
+  DOCUMENTATION
+    - git setting for HuggingFace (NanoBert) (Issue #93)
+
 v1.5.0
 01/24/2025
 

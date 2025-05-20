@@ -85,7 +85,7 @@ if(params.launchDynamicBind || params.launchDiffDock) {
   }
 }
 
-// AlphaFold3 does not take fasta file as input
+// AlphaFold3 do not take fasta file as input
 if(params.launchAlphaFold3) {
   allowFastaPathNull = true
 }
@@ -188,6 +188,16 @@ if (params.onlyMsas && params.fromMsas != null){
   exit 1, "The --fromMsas option is set with '" + params.fromMsas + "' and --onlyMsas is set to true. Choose either one of these two options."
 }
 
+// Check random_seed value
+if ((params.launchAfMassive || params.launchAlphaFold) && !params.alphaFoldOptions.find("--random_seed=\\d+")){
+  msg = "ERROR : The --random_seed parameter is not specified, AlphaFold Options " + params.alphaFoldOptions
+  exit 1, NFTools.printRedText(msg)
+}
+
+if ((params.launchColabFold) && !(params.colabFoldOptions.find("--random-seed \\d+") || params.colabFoldOptions.find("--random-seed=\\d+"))){
+  msg = "ERROR : The --random-seed parameter is not specified, ColabFold Options " + params.colabFoldOptions
+  exit 1, NFTools.printRedText(msg)
+}
 /*
 ==========================
  BUILD CHANNELS
@@ -489,6 +499,7 @@ workflow {
       massiveFoldPlots.out.plots,
       rankingCh,
       pymolPng.out.png,
+      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
       fastaFilesCh,
       Channel.of('').collectFile(name: 'empty.txt')
     )

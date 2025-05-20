@@ -67,12 +67,11 @@ workflow colabFoldWkfl {
   // Structure prediction //
   //////////////////////////
   if (params.onlyMsas){
-    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
-    versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
-    optionsCh = optionsCh.mix(colabFoldSearch.out.options)
+    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
+
   } else {
     if (params.fromMsas == null){
-      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase)
+      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
       versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
       optionsCh = optionsCh.mix(colabFoldSearch.out.options)
       msasCh = colabFoldSearch.out.msas
@@ -81,32 +80,34 @@ workflow colabFoldWkfl {
     versionsCh = versionsCh.mix(colabFold.out.versions)
     optionsCh = optionsCh.mix(colabFold.out.options)
     plotsCh = colabFold.out.plots
-  }
- 
-  ///////////////////////
-  // plot 3D structure //
-  ///////////////////////
-  pymolPng(colabFold.out.pdb)
-   
-  ////////////////////
-  // Software infos //
-  ////////////////////
-  getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
-  getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
-  optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
-  versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
 
-  //////////////////////////////////
-  // multiqc by protein structure //
-  //////////////////////////////////
-  mqcProteinStructWkfl(
-    optionsYamlCh,
-    versionsYamlCh,
-    plotsCh,
-    colabFold.out.ranking,
-    pymolPng.out.png,
-    fastaFilesCh,
-    workflowSummaryCh
-  )
+    ////////////////////
+    // Software infos //
+    ////////////////////
+    getSoftwareOptions(optionsCh.unique().collectFile(sort: true))
+    getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
+    optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
+    versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
+
+    ///////////////////////
+    // plot 3D structure //
+    ///////////////////////
+    pymolPng(colabFold.out.pdb)
+    
+    //////////////////////////////////
+    // multiqc by protein structure //
+    //////////////////////////////////
+    mqcProteinStructWkfl(
+      optionsYamlCh,
+      versionsYamlCh,
+      plotsCh,
+      colabFold.out.ranking,
+      pymolPng.out.png,
+      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
+      fastaFilesCh,
+      workflowSummaryCh
+    )
+
+  }
 
 }

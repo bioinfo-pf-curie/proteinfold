@@ -26,26 +26,22 @@ workflow mqcProteinStructWkfl {
   plotsCh
   rankingCh
   pymolPngCh
+  alphaBridgePngCh
   fastaFileCh
   workflowSummaryCh
 
 
   main:
-
-  //plotsCh.view()
-  //rankingCh.view()
-  //pymolPngCh.view()
-  //fastaFileCh.view()
-  
-  // Perform multiqc by protein structure
-  mqcProteinStruct(
-    plotsCh
+    // Perform multiqc by protein structure
+    mqcProteinStruct(
+      plotsCh
       .join(rankingCh)
       .join(pymolPngCh)
+      .join(alphaBridgePngCh)
       .join(fastaFileCh)
       .combine(versionsYamlCh)
       .combine(optionsYamlCh)
       .combine(workflowSummaryCh)
-  )
+      ) 
 
 }

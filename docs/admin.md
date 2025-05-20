@@ -21,6 +21,10 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-m
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-monomer-frommsas.json -profile singularity
 
 rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-monomer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-monomer-onlymsas.json -profile singularity
+
+rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 
@@ -31,6 +35,10 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-m
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-multimer-frommsas.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-multimer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-multimer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-multimer-onlymsas.json -profile singularity
 
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/afmassive-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
@@ -54,6 +62,10 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-m
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-monomer-frommsas.json -profile singularity
 
 rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-monomer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-monomer-onlymsas.json -profile singularity
+
+rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 
@@ -64,6 +76,10 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-m
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-multimer-frommsas.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-multimer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-multimer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-multimer-onlymsas.json -profile singularity
 
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
@@ -80,6 +96,10 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-frommsas.json -profile singularity
 
 rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-onlymsas.json -profile singularity
+
+rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-monomer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
 
@@ -90,6 +110,10 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-frommsas.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-onlymsas.json -profile singularity
 
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/alphafold3-multimer-alphafill.json -profile singularity --alphaFillDatabase $PWD/test/data/alphafill/database/
@@ -106,12 +130,20 @@ nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-m
 nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-monomer-frommsas.json -profile singularity
 
 rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-monomer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-monomer-onlymsas.json -profile singularity
+
+rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-multimer.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-multimer.json -profile singularity
 
 rm -r work results/ .nextflow*
 nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-multimer-frommsas.json -profile singularity
 nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-multimer-frommsas.json -profile singularity
+
+rm -r work results/ .nextflow*
+nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-multimer-onlymsas.json -profile singularity
+nextflow run main.nf -resume -stub-run -params-file test/params-file/colabfold-multimer-onlymsas.json -profile singularity
 
 
 # DiffDock

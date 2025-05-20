@@ -11,20 +11,26 @@ Users are therefore encouraged to test the software's suitability as regards
 their requirements in conditions enabling the security of their systems and/or data.
 The fact that you are presently reading this means that you have had knowledge
 of the license and that you accept its terms.
+
 */
 
-// This process checks that the json files for required by AlphaFold3 are correctly formatted
-process jsonChecker {
-  tag "${fastaFileJson}"
+
+
+process createAf3ModelsCh {
+	tag "${protein}"
   label 'python'
   label 'minMem'
   label 'minCpu'
+	
+	debug true 
 
   input:
-  path fastaFileJson
+  tuple val(protein), path(fastaFileJson)
+  val(jsonOK)
 
   output:
-  val(true), emit: jsonOK
+  tuple val(protein), path("seeds_json/*.json"), val(jsonOK)
+  
 
   script:
   def num_seed = null
@@ -32,9 +38,16 @@ process jsonChecker {
     num_seed = (params.alphaFold3Options =~ /--num_seeds=\w+/)[0]
   }
   """
-  ap_create_alphafold3_json_seed.py --protein=None --json=$fastaFileJson $num_seed --create_file=False
-  ap_json_checker.py --json=${fastaFileJson} 
+  ap_create_alphafold3_json_seed.py --protein=$protein --json=$fastaFileJson $num_seed
   """
-
 }
 
+
+// mkdir -p seeds_json
+//   _seed = jq -c '.modelSeeds[]' $fastaFileJson
+
+//   jq -c '.modelSeeds[]' $fastaFileJson | while read seed; do
+//       content=\$(jq --argjson seed \$seed '.modelSeeds = \$seed' $fastaFileJson)
+//       echo \$content > seeds_json/${protein}_seed_\${seed}.json
+//   done  
+//  $params.alphaFold3Options
