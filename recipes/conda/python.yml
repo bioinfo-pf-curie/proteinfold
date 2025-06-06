@@ -2,7 +2,7 @@ name: python_env
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   - mdtraj=1.9.9=py312hadb1fa1_1
   - numpy=1.26.4=py312heda63a1_0
