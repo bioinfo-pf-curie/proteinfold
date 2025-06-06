@@ -167,7 +167,9 @@ sbatch launcher.sh
 
 ## Credits
 
-This pipeline has been written by the bioinformatics platform of the Institut Curie (P. Hupé)
+This pipeline has been written by the bioinformatics platform of the Institut Curie (P. Hupé).
+
+This work was granted access to the HPC resources of IDRIS under the allocation 2024-AD010315541 made by GENCI.
 
 ## Citation
 
