@@ -263,6 +263,26 @@ cat << EOF
 EOF
 fi
 
+if [[ -f AlphaBridge/ribbon_plot.png ]]; then
+cat << EOF
+  ribbon_plot:
+    id: 'ribbon_plot'
+    parent_id: prediction_structure_plots
+    parent_name: 'Plots'
+    section_name: 'AlphaBridge Interact plot'
+EOF
+fi
+
+if [[ -f AlphaBridge/quality_matrix.png ]]; then
+cat << EOF
+  quality_matrix:
+    id: 'quality_matrix'
+    parent_id: prediction_structure_plots
+    parent_name: 'Plots'
+    section_name: 'AlphaBridge quality plot'
+EOF
+fi
+
 # test that ranking_debug.tsv file contains data,
 # since colabFold process generates empty file
 if [[ -s ranking_debug.tsv ]]; then
@@ -550,6 +570,14 @@ done
 echo ""
 echo "  pymol_mosaic:"
 echo "    fn: \"mosaic.png\""
+
+echo ""
+echo "  ribbon_plot:"
+echo "    fn: \"ribbon_plot.png\""
+
+echo ""
+echo "  quality_matrix:"
+echo "    fn: \"quality_matrix.png\""
 
 # test that ranking_debug.tsv file contains data,
 # since colabFold process generates empty file
