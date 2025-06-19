@@ -9,16 +9,16 @@ from createInputAlphafold3.list import list_json
 
 def load_sample_plan(file_path: str) -> list[list[str]]:
     """
-    Charge un fichier CSV contenant des groupes de protéines.
+    Loads a CSV file containing groups of proteins.
 
     Args:
-        file_path (str): Chemin vers le fichier CSV.
+        file_path (str): Path to the CSV file.
 
     Returns:
-        list[list[str]]: Liste de groupes de noms de protéines.
+        list[list[str]]: List of groups of protein names.
 
     Raises:
-        FileNotFoundError: Si le fichier n'existe pas.
+        FileNotFoundError:  If the file does not exist
     """
     if not os.path.exists(file_path):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
@@ -33,19 +33,19 @@ def load_sample_plan(file_path: str) -> list[list[str]]:
 
 def create_json(proteins: list[str], seeds: list[int], input_folder: str, output_folder: str) -> str:
     """
-    Crée un fichier JSON AlphaFold3 à partir de plusieurs protéines.
+    Creates an AlphaFold3 JSON file from several proteins.
 
     Args:
-        proteins (list[str]): Liste des noms de protéines.
-        seeds (list[int]): Liste de graines aléatoires.
-        input_folder (str): Répertoire contenant les fichiers JSON des protéines.
-        output_folder (str): Répertoire de sortie.
+        proteins (list[str]): List of protein names.
+        seeds (list[int]): List of random seeds.
+        input_folder (str): Directory containing protein JSON files.
+        output_folder (str): Output directory.
 
     Returns:
-        str: Nom du fichier généré (sans extension).
+        str: Name of the generated file (without extension).
 
     Raises:
-        ValueError: Si une protéine n'a pas de fichier d'entrée associé.
+        ValueError: If a protein has no associated input file.
     """
     json_files = list_json(input_folder)
     available_proteins = json_files.keys()
@@ -86,13 +86,13 @@ def create_json(proteins: list[str], seeds: list[int], input_folder: str, output
 
 def create_json_params(name: str, output_folder: str, model_dir: str, server_path: str) -> None:
     """
-    Crée un fichier `params-file` JSON pour exécuter AlphaFold3 avec Nextflow.
+    Creates a JSON `params-file` to run AlphaFold3 with Nextflow.
 
     Args:
-        name (str): Nom de l'échantillon.
-        output_folder (str): Dossier local de sortie.
-        model_dir (str): Répertoire du modèle AlphaFold.
-        server_path (str): Répertoire côté serveur pour accéder aux fichiers.
+        name (str): Sample name.
+        output_folder (str): Local output folder.
+        model_dir (str): AlphaFold model directory.
+        server_path (str): Server-side directory for accessing files.
     """
     create_output_dir(output_folder, name, "params-file")
 
@@ -110,10 +110,10 @@ def create_json_params(name: str, output_folder: str, model_dir: str, server_pat
 
 def generate_af3_id() -> Iterator[str]:
     """
-    Génère une séquence infinie d'ID de type A, B, ..., Z, AA, AB, ..., AAA, etc.
+    Generates an infinite sequence of IDs of type A, B, ..., Z, AA, AB, ..., AAA, etc.
 
     Yields:
-        str: Identifiant unique.
+        str: Unique identifier.
     """
     chars = string.ascii_uppercase
     length = 1
@@ -125,11 +125,11 @@ def generate_af3_id() -> Iterator[str]:
 
 def create_output_dir(base_folder: str, name: str, subfolder: str) -> None:
     """
-    Crée récursivement les dossiers nécessaires à l'écriture des fichiers.
+    Recursively creates the folders needed to write files.
 
     Args:
-        base_folder (str): Répertoire de base.
-        name (str): Nom de l'échantillon.
-        subfolder (str): Sous-dossier à créer (ex: "fasta", "params-file").
+        base_folder (str): Base directory.
+        name (str): Sample name.
+        subfolder (str): Subfolder to be created (e.g. "fasta", "params-file").
     """
     os.makedirs(os.path.join(base_folder, name, subfolder), exist_ok=True)

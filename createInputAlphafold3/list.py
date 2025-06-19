@@ -3,16 +3,16 @@ import errno
 
 def list_json(directory: str) -> dict[str, str]:
     """
-    Parcourt récursivement un dossier pour lister tous les fichiers .json.
+    Recursively browses a directory to list all .json files.
 
     Args:
-        directory (str): Répertoire racine à explorer.
+        directory (str): Root directory to browse.
 
     Returns:
-        dict[str, str]: Dictionnaire associant les noms de fichiers (sans extension) à leur chemin complet.
+        dict[str, str]: Dictionary associating file names (without extension) with their full path.
 
     Raises:
-        FileNotFoundError: Si le répertoire spécifié n'existe pas.
+        FileNotFoundError: If the specified directory does not exist.s.
     """
     if not os.path.exists(directory):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), directory)
@@ -28,10 +28,10 @@ def list_json(directory: str) -> dict[str, str]:
 
 def display_json(directory: str) -> None:
     """
-    Affiche sous forme formatée les fichiers JSON présents dans un répertoire.
+    Displays the JSON files in a directory in formatted for.
 
     Args:
-        directory (str): Répertoire à scanner.
+        directory (str): Directory to scan.
     """
     json_files = list_json(directory)
     for protein, path in json_files.items():

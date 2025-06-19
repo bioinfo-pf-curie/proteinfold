@@ -5,13 +5,13 @@ from createInputAlphafold3.merge import create_output_dir
 
 def create_launcher(input_dir: str, server_path: str, nextflow_path: str, output_dir: str) -> None:
     """
-    Génère des scripts SLURM de lancement Nextflow pour chaque fichier de paramètres trouvé.
+   Generates Nextflow launch SLURM scripts for each parameter file found.
 
     Args:
-        input_dir (str): Dossier contenant les sous-dossiers avec les fichiers de paramètres.
-        server_path (str): Chemin vers les fichiers côté serveur (utilisé dans le script).
-        nextflow_path (str): Chemin vers l'exécutable Nextflow.
-        output_dir (str): Dossier où seront générés les scripts SLURM.
+        input_dir (str): Folder containing subfolders with parameter files.
+        server_path (str): Path to the server-side files (used in the script).
+        nextflow_path (str): Path to the Nextflow executable.
+        output_dir (str): Folder where SLURM scripts will be generated.
     """
     # Recherche récursive de tous les fichiers dans des sous-dossiers `params-file`
     params_files = glob.glob(os.path.join(input_dir, "**", "params-file", "*"), recursive=True)

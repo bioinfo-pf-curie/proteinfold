@@ -10,8 +10,8 @@ from createInputAlphafold3.merge import (
 
 def main() -> None:
     """
-    Point d'entrée principal de l'application jsonCreator.
-    Exécute la commande demandée : list, merge ou launcher.
+    Main entry point for the jsonCreator application.
+    Executes the requested command: list, merge or launcher.
     """
     args = parse_args()
 
