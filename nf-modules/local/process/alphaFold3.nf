@@ -38,9 +38,9 @@ process alphaFold3 {
   script:
   """
   #remove num_seeds from parameters as it has already been taken into account in json creation
-  alphaFold3Options=${params.alphaFold3Options}
+  alphaFold3Options="${params.alphaFold3Options}"
   if [[ -n \$alphaFold3Options && \$alphaFold3Options == *"--num_seeds"* ]]; then
-      seed_data=\$(echo ${params.alphaFold3Options} | grep -oP '--num_seeds=\\w+')
+      seed_data=\$(echo ${params.alphaFold3Options} | grep -oP '\\-\\-num_seeds=\\w+')
       alphaFold3Options=\$(echo ${params.alphaFold3Options} | sed "s/\$seed_data//")
   fi
 
@@ -61,9 +61,9 @@ process alphaFold3 {
   stub:
   """
   #remove num_seeds from parameters as it has already been taken into account in json creation
-  alphaFold3Options=${params.alphaFold3Options}
+  alphaFold3Options="${params.alphaFold3Options}"
   if [[ -n \$alphaFold3Options && \$alphaFold3Options == *"--num_seeds"* ]]; then
-      seed_data=\$(echo ${params.alphaFold3Options} | grep -oP '--num_seeds=\\w+')
+      seed_data=\$(echo ${params.alphaFold3Options} | grep -oP '\\-\\-num_seeds=\\w+')
       alphaFold3Options=\$(echo ${params.alphaFold3Options} | sed "s/\$seed_data//")
   fi
 
