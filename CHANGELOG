@@ -1,3 +1,9 @@
+v1.6.2
+18/07/2025
+  BUGFIXES
+  - AlphaFold3:
+    * Resolve bug when option --num_seeds : erreur to addresse the content of alphafold3Options to bash variable (Issue #102)
+
 v1.6.1
 06/06/2025
   BUGFIXES
