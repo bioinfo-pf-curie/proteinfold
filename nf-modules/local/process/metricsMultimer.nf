@@ -2,14 +2,12 @@
  * MultiQC for ProteinFold report
  */
 
-import java.lang.Math
-
 process metricsMultimer {
   tag "${protein}"
   label 'python'
   label 'minCpu'
   memory {
-    def memValue = 0.64*Math.log((float)pickleSize)/Math.log(2.0)
+    def memValue = 0.64*Math.log( pickleSize.toFloat()  )/Math.log(2.0)
     memValue = 14.0 + memValue
     memValue = Math.pow(2, memValue)
     memValue = memValue / Math.pow(10, 9)

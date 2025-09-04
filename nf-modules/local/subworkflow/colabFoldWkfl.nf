@@ -18,7 +18,7 @@ of the license and that you accept its terms.
 ==================================
            INCLUDE
 ==================================
-*/ 
+*/
 
 // Processes
 include { colabFold } from '../process/colabFold'
@@ -29,9 +29,6 @@ include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVers
 include { massiveFoldPlots } from '../process/massiveFoldPlots'
 include { pymolPng } from '../process/pymolPng'
 
-// Subworkflows
-include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
-
 /*
 =====================================
             WORKFLOW 
@@ -39,9 +36,8 @@ include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 */
 
 workflow colabFoldWkfl {
-
   take:
-
+  colabFoldDatabase
   fastaChainsCh
   fastaFilesCh
   fastaPathCh
@@ -49,7 +45,7 @@ workflow colabFoldWkfl {
   workflowSummaryCh
 
   main:
-  
+
   ///////////////////
   // Init channels //
   ///////////////////
@@ -66,17 +62,17 @@ workflow colabFoldWkfl {
   //////////////////////////
   // Structure prediction //
   //////////////////////////
-  if (params.onlyMsas){
-    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
-
-  } else {
-    if (params.fromMsas == null){
-      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
+  if (params.onlyMsas) {
+    colabFoldSearch(fastaFilesCh, colabFoldDatabase, fastaChecker.out.jsonOK)
+  }
+  else {
+    if (params.fromMsas == null) {
+      colabFoldSearch(fastaFilesCh, colabFoldDatabase, fastaChecker.out.jsonOK)
       versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
       optionsCh = optionsCh.mix(colabFoldSearch.out.options)
       msasCh = colabFoldSearch.out.msas
     }
-    colabFold(msasCh, params.colabFoldDatabase)
+    colabFold(msasCh, colabFoldDatabase)
     versionsCh = versionsCh.mix(colabFold.out.versions)
     optionsCh = optionsCh.mix(colabFold.out.options)
     plotsCh = colabFold.out.plots
@@ -93,21 +89,15 @@ workflow colabFoldWkfl {
     // plot 3D structure //
     ///////////////////////
     pymolPng(colabFold.out.pdb)
-    
-    //////////////////////////////////
-    // multiqc by protein structure //
-    //////////////////////////////////
-    mqcProteinStructWkfl(
-      optionsYamlCh,
-      versionsYamlCh,
-      plotsCh,
-      colabFold.out.ranking,
-      pymolPng.out.png,
-      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
-      fastaFilesCh,
-      workflowSummaryCh
-    )
-
   }
 
+  emit:
+  options = optionsYamlCh
+  versions = versionsYamlCh
+  plots = plotsCh
+  ranking = colabFold.out.ranking
+  pymolPng = pymolPng.out.png
+  alphaBridgePng = fastaChainsCh.map { protein, file, n -> [protein] }.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge"))
+  fastaFiles = fastaFilesCh
+  workflowSummary = workflowSummaryCh
 }

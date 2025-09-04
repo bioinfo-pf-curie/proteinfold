@@ -1,51 +1,161 @@
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ProteinFold Pipeline : custom functions 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
+#!/usr/bin/env nextflow
+nextflow.enable.dsl = 2
 
 /*
 =============================================
-  Set of utilities functions 
+   Set of functions to check the input file
+   with protein (pdb) and ligand (sdf) required
+   by DynamicBind
 =============================================
 */
 
-// Function which returns elements which are present in list2
-// but not in list1
-def elementsNotPresent (ArrayList list1, ArrayList list2){
+// Function to check if a file exists and has the extension ext
+def checkFileExistWithExt(filePath, ext = null) {
+  def file = new File(filePath)
+  if (!file.exists() || !file.isFile()) {
+    exit(1, "${filePath} does not exist or is not a regular file")
+  }
 
-  def elementsNotInList1 = list2.findAll { !list1.contains(it) }
-
-  return elementsNotInList1
-
-}
-
-// Function to print the help of the tools
-def printFileContent(file) {
-    def inputFile = new File(file)
-    
-    if (inputFile.exists()) {
-        inputFile.eachLine { line ->
-            println line
-        }
-    } else {
-        System.out.println("File not found: $file")
+  // Check if the file has the extension ext
+  if (ext != null) {
+    if (!filePath.endsWith(ext)) {
+      exit(1, "${filePath} does not have the '${ext}' extension")
     }
+  }
+
+  return true
 }
 
+// Function to check if columns exist in a CSV file
+def checkColumnsExist(filePath, columns) {
+  checkFileExistWithExt(filePath)
+  def file = new File(filePath)
+
+  // Read the first line (header) from the file
+  def headerLine = null
+  file.withReader { reader ->
+    headerLine = reader.readLine()
+  }
+
+  if (headerLine == null) {
+    exit(1, "${filePath} is empty")
+  }
+
+  // Split the header line into columns
+  def headerColumns = headerLine.split(',')
+
+  // Check if all specified columns exist
+
+  columns.each { column ->
+    if (!headerColumns.contains(column.trim())) {
+      exit(1, "Column '${column}' not found in the CSV file ${filePath}")
+    }
+  }
+
+  return true
+}
+
+def checkBlankLines(filePath) {
+  checkFileExistWithExt(filePath)
+  def file = new File(filePath)
+
+  // Use BufferedReader with FileReader to read the file
+  def reader
+  try {
+    reader = new BufferedReader(new FileReader(file))
+    def lineCounter = 0
+
+    // Read each line from the file
+    reader.eachLine { line ->
+      lineCounter += 1
+
+      // Check if the line contains a space
+      if (line.contains(' ')) {
+        exit(1, "Line ${lineCounter} contains a space in the CSV file ${filePath}")
+      }
+    }
+  }
+  if (reader != null) {
+    reader.close()
+  }
+
+
+  return true
+}
+
+// Function to check that there are the pdb and sdf files exist
+def checkProteinLigandFiles(filePath) {
+  checkFileExistWithExt(filePath)
+  def file = new File(filePath)
+
+  // Use BufferedReader with FileReader to read the file
+  def reader
+  try {
+    reader = new BufferedReader(new FileReader(file))
+    // skip the first line with the header
+    def header = reader.readLine().split(',')
+    println(header)
+    def lineCounter = 1
+
+    // Read each line from the file
+    reader.eachLine { line ->
+      lineCounter += 1
+      def fields = line.split(',')
+      def value = [:]
+      value[header[0]] = fields[0]
+      value[header[1]] = fields[1]
+      checkFileExistWithExt(value.protein, 'pdb')
+      checkFileExistWithExt(value.ligand, 'sdf')
+    }
+  }
+  if (reader != null) {
+    reader.close()
+  }
+
+
+  return true
+}
+
+// Function to check that the input file with path 
+// to protein pdb and ligand sdf files is correctly formatted
+def checkInput4Docking(filePath) {
+  checkBlankLines(filePath)
+  checkColumnsExist(filePath, ['protein', 'ligand'])
+  checkProteinLigandFiles(filePath)
+
+  return true
+}
+
+def buildFastaPathCh(fastaPath) {
+
+  def fastaPathCh = Channel.fromPath(fastaPath)
+  fastaPathCh
+    .collect()
+    .map { fileList ->
+      // Use regex to extract the file extension
+      def List extensionList = []
+      fileList.each {
+        def matcher = it =~ /.*\.(\w+)$/
+        def extension = matcher ? matcher[0][1] : null
+        extensionList.add(extension)
+      }
+
+      if (extensionList.unique().size() > 1) {
+        def msg = "In the path " + params.fastaPath + " multiple file extension have been found: " + extensionList.unique() + ". Only one extension type must be found: either 'fasta' or 'json' (for AlphaFold3)"
+        NFTools.printRedText(msg)
+        exit(1, msg)
+      }
+    }
+
+  return fastaPathCh
+}
 
 // Function to chack that the multimer version is valid
 def checkMultimerVersions(String version) {
-  switch(version) {
-  case 'v1':
-    break
-  case 'v2':
-    break
-  case 'v3':
-    break
-  default:
-    exit 1, "version " + version + " is not supported."
+  def allowedVersions = ['v1', 'v2', 'v3']
+
+  if (!(version in allowedVersions)) {
+    error("version " + version + " is not supported.")
   }
 }
 
@@ -58,95 +168,83 @@ def checkMultimerVersions(String version) {
 =================================================
 */
 
-def createAfModelsCh(String alphaFoldOptions,
-                     int predictionsPerModel = 5,
-                     int numberOfModels = 5,
-                     String multimerVersions = "v1,v2,v3") {
+def createAfModelsCh(String alphaFoldOptions, int predictionsPerModel = 5, int numberOfModels = 5, String multimerVersions = "v1,v2,v3") {
   // Set variables
-  List afModels
-  Map afModelsInfo = [:]
-  int modelNumber = 0
-  String modelsToRelaxOptions = ""
-  List multimerVersionsList
-  int randomSeed
- 
+  def List afModels
+  def Map afModelsInfo = [:]
+  def int modelNumber = 0
+  def String modelsToRelaxOptions = ""
+  def List multimerVersionsList
+  def int randomSeed
+
   // This variable will store the new parameters
-  String alphaFoldOptionsParallel = alphaFoldOptions
+  def String alphaFoldOptionsParallel = alphaFoldOptions.toString()
 
   // Multimer
-  if(alphaFoldOptions.contains('model_preset=multimer')){
+  if (alphaFoldOptions.contains('model_preset=multimer')) {
     multimerVersionsList = multimerVersions.split(',').toList()
-    afModels = []
-    for (version in multimerVersionsList) {
+    multimerVersionsList.each { version ->
       checkMultimerVersions(version)
-      for (int model = 1; model <= numberOfModels; model++) {
-        modelNumber++
-        afModels.add("model_" + model + "_multimer_" + version)
+      afModels = (1..numberOfModels).collect { model ->
+        "model_${model}_multimer_${version}"
       }
+      modelNumber += numberOfModels
     }
   }
 
   // Monomer
-  if(!alphaFoldOptions.contains('model_preset=monomer_ptm') 
-     && (alphaFoldOptions.contains('model_preset=monomer') || !alphaFoldOptions.contains('model_preset'))) {
-    afModels = []
-    for (int model = 1; model <= numberOfModels; model++) {
-      modelNumber++
-      afModels.add("model_" + model)
+  if (!alphaFoldOptions.contains('model_preset=monomer_ptm') && (alphaFoldOptions.contains('model_preset=monomer') || !alphaFoldOptions.contains('model_preset'))) {
+    afModels = (1..numberOfModels).collect { model ->
+      "model_${model}"
     }
+    modelNumber += numberOfModels
   }
 
   // Monomer pTM
-  if(alphaFoldOptions.contains('model_preset=monomer_ptm')){
-    afModels = []
-    for (int model = 1; model < 6; model++) {
-      modelNumber++
-      afModels.add("model_" + model + "_ptm")
+  if (alphaFoldOptions.contains('model_preset=monomer_ptm')) {
+    afModels = (1..6).collect { model ->
+      "model_${model}_ptm"
     }
+    modelNumber += numberOfModels
   }
 
   // We can not keep the same random_seed for each prediction
   // otherwise results would be the same.
-  if(alphaFoldOptions.contains('random_seed')){
-    String randomSeedParams = (alphaFoldOptions =~ /--random_seed=\d+/)[0]
-    alphaFoldOptionsParallel = alphaFoldOptions
-                                 .replace(randomSeedParams, '')
+  if (alphaFoldOptions.contains('random_seed')) {
+    def String randomSeedParams = (alphaFoldOptions =~ /--random_seed=\d+/)[0]
+    alphaFoldOptionsParallel = alphaFoldOptions.replace(randomSeedParams, '')
     randomSeed = randomSeedParams
-                   .replaceAll('--random_seed=', '')
-                   .toInteger()
+      .replaceAll('--random_seed=', '')
+      .toInteger()
   }
 
   // Check what is the option for relaxation.
   // We do not want to relax all the models 
   // as we we have only one model each time
   // which will be obviously the best
-  if(alphaFoldOptions.contains('models_to_relax')){
+  if (alphaFoldOptions.contains('models_to_relax')) {
     modelsToRelaxOptions = (alphaFoldOptions =~ /--models_to_relax=\w+/)[0]
-    alphaFoldOptionsParallel = alphaFoldOptionsParallel
-                                 .replaceAll(modelsToRelaxOptions, '')
-    alphaFoldOptionsParallel = alphaFoldOptionsParallel + " --models_to_relax=none"
-  } else {
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel.replaceAll(modelsToRelaxOptions, '')
     alphaFoldOptionsParallel = alphaFoldOptionsParallel + " --models_to_relax=none"
   }
-   
-  // This is necessary to have a deterministic combination of model/pred with the random seed
-  def afModelsList = [] 
-  for (int pred_i = 1; pred_i <= predictionsPerModel; pred_i++) {
-    afModels.each { 
-      randomSeed = randomSeed + 1
-      afModelsList.add(tuple(pred_i, it, randomSeed))
-    }
+  else {
+    alphaFoldOptionsParallel = alphaFoldOptionsParallel + " --models_to_relax=none"
+  }
 
-  afModelsCh = Channel.fromList(afModelsList)
-  
+  // This is necessary to have a deterministic combination of model/pred with the random seed
+  def afModelsList = (1..predictionsPerModel).collect { pred_i ->
+    afModels.each {
+      randomSeed = randomSeed + 1
+      tuple(pred_i, it, randomSeed)
+    }
   }
+  def afModelsCh = Channel.fromList(afModelsList)
 
   afModelsInfo['alphaFoldOptionsParallel'] = alphaFoldOptionsParallel
   afModelsInfo['channel'] = afModelsCh
   afModelsInfo['modelsToRelaxOptions'] = modelsToRelaxOptions
 
   return afModelsInfo
-
 }
 
 /*
@@ -154,13 +252,13 @@ def createAfModelsCh(String alphaFoldOptions,
   Create channel for a list a protein directories
 =================================================
 */
-def createFromCh(def fromParams, fastaFilesCh) {
-  File fromParamsFile = new File(params[fromParams])
-  if (!fromParamsFile.exists()){
-    exit 1, "The path to the folder '" + params[fromParams] + "' does not exist."
+def createFromCh(fromParams, fastaFilesCh) {
+  def File fromParamsFile = new File(params[fromParams])
+  if (!fromParamsFile.exists()) {
+    exit(1, "The path to the folder '" + params[fromParams] + "' does not exist.")
   }
-  if (!fromParamsFile.isDirectory()){
-    exit 1, "The path to the folder '" + params[fromParams] + "' is not a directory."
+  if (!fromParamsFile.isDirectory()) {
+    exit(1, "The path to the folder '" + params[fromParams] + "' is not a directory.")
   }
 
   def fromCh
@@ -169,195 +267,69 @@ def createFromCh(def fromParams, fastaFilesCh) {
   def proteinUnion
 
   fromCh = Channel.fromPath("${params[fromParams]}/*", type: 'dir')
-             .map { def dir -> 
-                String protein = dir.toString()
-                                   .replaceAll(".*/", "")
-                File proteinDir = new File("${params[fromParams]}/${protein}")
-                def dirFileList = [] 
-                proteinDir.eachFile {def file -> dirFileList.add(file.getAbsolutePath())}
-                tuple(protein, dirFileList)
-             }
- 
-  proteinInDir = fromCh.map { it[0]}.collect().map { tuple ('list', it) }
-  proteinInFasta = fastaFilesCh.map { it[0]}.collect().map { tuple ('list', it) }
+    .map { dir ->
+      def String protein = dir
+        .toString()
+        .replaceAll(".*/", "")
+      def File proteinDir = new File("${params[fromParams]}/${protein}")
+      def dirFileList = []
+      proteinDir.eachFile { file -> dirFileList.add(file.getAbsolutePath()) }
+      tuple(protein, dirFileList)
+    }
+
+  proteinInDir = fromCh.map { it[0] }.collect().map { tuple('list', it) }
+  proteinInFasta = fastaFilesCh.map { it[0] }.collect().map { tuple('list', it) }
   proteinUnion = proteinInDir.join(proteinInFasta)
 
   // Print warning if the msas is present but not the fasta file  
-  proteinUnion
-    .map{
-      elementsNotPresent(it[2].toList(), it[1].toList())
-        .each{ def prot ->
-                 String msg
-                 msg = "WARNING (option ${fromParams}) - folder is present but no FASTA file available for protein '" 
-                 msg = msg + prot + "'. The protein will be ignored."
-                 NFTools.printOrangeText(msg)
-        }
+  proteinUnion.map {
+    elementsNotPresent(it[2].toList(), it[1].toList()).each { prot ->
+      def String msg
+      msg = "WARNING (option ${fromParams}) - folder is present but no FASTA file available for protein '"
+      msg = msg + prot + "'. The protein will be ignored."
+      NFTools.printOrangeText(msg)
     }
-    
-  // Print warning if the fasta file is present but not the msas folder
-  proteinUnion
-    .map{
-      elementsNotPresent(it[1].toList(), it[2].toList())
-        .each{ def prot ->
-          String msg
-          msg = "WARNING (option ${fromParams}) - FASTA file is present but no folder available for protein '"
-          msg = msg + prot + "'. The protein will be ignored. "
-          NFTools.printOrangeText(msg)
-        }
-    }
+  }
 
-    return fromCh
+  // Print warning if the fasta file is present but not the msas folder
+  proteinUnion.map {
+    elementsNotPresent(it[1].toList(), it[2].toList()).each { prot ->
+      def String msg
+      msg = "WARNING (option ${fromParams}) - FASTA file is present but no folder available for protein '"
+      msg = msg + prot + "'. The protein will be ignored. "
+      NFTools.printOrangeText(msg)
+    }
+  }
+
+  return fromCh
 }
+
 
 /*
 =============================================
-   Set of functions to check the input file
-   with protein (pdb) and ligand (sdf) required
-   by DynamicBind
+  Set of utilities functions 
 =============================================
 */
 
-// Function to check if a file exists and has the extension ext
-def checkFileExistWithExt(filePath, ext = null) {
-    def file = new File(filePath)
-    if (!file.exists() || !file.isFile()) {
-        exit 1, "${filePath} does not exist or is not a regular file"
-    }
+// Function which returns elements which are present in list2
+// but not in list1
+def elementsNotPresent(ArrayList list1, ArrayList list2) {
 
-    // Check if the file has the extension ext
-    if (ext != null) 
-        if (!filePath.endsWith(ext)) {
-            exit 1, "${filePath} does not have the '${ext}' extension"
-    }
+  def elementsNotInList1 = list2.findAll { !list1.contains(it) }
 
-    return true
+  return elementsNotInList1
 }
 
-// Function to check if columns exist in a CSV file
-def checkColumnsExist(filePath, columns) {
-    checkFileExistWithExt(filePath)
-    def file = new File(filePath)
+// Function to print the help of the tools
+def printFileContent(file) {
+  def inputFile = new File(file)
 
-    // Read the first line (header) from the file
-    def headerLine = null
-    file.withReader { reader ->
-        headerLine = reader.readLine()
+  if (inputFile.exists()) {
+    inputFile.eachLine { line ->
+      println(line)
     }
-    
-    if (headerLine == null) {
-        exit 1, "${filePath} is empty"
-    }
-
-    // Split the header line into columns
-    def headerColumns = headerLine.split(',')
-
-    // Check if all specified columns exist
-    for (column in columns) {
-        if (!headerColumns.contains(column.trim())) {
-            exit 1, "Column '$column' not found in the CSV file ${filePath}"
-        }
-    }
-
-    return true
-}
-
-// Function to check for lines with spaces or blanks in a CSV file
-def checkBlankLines(filePath) {
-    checkFileExistWithExt(filePath)
-    def file = new File(filePath)
-
-    // Use BufferedReader with FileReader to read the file
-    def reader
-    try {
-        reader = new BufferedReader(new FileReader(file))
-        def lineCounter = 0
-
-        // Read each line from the file
-        reader.eachLine { line ->
-            lineCounter++
-            
-            // Check if the line contains a space
-            if (line.contains(' ')) {
-                exit 1, "Line $lineCounter contains a space in the CSV file ${filePath}"
-            }
-        }
-    } finally {
-        if (reader != null) {
-            reader.close()
-        }
-    }
-
-    return true
-}
-
-// Function to check that there are the pdb and sdf files exist
-def checkProteinLigandFiles(filePath) {
-    checkFileExistWithExt(filePath)
-    def file = new File(filePath)
-
-    // Use BufferedReader with FileReader to read the file
-    def reader
-    try {
-        reader = new BufferedReader(new FileReader(file))
-        // skip the first line with the header
-        header = reader.readLine().split(',')
-        println header 
-        def lineCounter = 1
-
-        // Read each line from the file
-        reader.eachLine { line ->
-            lineCounter++
-            fields = line.split(',')
-            value = [:]
-            value[header[0]] = fields[0]
-            value[header[1]] = fields[1]
-            checkFileExistWithExt(value.protein, 'pdb')
-            checkFileExistWithExt(value.ligand, 'sdf')
-            
-        }
-    } finally {
-        if (reader != null) {
-            reader.close()
-        }
-    }
-
-    return true
-}
-
-// Function to check that the input file with path 
-// to protein pdb and ligand sdf files is correctly formatted
-def checkInput4Docking(filePath) {
-    checkBlankLines(filePath)
-    checkColumnsExist(filePath, ['protein', 'ligand']) 
-    checkProteinLigandFiles(filePath)
-
-    return true
-}
-
-// Function to check that theire is eithe json of fasta file
-// but not both
-
-def buildFastaPathCh(fastaPath) {
-
-  fastaPathCh = Channel.fromPath(fastaPath)
-  fastaPathCh
-    .collect()
-    .map { fileList ->
-      // Use regex to extract the file extension
-  		List extensionList = []
-      fileList.each { 
-        def matcher = it =~ /.*\.(\w+)$/
-        def extension = matcher ? matcher[0][1] : null
-        extensionList.add(extension)
-      }
-  
-      if (extensionList.unique().size() > 1) {
-        msg = "In the path " + params.fastaPath + " multiple file extension have been found: " + extensionList.unique() + ". Only one extension type must be found: either 'fasta' or 'json' (for AlphaFold3)"
-        NFTools.printRedText(msg)
-        exit 1, msg
-      }
-    }
-
-  return fastaPathCh
-
+  }
+  else {
+    System.out.println("File not found: ${file}")
+  }
 }

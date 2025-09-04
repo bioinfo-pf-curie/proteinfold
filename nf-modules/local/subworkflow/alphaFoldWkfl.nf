@@ -18,7 +18,7 @@ of the license and that you accept its terms.
 ==================================
            INCLUDE
 ==================================
-*/ 
+*/
 
 // Processes
 include { alphaFold } from '../process/alphaFold'
@@ -32,10 +32,6 @@ include { mergeMetricsMultimer } from '../process/mergeMetricsMultimer'
 include { metricsMultimer } from '../process/metricsMultimer'
 include { pymolPng } from '../process/pymolPng'
 
-// Subworkflows
-include { alphaFillWkfl } from '../subworkflow/alphaFillWkfl'
-include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
-
 /*
 =====================================
             WORKFLOW 
@@ -43,9 +39,8 @@ include { mqcProteinStructWkfl } from '../subworkflow/mqcProteinStructWkfl'
 */
 
 workflow alphaFoldWkfl {
-
   take:
-
+  alphaFoldDatabase
   fastaChainsCh
   fastaFilesCh
   fastaPathCh
@@ -53,7 +48,7 @@ workflow alphaFoldWkfl {
   workflowSummaryCh
 
   main:
-  
+
   ///////////////////
   // Init channels //
   ///////////////////
@@ -70,14 +65,14 @@ workflow alphaFoldWkfl {
   //////////////////////////
   // Structure prediction //
   //////////////////////////
-  alphaFoldOptions(params.alphaFoldOptions, params.alphaFoldDatabase)
+  alphaFoldOptions(params.alphaFoldOptions, alphaFoldDatabase)
 
-  if (params.onlyMsas){
+  if (params.onlyMsas) {
     // step - MSAS when onlyMsas
-    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, fastaChecker.out.jsonOK)
-
-  } else {
-    if (params.fromMsas != null){
+    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, alphaFoldDatabase, fastaChecker.out.jsonOK)
+  }
+  else {
+    if (params.fromMsas != null) {
       // step MSAS when fromMsas
       // after the join operator, msasCh contains:
       // [protein, /path/to/fasta/protein.fasta, [/path/to/msas/protein/file1, ..., /path/to/msas/protein/fileX]]
@@ -85,21 +80,22 @@ workflow alphaFoldWkfl {
       // [MISFA, [/proteinfold/test/data/msas/monomer2/alphafold/MISFA/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MISFA/mgnify_hits.sto]]
       // [MRLN, [/proteinfold/test/data/msas/monomer2/alphafold/MRLN/uniref90_hits.sto, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/pdb_hits.hhr, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/bfd_uniref_hits.a3m, /proteinfold/test/data/msas/monomer2/alphafold/MRLN/mgnify_hits.sto]]
       msasCh = fastaFilesCh.join(msasCh)
-    } else {
+    }
+    else {
       // step - MSAS
-      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, fastaChecker.out.jsonOK)
+      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, alphaFoldDatabase, fastaChecker.out.jsonOK)
       versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
       optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
       msasCh = alphaFoldSearch.out.msas
-                 .groupTuple()
-                 .map { it ->
-                   it[1] = it[1].flatten()
-                   it
-                 }
+        .groupTuple()
+        .map {
+          it[1] = it[1].flatten()
+          it
+        }
       msasCh = fastaFilesCh.join(msasCh)
     }
     // step - structure prediction
-    alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, alphaFoldDatabase)
     versionsCh = versionsCh.mix(alphaFold.out.versions)
     optionsCh = optionsCh.mix(alphaFold.out.options)
     // step generate plots
@@ -113,37 +109,38 @@ workflow alphaFoldWkfl {
     getSoftwareVersions(versionsCh.unique().collectFile(sort: true))
     optionsYamlCh = getSoftwareOptions.out.optionsYaml.collect(sort: true).ifEmpty([])
     versionsYamlCh = getSoftwareVersions.out.versionsYaml.collect(sort: true).ifEmpty([])
- 
+
     ///////////////////////
     // plot 3D structure //
     ///////////////////////
     pymolPng(alphaFold.out.pdb)
-    
+
     // rankModelCh contains:
     // [protein, rank, model, tool, pathToprediction]
     // for example:
     // [BTB-domain, 67, model_1_multimer_v3_pred_5, alphaFold, /path/to/work/70/fb3e7/predictions/BTB-domain]
     rankModelCh = alphaFold.out.ranking
       .map {
-        File rankingTsv = new File(it[1].toString())
-        int lineNumber = 0 
-        List rankModel = [] 
-        for(line in rankingTsv.readLines()) {
-          if (lineNumber != 0) {
-            def (rank, model, score) = line.tokenize('\t')
-            rankModel.add(tuple (it[0], rank, model))
+        def File rankingTsv = new File(it[1].toString())
+        def int lineNumber = 0
+        def List rankModel = []
+        rankingTsv
+          .readLines()
+          .each { line ->
+            if (lineNumber != 0) {
+              def (rank, model, score) = line.tokenize('\t')
+              rankModel.add(tuple(it[0], rank, model))
+            }
+            lineNumber = lineNumber + 1
           }
-          lineNumber = lineNumber + 1 
-        }
         rankModel
       }
       .flatten()
       .collate(3)
       .combine(alphaFold.out.predictions, by: 0)
-      // The map is needed for adaptive memory resource
       .map {
         // size in Bytes of the pickle file
-        long pickleSize = 0
+        def long pickleSize = 0
         def pickle = new File(it[4].toString() + "/result_" + it[2] + ".pkl")
         pickleSize = pickle.length()
         it.add(pickleSize)
@@ -155,37 +152,28 @@ workflow alphaFoldWkfl {
     // metrics for the multimer prediction //
     /////////////////////////////////////////
 
-    if(params.alphaFoldOptions.contains('multimer')){
+    if (params.alphaFoldOptions.contains('multimer')) {
       metricsMultimer(rankModelCh)
-      mergeMetricsMultimer(metricsMultimer.out.metrics
-                            .groupTuple()
-                            .map { tuple(it[0], it[1], it[2][0])}
-                          )
+      mergeMetricsMultimer(
+        metricsMultimer.out.metrics.groupTuple().map { tuple(it[0], it[1], it[2][0]) }
+      )
       rankingCh = mergeMetricsMultimer.out.ranking
-    } else {
+    }
+    else {
       rankingCh = alphaFold.out.ranking
     }
 
-    //////////////////////////////////
-    // multiqc by protein structure //
-    //////////////////////////////////
-    mqcProteinStructWkfl(
-      optionsYamlCh,
-      versionsYamlCh,
-      plotsCh,
-      rankingCh,
-      pymolPng.out.png,
-      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
-      fastaFilesCh,
-      workflowSummaryCh
-    )
-
-    ///////////////
-    // AlphaFill //
-    ///////////////
-    if(params.launchAlphaFill){
-      alphaFillWkfl(alphaFold.out.predictions)
-    }
+    
   }
 
+  emit:
+  predictions = alphaFold.out.predictions
+  options = optionsYamlCh
+  versions = versionsYamlCh
+  plots = plotsCh
+  ranking = rankingCh
+  pymolPng = pymolPng.out.png
+  alphaBridgePng = fastaChainsCh.map { protein, file, n -> [protein] }.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge"))
+  fastaFiles = fastaFilesCh
+  workflowSummary = workflowSummaryCh
 }
