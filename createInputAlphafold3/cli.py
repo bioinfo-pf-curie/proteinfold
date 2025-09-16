@@ -28,10 +28,30 @@ def parse_args() -> argparse.Namespace:
 
     # launcher command
     launcher_parser = subparsers.add_parser("launcher", help="Create SLURM launcher script.")
-    launcher_parser.add_argument("--server_path", default=".", help="Server path to input files.")
-    launcher_parser.add_argument("--nextflow_path", default="$WORK/../commun/bin/nextflow/nextflow-24.10.2",
-                                 help="Path to Nextflow executable.")
-    launcher_parser.add_argument("--output", "-o", default="./inputFile", help="Output folder for launcher.")
+
+
     launcher_parser.add_argument("--input", "-i", default=".", help="Input folder containing param files.")
+
+    launcher_parser.add_argument("--pipeline_dir", default="/mnt/beegfs/RECHERCHE/u900pf-bioinfo/common/pipelines/cubicpipes/dev/proteinfold/pipeline/", help="Path to the proteinFold pipeline directory")
+
+    launcher_parser.add_argument("--server_path", default=".", help="Server path to input files.")
+
+    launcher_parser.add_argument("--nextflow_path", default="/mnt/beegfs/common/apps/nextflow/nextflow-24.10.4", help="Path to Nextflow executable.")
+
+    launcher_parser.add_argument("--singularity_path", default="/mnt/beegfs/common/apps/singularity/singularity-3.8.5/bin", help="Path to Singularity executable.")
+
+    launcher_parser.add_argument("--java_path", default="/usr/lib/jvm/java-24-openjdk/bin", help="Path to java executable.")
+
+    launcher_parser.add_argument("--queue_cpu", default="recherche_batch", help="Queue cpu (partition)")
+
+    launcher_parser.add_argument("--account_gpu", default="dev_gpu", help="Account gpu")
+
+    launcher_parser.add_argument("--queue_gpu", default="batch_gpu", help="Queue gpu (partition)")
+
+    launcher_parser.add_argument("--genome_path", default="/mnt/beegfs/common/annotations/pipelines_CDR", help="Path to the annotation for proteinFold")
+
+    launcher_parser.add_argument("--singularity_img", default="/mnt/beegfs/RECHERCHE/u900pf-bioinfo/common/pipelines/cubicpipes/dev/proteinfold/singularity/images", help="Path to the singularity images for proteinFold")
+
+    launcher_parser.add_argument("--output", "-o", default="./inputFile", help="Output folder for launcher.")
 
     return parser.parse_args()

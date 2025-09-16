@@ -33,7 +33,7 @@ def main() -> None:
             raise NotImplementedError("--protein option is not yet implemented.")
 
     elif args.command == "launcher":
-        create_launcher(args.input, args.server_path, args.nextflow_path, args.output)
+        create_launcher(args.input, args.pipeline_dir, args.server_path, args.nextflow_path, args.singularity_path, args.java_path, args.queue_cpu, args.account_gpu, args.queue_cpu, args.genome_path, args.singularity_img, args.output)
 
 
 if __name__ == "__main__":
