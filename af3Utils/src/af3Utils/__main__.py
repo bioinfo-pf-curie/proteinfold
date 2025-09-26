@@ -1,0 +1,45 @@
+import logging
+from typing import Optional, Sequence
+from af3Utils.cli import build_parser
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    """
+    Main entry point for the jsonCreator application.
+    Executes the requested command: list, merge or launcher.
+    """
+
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(levelname)s: %(message)s",
+    )
+    return int(args.func(args))
+
+    # args = parse_args()
+
+    # if args.command == "list":
+    #     display_json(args.directory)
+
+    # elif args.command == "merge":
+    #     if args.protein is None and args.sample_plan is None:
+    #         raise TypeError("You must provide either --protein or samplePlan file")
+
+    #     if args.sample_plan:
+    #         protein_groups = load_sample_plan(args.sample_plan)
+    #         for proteins in protein_groups:
+    #             name = create_json(proteins, args.seeds, args.input, args.output)
+    #             create_json_params(name, args.output, args.model_dir, args.server_path)
+
+    #     # Optionnel : à implémenter si support des --protein sans plan
+    #     elif args.protein:
+    #         raise NotImplementedError("--protein option is not yet implemented.")
+
+    # elif args.command == "launcher":
+    #     create_launcher(args.input, args.pipeline_dir, args.server_path, args.nextflow_path, args.singularity_path, args.java_path, args.queue_cpu, args.account_gpu, args.queue_cpu, args.genome_path, args.singularity_img, args.output)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

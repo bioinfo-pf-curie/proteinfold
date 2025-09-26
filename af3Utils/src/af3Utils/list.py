@@ -1,5 +1,7 @@
+import argparse
 import os
 import errno
+
 
 def list_json(directory: str) -> dict[str, str]:
     """
@@ -26,13 +28,15 @@ def list_json(directory: str) -> dict[str, str]:
     return json_files
 
 
-def display_json(directory: str) -> None:
+def display_json(args: argparse.Namespace) -> int:
     """
     Displays the JSON files in a directory in formatted for.
 
     Args:
         directory (str): Directory to scan.
     """
-    json_files = list_json(directory)
+    json_files = list_json(args.directory)
     for protein, path in json_files.items():
         print(f"{protein:30} : {path:100}")
+
+    return 0

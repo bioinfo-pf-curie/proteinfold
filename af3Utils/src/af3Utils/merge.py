@@ -1,11 +1,28 @@
+import argparse
 import os
 import json
 import errno
 import string
 import itertools
 from typing import Iterator
-from createInputAlphafold3.list import list_json
+from af3Utils.list import list_json
 
+def cmd_merge(args: argparse.Namespace) -> int:
+    if args.protein is None and args.sample_plan is None:
+            raise TypeError("You must provide either --protein or samplePlan file")
+
+    if args.sample_plan:
+        protein_groups = load_sample_plan(args.sample_plan)
+        for proteins in protein_groups:
+            name = create_json(proteins, args.seeds, args.input, args.output)
+            create_json_params(name, args.output, args.model_dir, args.server_path)
+            return 0
+
+    # Optionnel : à implémenter si support des --protein sans plan
+    elif args.protein:
+        raise NotImplementedError("--protein option is not yet implemented.")
+
+    return 1
 
 def load_sample_plan(file_path: str) -> list[list[str]]:
     """
@@ -31,7 +48,9 @@ def load_sample_plan(file_path: str) -> list[list[str]]:
     return sample_plan
 
 
-def create_json(proteins: list[str], seeds: list[int], input_folder: str, output_folder: str) -> str:
+def create_json(
+    proteins: list[str], seeds: list[int], input_folder: str, output_folder: str
+) -> str:
     """
     Creates an AlphaFold3 JSON file from several proteins.
 
@@ -56,22 +75,22 @@ def create_json(proteins: list[str], seeds: list[int], input_folder: str, output
             raise ValueError(f"Protein '{protein}' not found in {input_folder}")
         fasta_files.append(json_files[protein])
 
-    contents = []
+    contents: list[str] = []
     af3_id_generator = generate_af3_id()
-    name = '-'.join(proteins)
+    name = "-".join(proteins)
 
     for file_path in fasta_files:
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             json_content = json.load(f)
             json_content["protein"]["id"] = next(af3_id_generator)
             contents.append(json_content)
 
-    af3_json = {
+    af3_json: dict[str, str | int | list[int] | list[str]] = {
         "dialect": "alphafold3",
         "version": 1,
         "name": name,
         "modelSeeds": seeds,
-        "sequences": contents
+        "sequences": contents,
     }
 
     json_output = json.dumps(af3_json, indent=4, sort_keys=True)
@@ -84,7 +103,9 @@ def create_json(proteins: list[str], seeds: list[int], input_folder: str, output
     return name
 
 
-def create_json_params(name: str, output_folder: str, model_dir: str, server_path: str) -> None:
+def create_json_params(
+    name: str, output_folder: str, model_dir: str, server_path: str
+) -> None:
     """
     Creates a JSON `params-file` to run AlphaFold3 with Nextflow.
 
@@ -96,11 +117,11 @@ def create_json_params(name: str, output_folder: str, model_dir: str, server_pat
     """
     create_output_dir(output_folder, name, "params-file")
 
-    params = {
+    params: dict[str, bool | str] = {
         "launchAlphaFold3": True,
         "alphaFold3Options": f"--model_dir={model_dir}",
         "fastaPath": os.path.join(server_path, output_folder, name, "fasta"),
-        "outDir": os.path.join(server_path, output_folder, name)
+        "outDir": os.path.join(server_path, output_folder, name),
     }
 
     params_path = os.path.join(output_folder, name, "params-file", f"{name}.json")
@@ -119,7 +140,7 @@ def generate_af3_id() -> Iterator[str]:
     length = 1
     while True:
         for combo in itertools.product(chars, repeat=length):
-            yield ''.join(combo)
+            yield "".join(combo)
         length += 1
 
 

@@ -1,6 +1,6 @@
-# createInputAlphafold3
+# af3Utils
 
-**createInputAlphafold3** is a command-line tool to automatically generate input JSON files for AlphaFold3 from FASTA sequences and sample plans.
+**af3Utils** is a command-line tool to automatically generate input JSON files for AlphaFold3 from FASTA sequences and sample plans.
 
 It also creates configuration files for execution via Nextflow and can generate SLURM launcher scripts.
 
@@ -20,19 +20,19 @@ It also creates configuration files for execution via Nextflow and can generate 
 ### List available JSON files
 
 ```bash
-python -m createInputAlphafold3 list ./fasta
+python -m af3Utils list ./fasta
 ```
 
 ### Merge proteins using a CSV sample plan
 
 ```bash
-python -m createInputAlphafold3 merge samplePlan.csv --seeds 1 2 3 --serverPath /work/data
+python -m af3Utils merge samplePlan.csv --seeds 1 2 3 --serverPath /work/data
 ```
 
 ### Generate SLURM launcher scripts
 
 ```bash
-python -m createInputAlphafold3 launcher --input ./inputFile --output ./slurm --serverPath /work/data
+python -m af3Utils launcher --input ./inputFile --output ./slurm --serverPath /work/data
 ```
 
 ---
@@ -40,7 +40,7 @@ python -m createInputAlphafold3 launcher --input ./inputFile --output ./slurm --
 ## Project Structure
 
 ```bash
-createInputAlphafold3/
+af3Utils/
 ├── cli.py               # Argument parsing for CLI
 ├── createLauncher.py    # SLURM script generation
 ├── list.py              # Lists available JSON files

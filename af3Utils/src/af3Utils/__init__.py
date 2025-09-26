@@ -15,24 +15,23 @@ Modules principaux :
 - createLauncher : Génération des scripts SLURM
 """
 
-from createInputAlphafold3.cli import parse_args
-from createInputAlphafold3.merge import (
+from .cli import build_parser
+from .merge import (
     create_json,
     create_json_params,
-    load_sample_plan
+    load_sample_plan,
 )
-from createInputAlphafold3.list import (
-    list_json,
-    display_json
-)
-from createInputAlphafold3.createLauncher import create_launcher
+from .list import list_json, display_json
+from .createLauncher import create_launcher
 
 __all__ = [
-    "parse_args",
+    "build_parser",
     "create_json",
     "create_json_params",
     "load_sample_plan",
     "list_json",
     "display_json",
-    "create_launcher"
+    "create_launcher",
 ]
+
+__version__ = "0.1.1"
