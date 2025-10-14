@@ -33,7 +33,7 @@ process alphaFill {
 
   script:
   """
-  if [[ -f predictions/${protein}/ranked_0.pdb ]]; then ranked_0="ranked_0.pdb"; else ranked_0="ranked_0.cif"; fi
+  ranked_0="ranked_0.pdb"
   identity=0.25
   alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/\${ranked_0} identity\${identity}.cif
   identity=0.30
@@ -50,7 +50,7 @@ process alphaFill {
 
   stub:
   """
-  if [[ -f predictions/${protein}/ranked_0.pdb ]]; then ranked_0="ranked_0.pdb"; else ranked_0="ranked_0.cif"; fi
+  ranked_0="ranked_0.pdb"
   identity=0.25
   echo alphafill process -t ${task.cpus} --min-hsp-identity \${identity} --pdb-dir ${alphaFillDatabase}/mmcif_files --pdb-fasta ${alphaFillDatabase}/fasta/pdb-redo.fasta --ligands ${alphaFillDatabase}/ligands/af-ligands.cif predictions/${protein}/\${ranked_0} ${protein}-identity\${identity}.cif
   touch identity\${identity}.cif

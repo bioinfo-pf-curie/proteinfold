@@ -319,7 +319,8 @@ if(params.fromPredictions != null){
                        }
  										   tuple(it[0], pdbFile)
                      }
-
+  // Select protein input from Alphafold2 (pdb files)
+  pdbType = pdbFileCh.map { protein, files -> [protein, files.any { file -> file.endsWith("ranked_0.pdb") }]}
 }
 
 /*
@@ -378,6 +379,7 @@ include { alphaFold3Help } from './nf-modules/local/process/alphaFold3Help'
 include { colabFold } from './nf-modules/local/process/colabFold'
 include { colabFoldHelp } from './nf-modules/local/process/colabFoldHelp'
 include { colabFoldSearch } from './nf-modules/local/process/colabFoldSearch'
+include { convertCifToPdb } from './nf-modules/local/process/convertCifToPdb'
 include { dynamicBind } from './nf-modules/local/process/dynamicBind'
 include { dynamicBindHelp } from './nf-modules/local/process/dynamicBindHelp'
 include { fastaChecker } from './nf-modules/local/process/fastaChecker'
@@ -472,7 +474,29 @@ workflow {
 
   // Launch AlphaFill using existing predicted structure
   if (params.launchAlphaFill && params.fromPredictions != null ){
-    alphaFillWkfl(predictionsCh)
+    // Select protein input different PDB files: CIF
+    filesToConvert = pdbType.map({protein, bool -> if (bool ==false) return protein}).join(predictionsCh)
+
+    // Convert CIF -> PDB
+    convertCifToPdb(filesToConvert)
+
+    // Add PDB files to other input for a protein
+    predictionsConvertFiles = filesToConvert
+      .join(convertCifToPdb.out.pdb, remainder: true)
+      .map {protein, toolname, paths1, paths2 -> def all_paths = []
+        if (paths1) {
+          def list1 = [paths1].flatten()
+          all_paths.addAll(list1)
+        }
+        if (paths2) {
+          def list2 = [paths2].flatten()
+          all_paths.addAll(list2)
+        }
+        [protein, toolname, all_paths] }
+
+    // Add all protein with pdb files in one channel
+    alphaFillWkfl(predictionsConvertFiles.mix(pdbType.map({protein, bool -> if (bool == true) return protein}).join(predictionsCh)))
+
   }
 
   // Launch the nanoBERT predictions
