@@ -44,7 +44,7 @@ process convertCifToPdb {
     folder="monomer2"
   fi
 
-  cp -r $projectDir/test/data/afmassive/\$foler/${protein}/ranked_0.pdb predictions/${protein}
+  cp -r $projectDir/test/data/afmassive/\$folder/${protein}/ranked_0.pdb predictions/${protein}
   """
 }
 
