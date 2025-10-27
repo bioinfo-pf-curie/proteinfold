@@ -19,13 +19,17 @@ process dynamicBindHelp {
   label 'dynamicBind'
   label 'minMem'
   label 'minCpu'
+  publishDir "${params.outDir}/", mode: "copy"
+
+  output:
+  path('dynamicBindHelp.txt'), emit: help
 
   when:
   params.dynamicBindHelp
 
   script:
   """
-  launch_dynamicbind.sh -h > "${params.outDir}/dynamicBindHelp.txt"
+  launch_dynamicbind.sh -h > dynamicBindHelp.txt
   """
 }
 

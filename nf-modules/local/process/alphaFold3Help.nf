@@ -20,14 +20,18 @@ process alphaFold3Help {
   label 'alphaFold3'
   label 'minMem'
   label 'minCpu'
-  errorStrategy 'ignore'
+  publishDir "${params.outDir}/", mode: "copy"
+
+  output:
+  path('alphaFold3Help.txt'), emit: help
 
   when:
   params.alphaFold3Help 
 
   script:
   """
-  launch_alphafold.sh --helpfull > "${params.outDir}/alphaFold3Help.txt"
+  trap 'exit 0' EXIT 1
+  launch_alphafold.sh --helpfull > alphaFold3Help.txt
   """
 }
 
