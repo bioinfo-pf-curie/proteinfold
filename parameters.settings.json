@@ -17,7 +17,7 @@
       "name": "params-file",
       "label": "Parameter options",
       "usage": "Set the parameters of the pipeline using a JSON file configuration file (i.e. 'params.json'). All parameters defined as JSON type must be this way. For example, the JSON can contain: \"alphaFoldOptions\": \"--max_template=2024-01-01 --multimer\". WARNING: passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which are not appreciated by nextflow.",
-      "type": "path",
+      "type": "json",
       "choices": [],
       "nargs": "1",
       "default_value": null,
@@ -54,20 +54,6 @@
       "group": "References"
     },
     {
-	    "origin": "pipeline",
-      "name": "proteinLigandFile",
-      "label": "Input file",
-      "usage": "Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.",
-      "type": "path",
-      "choices": [],
-      "nargs": "1",
-      "default_value": null,
-      "pattern": "",
-      "render": "textfield",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
       "name": "afMassiveDatabase",
       "label": "afMassive database",
       "usage": "Path to the database required by AFMassive.",
@@ -78,51 +64,64 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "afMassive"
     },
     {
       "name": "afMassiveHelp",
       "label": "massivebFold help",
       "usage": "Display all the options available to run AFMassive. Use this option in combination with -profile singularity.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "afMassive"
     },
     {
       "name": "afMassiveOptions",
       "label": "afMassive options",
       "usage": "Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed using the --alphaFoldOptions option.",
-      "type": "JSON",
+      "type": "string",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "afMassive"
+    },
+    {
+      "name": "frommsas",
+      "label": "from msas",
+      "usage": "When true, the pipeline will skip the multiple sequence alignments (msas).",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "afMassive"
     },
     {
       "name": "launchAfMassive",
       "label": "launch AfMassive",
       "usage": "Launch AFMassive",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "afMassive"
     },
     {
       "name": "numberOfModels",
       "label": "number of models",
-      "usage": "Number of models that will be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true.",
+      "usage": "Number of models that will be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true. (Default 5)",
       "type": "int",
       "nargs": 1,
       "choices": [],
@@ -130,25 +129,25 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "afMassive"
     },
     {
       "name": "multimerVersions",
       "label": "Multimer versions",
       "usage": "AlphaFold multimer model versions (v1, v2, v3) which will be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true. The list of the versions to be evaluated must be provided with a comma separated string, e.g. 'v1,v2', Default is 'v1,v2,v3'.",
-      "type": "int",
+      "type": "string",
       "nargs": 1,
       "choices": [],
       "default_value": "5",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "afMassive"
     },
     {
       "name": "predictionsPerModel",
       "label": "predictions per model",
-      "usage": "Number of predictions per model which will be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true.",
+      "usage": "Number of predictions per model which will be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is true. (Default 5)",
       "type": "int",
       "nargs": 1,
       "choices": [],
@@ -156,33 +155,60 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "afMassive"
+    },
+    {
+      "name": "onlymsas",
+      "label": "only msas",
+      "usage": "When true, the pipeline will only generate the multiple sequence alignments (msas).",
+
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "afMassive"
+    },
+    {
+      "name": "useGpu",
+      "label": "useGpu",
+      "usage": "Run the prediction model on GPU. AFMassive can run either on CPU or GPU.",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": false,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "afMassive"
     },
     {
       "name": "alphaFillHelp",
       "label": "alphaFill help",
       "usage": "Display all the options available to run AlphaFill. Use this option in combination with -profile singularity.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFill"
     },
     {
       "name": "launchAlphaFill",
       "label": "launch alphaFill",
       "usage": "Launch AlphaFill.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFill"
     },
     {
       "name": "alphaFoldDatabase",
@@ -195,46 +221,86 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold"
     },
     {
       "name": "alphaFoldHelp",
       "label": "alphaFold help",
       "usage": "Display all the options available to run AlphaFold. Use this option in combination with -profile singularity.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold"
     },
     {
       "name": "alphaFoldOptions",
       "label": "alphaFold options",
       "usage": "Prediction model options passed to AlphaFold or AFMassive.",
-      "type": "JSON",
+      "type": "string",
       "nargs": 1,
       "choices": [],
       "default_value": "--max_template_date=2024-01-01 --random_seed=654321",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold"
     },
     {
-      "name": "launchAlphaFold",
-      "label": "launch alphaFold",
-      "usage": "Launch AlphaFold.",
-      "type": "boolean",
+      "name": "frommsas",
+      "label": "from msas",
+      "usage": "When true, the pipeline will skip the multiple sequence alignments (msas).",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold"
+    },
+    {
+      "name": "launchAlphaFold",
+      "label": "launch alphaFold",
+      "usage": "Launch AlphaFold.",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "alphaFold"
+    },
+    {
+      "name": "onlymsas",
+      "label": "only msas",
+      "usage": "When true, the pipeline will only generate the multiple sequence alignments (msas).",
+
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "alphaFold"
+    },
+    {
+      "name": "useGpu",
+      "label": "useGpu",
+      "usage": "Run the prediction model on GPU. AlphaFold can run either on CPU or GPU.",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": false,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "alphaFold"
     },
     {
       "name": "alphaFold3Database",
@@ -247,46 +313,85 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold3"
     },
     {
       "name": "alphaFold3Help",
       "label": "alphaFold3 help",
       "usage": "Display all the options available to run AlphaFold3. Use this option in combination with -profile singularity.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold3"
     },
     {
       "name": "alphaFold3Options",
       "label": "alphaFold3 options",
       "usage": "Prediction model options passed to AlphaFold3.",
-      "type": "JSON",
+      "type": "string",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold3"
+    },
+    {
+      "name": "frommsas",
+      "label": "from msas",
+      "usage": "When true, the pipeline will skip the multiple sequence alignments (msas).",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "alphaFold3"
     },
     {
       "name": "launchAlphaFold3",
       "label": "launch alphaFold3",
       "usage": "Launch AlphaFold3.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "alphaFold3"
+    },
+    {
+      "name": "onlymsas",
+      "label": "only msas",
+      "usage": "When true, the pipeline will only generate the multiple sequence alignments (msas).",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "alphaFold3"
+    },
+    {
+      "name": "useGpu",
+      "label": "useGpu",
+      "usage": "Mandatory -- Run the prediction model on GPU. AlphaFold3 run only on GPU.",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "alphaFold3"
     },
     {
       "name": "colabFoldDatabase",
@@ -299,46 +404,86 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "colabFold"
     },
     {
       "name": "colabFoldHelp",
       "label": "colabFold help",
       "usage": "Display all the options available to run ColabFold. Use this option in combination with -profile singularity.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "colabFold"
     },
     {
       "name": "colabFoldOptions",
       "label": "colabFold options",
       "usage": "Prediction model options passed to ColabFold.",
-      "type": "JSON",
+      "type": "string",
       "nargs": 1,
       "choices": [],
       "default_value": "--random-seed 654321 --model-type auto",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "colabFold"
     },
     {
-      "name": "launchColabFold",
-      "label": "launch colabFold",
-      "usage": "Launch ColabFold.",
-      "type": "boolean",
+      "name": "frommsas",
+      "label": "from msas",
+      "usage": "When true, the pipeline will skip the multiple sequence alignments (msas).",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "colabFold"
+    },
+    {
+      "name": "launchColabFold",
+      "label": "launch colabFold",
+      "usage": "Launch ColabFold.",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "colabFold"
+    },
+    {
+      "name": "onlymsas",
+      "label": "only msas",
+      "usage": "When true, the pipeline will only generate the multiple sequence alignments (msas).",
+
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "",
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "colabFold"
+    },
+    {
+      "name": "useGpu",
+      "label": "useGpu",
+      "usage": "Mandatory -- Run the prediction model on GPU. ColabFold require GPU only.",
+      "type": "bool",
+      "nargs": 1,
+      "choices": [],
+      "default_value": false,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "colabFold"
     },
     {
       "name": "diffDockDatabase",
@@ -351,7 +496,7 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "diffDock"
     },
     {
       "name": "diffDockArgsYamlFile",
@@ -364,20 +509,34 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "diffDock"
     },
     {
       "name": "launchDiffDock",
       "label": "launch DiffDock",
       "usage": "Launch DiffDock.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "diffDock"
+    },
+    {
+	    "origin": "pipeline",
+      "name": "proteinLigandFile",
+      "label": "Input file",
+      "usage": "Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.",
+      "type": "path",
+      "choices": [],
+      "nargs": "1",
+      "default_value": null,
+      "pattern": "",
+      "render": "textfield",
+      "arity": 0,
+      "group": "diffDock"
     },
     {
       "name": "dynamicBindDatabase",
@@ -390,93 +549,79 @@
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "dynamicBind"
     },
 	{
       "name": "dynamicBindHelp",
       "label": "dynamicBind help",
       "usage": "Display all the options available to run DynamicBind. Use this option in combination with -profile singularity.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "dynamicBind"
     },
     {
       "name": "dynamicBindOptions",
       "label": "dynamicBind options",
       "usage": "Prediction model options passed to DynamicBind.",
-      "type": "JSON",
+      "type": "string",
       "nargs": 1,
       "choices": [],
       "default_value": "--savings_per_complex 40 --inference_steps 20 --movie --seed 654321",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "dynamicBind"
     },
     {
       "name": "launchDynamicBind",
       "label": "launch DynamicBind",
       "usage": "Launch DynamicBind.",
-      "type": "boolean",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": "",
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "dynamicBind"
     },
     {
-      "name": "fromMsas",
-      "label": "from msas",
-      "usage": "Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction. Typically the path could be the results of the pipeline launcded with the --onlyMsas option.",
-
+	    "origin": "pipeline",
+      "name": "proteinLigandFile",
+      "label": "Input file",
+      "usage": "Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.",
       "type": "path",
-      "nargs": 1,
       "choices": [],
-      "default_value": "",
-      "pattern": ".*",
-      "render": "file",
+      "nargs": "1",
+      "default_value": null,
+      "pattern": "",
+      "render": "textfield",
       "arity": 0,
-      "group": "Other options"
+      "group": "dynamicBind"
     },
     {
-      "name": "onlyMsas",
-      "label": "only msas",
-      "usage": "When true, the pipeline will only generate the multiple sequence alignments (msas).",
-
-      "type": "boolean",
-      "nargs": 1,
-      "choices": [],
-      "default_value": "",
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "outDir",
-      "label": "Output directory",
-      "usage": "The output directory where the results will be saved",
-      "type": "path",
+      "name": "useGpu",
+      "label": "useGpu",
+      "usage": "Mandatory -- Run the prediction model on GPU. DynamicBind require GPU only.",
+      "type": "bool",
       "nargs": 1,
       "choices": [],
       "default_value": null,
       "pattern": ".*",
       "render": "file",
       "arity": 0,
-      "group": "Other options"
+      "group": "dynamicBind"
     },
     {
-      "name": "useGpu",
-      "label": "useGpu",
-      "usage": "Run the prediction model on GPU. AlphaFold and AFMassive can run either on CPU or GPU. ColabFold and DynamicBind require GPU only.",
-      "type": "boolean",
+      "name": "outDir",
+      "label": "Output directory",
+      "usage": "The output directory where the results will be saved",
+      "type": "path",
       "nargs": 1,
       "choices": [],
       "default_value": null,

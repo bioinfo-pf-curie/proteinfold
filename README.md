@@ -35,15 +35,19 @@ nextflow run main.nf --help
 ```
 
 ```bash
-N E X T F L O W  ~  version 22.10.6
-Launching `main.nf` [curious_perlman] DSL2 - revision: 986ad6e9f0
+ N E X T F L O W   ~  version 24.10.5
+
+Launching `main.nf` [high_cori] DSL2 - revision: 5992df9705
+
 ------------------------------------------------------------------------
       _   _   _   _   _   _   _     _   _   _   _  
      / \ / \ / \ / \ / \ / \ / \   / \ / \ / \ / \ 
     ( P | r | o | t | e | i | n ) ( F | o | l | d )
      \_/ \_/ \_/ \_/ \_/ \_/ \_/   \_/ \_/ \_/ \_/ 
     
+                   vtag:v1.6.2-commit:ca3bbb3aa05ccf1db6db208c8ce0d81ebb1dc3f0
 ------------------------------------------------------------------------
+
 
     Usage:
 
@@ -55,66 +59,87 @@ MANDATORY ARGUMENTS, NEXTFLOW:
     -profile  STRING [test, singularity, cluster]  Configuration profile to use. Can use multiple (comma separated).
 
 OTHER OPTIONS, NEXTFLOW:
-    -params-file  PATH   Set the parameters of the pipeline using a JSON file configuration file (i.e. 'params.json'). All parameters defined as JSON
-                         type must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING:
-                         passing the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which
-                         are not appreciated by nextflow.
+    -params-file  JSON   Set the parameters of the pipeline using a JSON file configuration file (i.e. 'params.json'). All parameters defined as JSON type 
+                         must be this way. For example, the JSON can contain: "alphaFoldOptions": "--max_template=2024-01-01 --multimer". WARNING: passing 
+                         the option '--alphaFoldOptions' in command line will throw an error when the option contains '-' or '--' characters which are not 
+                         appreciated by nextflow.
 
 OTHER OPTIONS:
-    --afMassiveDatabase    PATH      Path to the database required by AFMassive.
-    --afMassiveHelp                  Display all the options available to run AFMassive. Use this option in combination with -profile singularity.
-    afMassiveOptions       JSON      Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed
-                                     using the --alphaFoldOptions option.
-    --alphaFillHelp                  Display all the options available to run AlphaFill. Use this option in combination with -profile singularity.
-    --alphaFold3Database   PATH      Path to the database required by AlphaFold3.
-    --alphaFold3Help                 Display all the options available to run AlphaFold3. Use this option in combination with -profile singularity.
-    alphaFold3Options      JSON      Prediction model options passed to AlphaFold3.
-    --alphaFoldDatabase    PATH      Path to the database required by AlphaFold.
-    --alphaFoldHelp                  Display all the options available to run AlphaFold. Use this option in combination with -profile singularity.
-    alphaFoldOptions       JSON      Prediction model options passed to AlphaFold or AFMassive.
-    --colabFoldDatabase    PATH      Path to the database required by ColabFold.
-    --colabFoldHelp                  Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
-    colabFoldOptions       JSON      Prediction model options passed to ColabFold.
-    --diffDockArgsYamlFile YAML      Path to the YAML file with the DiffDock options.
-    --diffDockDatabase     PATH      Path to the database required by DiffDock.
-    --dynamicBindDatabase  PATH      Path to the database required by DynamicBind.
-    --dynamicBindHelp                Display all the options available to run DynamicBind. Use this option in combination with -profile
-                                     singularity.
-    dynamicBindOptions     JSON      Prediction model options passed to DynamicBind.
-    --fastaPath            PATH      Path to the input directory which contains the fasta files.
-    --fromMsas             PATH      Path to existing multiple sequence alignments (msas) to use for the 3D protein strcuture prediction.
-                                     Typically the path could be the results of the pipeline launcded with the --onlyMsas option.
-    --launchAfMassive                Launch AFMassive
-    --launchAlphaFill                Launch AlphaFill.
-    --launchAlphaFold                Launch AlphaFold.
-    --launchAlphaFold3               Launch AlphaFold3.
-    --launchColabFold                Launch ColabFold.
-    --launchDiffDock                 Launch DiffDock.
-    --launchDynamicBind              Launch DynamicBind.
-    --multimerVersions     INT       AlphaFold multimer model versions (v1, v2, v3) which will be evaluated by AFMassive. This parameter is taken
-                                     into account when --launchAfMassive is true. The list of the versions to be evaluated must be provided with a
-                                     comma separated string, e.g. 'v1,v2', Default is 'v1,v2,v3'.
-    --numberOfModels       INT       Number of models that will be evaluated by AFMassive. This parameter is taken into account when
-                                     --launchAfMassive is true.
-    --onlyMsas                       When true, the pipeline will only generate the multiple sequence alignments (msas).
-    --outDir               PATH      The output directory where the results will be saved
-    --predictionsPerModel  INT       Number of predictions per model which will be evaluated by AFMassive. This parameter is taken into account
-                                     when --launchAfMassive is true.
-    --proteinLigandFile    PATH      Path to the input file for molecular docking. The file must be in CSV format, without space. One column named
-                                     'protein' contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the
-                                     'sdf' file.
-    --useGpu                         Run the prediction model on GPU. AlphaFold and AFMassive can run either on CPU or GPU. ColabFold and
-                                     DynamicBind require GPU only.
+    --fastaPath PATH   Path to the input directory which contains the fasta files.
+    --outDir    PATH   The output directory where the results will be saved
 
 REFERENCES:
     --genomeAnnotationPath PATH   Path to genome/proteome annotations folder used to predict the protein 3D structure.
+
+AFMASSIVE:
+    --afMassiveDatabase   PATH     Path to the database required by AFMassive.
+    --afMassiveHelp       BOOL     Display all the options available to run AFMassive. Use this option in combination with -profile singularity.
+    --afMassiveOptions    STRING   Specific options for AFMassive. As AFMassive is an AlphaFold-like tool, standard AlphaFold options are passed using the 
+                                   --alphaFoldOptions option.
+    --frommsas            BOOL     When true, the pipeline will skip the multiple sequence alignments (msas).
+    --launchAfMassive     BOOL     Launch AFMassive
+    --multimerVersions    STRING   AlphaFold multimer model versions (v1, v2, v3) which will be evaluated by AFMassive. This parameter is taken into 
+                                   account when --launchAfMassive is true. The list of the versions to be evaluated must be provided with a comma 
+                                   separated string, e.g. 'v1,v2', Default is 'v1,v2,v3'.
+    --numberOfModels      INT      Number of models that will be evaluated by AFMassive. This parameter is taken into account when --launchAfMassive is 
+                                   true. (Default 5)
+    --onlymsas            BOOL     When true, the pipeline will only generate the multiple sequence alignments (msas).
+    --predictionsPerModel INT      Number of predictions per model which will be evaluated by AFMassive. This parameter is taken into account when 
+                                   --launchAfMassive is true. (Default 5)
+    --useGpu              BOOL     Run the prediction model on GPU. AFMassive can run either on CPU or GPU.
+
+ALPHAFILL:
+    --alphaFillHelp   BOOL   Display all the options available to run AlphaFill. Use this option in combination with -profile singularity.
+    --launchAlphaFill BOOL   Launch AlphaFill.
+
+ALPHAFOLD:
+    --alphaFoldDatabase PATH     Path to the database required by AlphaFold.
+    --alphaFoldHelp     BOOL     Display all the options available to run AlphaFold. Use this option in combination with -profile singularity.
+    --alphaFoldOptions  STRING   Prediction model options passed to AlphaFold or AFMassive.
+    --frommsas          BOOL     When true, the pipeline will skip the multiple sequence alignments (msas).
+    --launchAlphaFold   BOOL     Launch AlphaFold.
+    --onlymsas          BOOL     When true, the pipeline will only generate the multiple sequence alignments (msas).
+    --useGpu            BOOL     Run the prediction model on GPU. AlphaFold can run either on CPU or GPU.
+
+ALPHAFOLD3:
+    --alphaFold3Database PATH     Path to the database required by AlphaFold3.
+    --alphaFold3Help     BOOL     Display all the options available to run AlphaFold3. Use this option in combination with -profile singularity.
+    --alphaFold3Options  STRING   Prediction model options passed to AlphaFold3.
+    --frommsas           BOOL     When true, the pipeline will skip the multiple sequence alignments (msas).
+    --launchAlphaFold3   BOOL     Launch AlphaFold3.
+    --onlymsas           BOOL     When true, the pipeline will only generate the multiple sequence alignments (msas).
+    --useGpu             BOOL     Mandatory -- Run the prediction model on GPU. AlphaFold3 run only on GPU.
+
+COLABFOLD:
+    --colabFoldDatabase PATH     Path to the database required by ColabFold.
+    --colabFoldHelp     BOOL     Display all the options available to run ColabFold. Use this option in combination with -profile singularity.
+    --colabFoldOptions  STRING   Prediction model options passed to ColabFold.
+    --frommsas          BOOL     When true, the pipeline will skip the multiple sequence alignments (msas).
+    --launchColabFold   BOOL     Launch ColabFold.
+    --onlymsas          BOOL     When true, the pipeline will only generate the multiple sequence alignments (msas).
+    --useGpu            BOOL     Mandatory -- Run the prediction model on GPU. ColabFold require GPU only.
+
+DIFFDOCK:
+    --diffDockArgsYamlFile YAML   Path to the YAML file with the DiffDock options. 
+    --diffDockDatabase     PATH   Path to the database required by DiffDock.
+    --launchDiffDock       BOOL   Launch DiffDock.
+    --proteinLigandFile    PATH   Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' 
+                                  contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.
+
+DYNAMICBIND:
+    --dynamicBindDatabase PATH     Path to the database required by DynamicBind.
+    --dynamicBindHelp     BOOL     Display all the options available to run DynamicBind. Use this option in combination with -profile singularity.
+    --dynamicBindOptions  STRING   Prediction model options passed to DynamicBind.
+    --launchDynamicBind   BOOL     Launch DynamicBind.
+    --proteinLigandFile   PATH     Path to the input file for molecular docking. The file must be in CSV format, without space. One column named 'protein' 
+                                   contains the path the the 'pdb' file and one column named 'ligand' must contain the path to the 'sdf' file.
+    --useGpu              BOOL     Mandatory -- Run the prediction model on GPU. DynamicBind require GPU only.
 
 =======================================================
 Available Profiles
    -profile test                        Run the test dataset
    -profile singularity                 Use the Singularity images for each process. Use `--singularityPath` to define the insallation path
    -profile cluster                     Run the workflow on the cluster, instead of locally
-------------------------------------------------------------------------
 
 
 ```
