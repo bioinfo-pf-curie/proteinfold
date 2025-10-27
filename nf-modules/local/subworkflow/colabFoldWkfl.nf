@@ -62,21 +62,22 @@ workflow colabFoldWkfl {
   // Check that the fasta files are correctly formatted  //
   /////////////////////////////////////////////////////////
   fastaChecker(fastaPathCh)
+  resultFastaChecker = fastaChecker.out.fastaOK.collect(sort: true)
 
   //////////////////////////
   // Structure prediction //
   //////////////////////////
   if (params.onlyMsas){
-    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
+    colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, resultFastaChecker)
 
   } else {
     if (params.fromMsas == null){
-      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, fastaChecker.out.jsonOK)
+      colabFoldSearch(fastaFilesCh, params.colabFoldDatabase, resultFastaChecker)
       versionsCh = versionsCh.mix(colabFoldSearch.out.versions)
       optionsCh = optionsCh.mix(colabFoldSearch.out.options)
       msasCh = colabFoldSearch.out.msas
     }
-    colabFold(msasCh, params.colabFoldDatabase)
+    colabFold(msasCh, params.colabFoldDatabase, resultFastaChecker)
     versionsCh = versionsCh.mix(colabFold.out.versions)
     optionsCh = optionsCh.mix(colabFold.out.options)
     plotsCh = colabFold.out.plots

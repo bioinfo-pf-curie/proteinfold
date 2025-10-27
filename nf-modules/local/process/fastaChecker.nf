@@ -30,7 +30,7 @@ process fastaChecker {
   path fastaFile
 
   output:
-  val(true), emit: jsonOK
+  val(true), emit: fastaOK
   
   script:
   """

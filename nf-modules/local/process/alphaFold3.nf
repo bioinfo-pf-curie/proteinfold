@@ -21,7 +21,7 @@ process alphaFold3 {
   label 'alphaFold3'
   label 'highMem'
   label 'medCpu'
-  
+
   containerOptions { (params.useGpu) ? "--nv --env NVIDIA_VISIBLE_DEVICES=all -B \$PWD:/tmp" : "-B \$PWD:/tmp" }
   clusterOptions { (params.useGpu) ? params.executor.gpu[task.executor] : '' }
 
