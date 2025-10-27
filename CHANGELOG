@@ -1,3 +1,16 @@
+v1.6.3
+27/10/2025
+  DOCUMENTATION
+  * Better help message for the pipelines (Issue #112)
+  BUGFIXES
+  * Resolve the bug where the checker adds dependencies to the search stage and inference step : AlphaFold2, AlphaFold3, afMassive, ColabFold (Issue #105)
+  * Resolve creation of the AlphaBridge folder :  AlphaFold2, afMassive, ColabFold (Issue #106)
+  * Resolve the help bug when --outDir is selected (Issue #109) 
+  * Remove printing on DiffDock, DynamicBind (Issue #111)
+  - NanoBert:
+    * Resolve the bug in the creation of Singularity container (Issue #110)
+
+
 v1.6.2
 18/07/2025
   BUGFIXES
