@@ -32,6 +32,7 @@ process colabFold {
   input:
   tuple val(protein), path(msas) 
   path colabFoldDatabase
+  val fastaOK
 
   output:
   tuple val(protein), val("colabFold"), path("predictions", type: 'dir'), emit: predictions

@@ -20,14 +20,18 @@ process afMassiveHelp {
   label 'afMassive'
   label 'minMem'
   label 'minCpu'
-  errorStrategy 'ignore'
+  publishDir "${params.outDir}/", mode: "copy"
+
+  output:
+  path('afMassiveHelp.txt'), emit: help
 
   when:
   params.afMassiveHelp 
 
   script:
   """
-  launch_alphafold.sh --helpfull > "${params.outDir}/afMassiveHelp.txt"
+  trap 'exit 0' EXIT 1
+  launch_alphafold.sh --helpfull > afMassiveHelp.txt
   """
 }
 

@@ -301,7 +301,6 @@ def checkProteinLigandFiles(filePath) {
         reader = new BufferedReader(new FileReader(file))
         // skip the first line with the header
         header = reader.readLine().split(',')
-        println header 
         def lineCounter = 1
 
         // Read each line from the file

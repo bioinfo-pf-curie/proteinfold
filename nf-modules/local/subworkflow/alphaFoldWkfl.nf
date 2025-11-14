@@ -66,6 +66,7 @@ workflow alphaFoldWkfl {
   // Check that the fasta files are correctly formatted  //
   /////////////////////////////////////////////////////////
   fastaChecker(fastaPathCh)
+  resultFastaChecker = fastaChecker.out.fastaOK.collect(sort: true)
 
   //////////////////////////
   // Structure prediction //
@@ -74,7 +75,7 @@ workflow alphaFoldWkfl {
 
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
-    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, fastaChecker.out.jsonOK)
+    alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, resultFastaChecker)
 
   } else {
     if (params.fromMsas != null){
@@ -87,7 +88,7 @@ workflow alphaFoldWkfl {
       msasCh = fastaFilesCh.join(msasCh)
     } else {
       // step - MSAS
-      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, fastaChecker.out.jsonOK)
+      alphaFoldSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, resultFastaChecker)
       versionsCh = versionsCh.mix(alphaFoldSearch.out.versions)
       optionsCh = optionsCh.mix(alphaFoldSearch.out.options)
       msasCh = alphaFoldSearch.out.msas
@@ -99,7 +100,7 @@ workflow alphaFoldWkfl {
       msasCh = fastaFilesCh.join(msasCh)
     }
     // step - structure prediction
-    alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase)
+    alphaFold(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.alphaFoldDatabase, resultFastaChecker)
     versionsCh = versionsCh.mix(alphaFold.out.versions)
     optionsCh = optionsCh.mix(alphaFold.out.options)
     // step generate plots
@@ -175,7 +176,7 @@ workflow alphaFoldWkfl {
       plotsCh,
       rankingCh,
       pymolPng.out.png,
-      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
+      fastaChainsCh.map { protein, file, n -> [protein] }.combine(Channel.of([file("AlphaBridge/software_options_mqc.yaml")])),
       fastaFilesCh,
       workflowSummaryCh
     )

@@ -20,13 +20,17 @@ process alphaFillHelp {
   label 'alphaFill'
   label 'minMem'
   label 'minCpu'
+  publishDir "${params.outDir}/", mode: "copy"
+
+  output:
+  path('alphaFillHelp.txt'), emit: help
 
   when:
   params.alphaFillHelp
 
   script:
   """
-  alphafill process --help > "${params.outDir}/alphaFillHelp.txt" 2>&1
+  alphafill process --help > alphaFillHelp.txt 2>&1
   """
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright Institut Curie 2023
+Copyright Institut Curie 2024
 
 This software is a computer program whose purpose is to
 predict 3D structure of proteins.
@@ -14,22 +14,38 @@ of the license and that you accept its terms.
 
 */
 
-// This process print the help of DynamicBind.
-process dynamicBindHelp {
-  label 'dynamicBind'
+process convertCifToPdb {
+  tag "${protein}"
+  label 'pymol'
   label 'minMem'
   label 'minCpu'
-  publishDir "${params.outDir}/", mode: "copy"
+  publishDir path: "${params.outDir}/alphaFold3/",
+             mode: 'copy',
+             saveAs: { filename -> if(filename == "*.pdb" ) filename  else null}
+
+
+  input:
+  tuple val(protein), val(toolFold), path("predictions/*")
 
   output:
-  path('dynamicBindHelp.txt'), emit: help
+  tuple val(protein), path("predictions/${protein}/*.pdb"), emit: pdb
 
-  when:
-  params.dynamicBindHelp
 
   script:
   """
-  launch_dynamicbind.sh -h > dynamicBindHelp.txt
+  ap_convert_cif_to_pdb.py --input="./predictions/${protein}/ranked_0.cif"
+  """
+
+  stub:
+  """
+  if [[ "${protein}" =~ "domain" ]]; then
+    folder="multimer"
+  else
+    folder="monomer2"
+  fi
+
+  cp -r $projectDir/test/data/afmassive/\$folder/${protein}/ranked_0.pdb predictions/${protein}
   """
 }
+
 

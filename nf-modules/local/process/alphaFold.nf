@@ -32,6 +32,7 @@ process alphaFold {
   tuple val(protein), path(fastaFile), path("msas/*")
   path alphaFoldOptions
   path alphaFoldDatabase
+  val fastaOK
 
   output:
   tuple val(protein), val("alphaFold"), path("predictions/*", type: 'dir'), emit: predictions

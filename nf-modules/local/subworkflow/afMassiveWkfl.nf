@@ -81,6 +81,7 @@ workflow afMassiveWkfl {
   // Check that the fasta files are correctly formatted  //
   /////////////////////////////////////////////////////////
   fastaChecker(fastaPathCh)
+  resultFastaChecker = fastaChecker.out.fastaOK.collect(sort: true)
 
 
   //////////////////////////
@@ -92,7 +93,7 @@ workflow afMassiveWkfl {
   // predictions
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
-    afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase, fastaChecker.out.jsonOK)
+    afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase, resultFastaChecker)
   
   } else {
     if (params.fromMsas != null){
@@ -100,7 +101,7 @@ workflow afMassiveWkfl {
       msasCh = fastaFilesCh.join(msasCh)
     } else {
       // step - MSAS
-      afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase, fastaChecker.out.jsonOK)
+      afMassiveSearch(fastaChainsCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase, resultFastaChecker)
       versionsCh = versionsCh.mix(afMassiveSearch.out.versions)
       optionsCh = optionsCh.mix(afMassiveSearch.out.options)
       msasCh = afMassiveSearch.out.msas
@@ -113,7 +114,7 @@ workflow afMassiveWkfl {
     }
     // step - structure prediction
     msasCh = msasCh.combine(afModelsCh)
-    afMassive(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase)
+    afMassive(msasCh, alphaFoldOptions.out.alphaFoldOptions, params.afMassiveDatabase, resultFastaChecker)
 
     // step - gather the predcition after parallelization
     afMassiveGatherCh = afMassive.out.predictions
@@ -214,7 +215,7 @@ workflow afMassiveWkfl {
       plotsCh,
       rankingCh,
       pymolPng.out.png,
-      fastaChainsCh.map{ protein, file, n -> [protein]}.combine(Channel.of('').collectFile(name: 'software_options_mqc.yaml', storeDir: "AlphaBridge")),
+      fastaChainsCh.map { protein, file, n -> [protein] }.combine(Channel.of([file("AlphaBridge/software_options_mqc.yaml")])),
       fastaFilesCh,
       workflowSummaryCh
     )

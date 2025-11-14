@@ -19,13 +19,17 @@ process colabFoldHelp {
   label 'colabFold'
   label 'minMem'
   label 'minCpu'
+  publishDir "${params.outDir}/", mode: "copy"
+
+  output:
+  path('colabFoldHelp.txt'), emit: help
 
   when:
   params.colabFoldHelp 
 
   script:
   """
-  colabfold_batch -h > "${params.outDir}/colabFoldHelp.txt"
+  colabfold_batch -h > colabFoldHelp.txt
   """
 }
 

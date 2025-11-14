@@ -28,6 +28,7 @@ process afMassive {
   tuple val(protein), path(fastaFile), path("msas/*"), val(predNumber), val(modelsToUse), val(randomSeed)
   path alphaFoldOptions
   path afMassiveDatabase
+  val fastaOK
 
   output:
   tuple val(protein), val("afMassive"), path("predictions/${protein}/*", type: 'file'), emit: predictions

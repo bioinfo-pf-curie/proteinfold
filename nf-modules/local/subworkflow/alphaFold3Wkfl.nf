@@ -26,6 +26,7 @@ include { alphaBridge } from '../process/alphaBridge'
 include { alphaFold3 } from '../process/alphaFold3'
 include { alphaFold3Gather } from '../process/alphaFold3Gather'
 include { alphaFold3Search } from '../process/alphaFold3Search'
+include { convertCifToPdb } from '../process/convertCifToPdb'
 include { createAf3ModelsCh } from '../process/createAf3ModelsCh'
 include { getSoftwareOptions } from '../../common/process/utils/getSoftwareOptions'
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
@@ -57,6 +58,7 @@ workflow alphaFold3Wkfl {
   // Check that the fasta files are correctly formatted  //
   /////////////////////////////////////////////////////////
   jsonChecker(fastaPathCh)
+  resultJsonChecker = jsonChecker.out.jsonOK.collect(sort: true)
 	  
   ///////////////////
   // Init channels //
@@ -69,21 +71,21 @@ workflow alphaFold3Wkfl {
  
   if (params.onlyMsas){
     // step - MSAS when onlyMsas
-    alphaFold3Search(fastaFilesCh, params.alphaFold3Database, jsonChecker.out.jsonOK)
+    alphaFold3Search(fastaFilesCh, params.alphaFold3Database, resultJsonChecker)
   } else {
     if (params.fromMsas != null){
       // Do nothing (just to have the same if/else condition as in the alphaFold.nf file
       msasCh = msasCh
     } else {
       // step - MSAS
-      alphaFold3Search(fastaFilesCh, params.alphaFold3Database, jsonChecker.out.jsonOK)
+      alphaFold3Search(fastaFilesCh, params.alphaFold3Database, resultJsonChecker)
       versionsCh = versionsCh.mix(alphaFold3Search.out.versions)
       optionsCh = optionsCh.mix(alphaFold3Search.out.options)
       msasCh = alphaFold3Search.out.msas
     }
     // afMassive options for parallelization
     // create on json file per seeds
-    afModels = createAf3ModelsCh(msasCh, jsonChecker.out.jsonOK)
+    afModels = createAf3ModelsCh(msasCh, resultJsonChecker)
                 | transpose()
                 | map { prot, file, jsonOK -> 
                         def seed = file.getName()
@@ -102,7 +104,7 @@ workflow alphaFold3Wkfl {
     // afModels contains:
     // [protein, /path/to/msas/protein_seed.json, seed]
 
-    alphaFold3(afModels, params.alphaFold3Database,jsonOK)
+    alphaFold3(afModels, params.alphaFold3Database, resultJsonChecker)
     versionsCh = versionsCh.mix(alphaFold3.out.versions)
     optionsCh = optionsCh.mix(alphaFold3.out.options)
 
@@ -154,7 +156,24 @@ workflow alphaFold3Wkfl {
     // AlphaFill //
     ///////////////
     if(params.launchAlphaFill){
-      alphaFillWkfl(alphaFold3Gather.out.predictions)
+      convertCifToPdb(alphaFold3Gather.out.predictions)
+      predictions = alphaFold3Gather.out.predictions
+      .join(convertCifToPdb.out.pdb, remainder: true)
+      .map {protein, toolname, paths1, paths2 ->
+        def all_paths = []
+        if (paths1) {
+            // Forcer en liste puis flatten
+            def list1 = [paths1].flatten()
+            all_paths.addAll(list1)
+        }
+
+        if (paths2) {
+            // Forcer en liste puis flatten
+            def list2 = [paths2].flatten()
+            all_paths.addAll(list2)
+        }
+        [protein, toolname, all_paths] }
+      alphaFillWkfl(predictions)
     }
   }
   
